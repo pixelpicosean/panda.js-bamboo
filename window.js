@@ -13,6 +13,7 @@ game.Editor.Window = game.Class.extend({
     height: 100,
     borderSize: 1,
     inputs: {},
+    visible: false,
 
     init: function(x, y, width, height) {
         if(typeof(x) !== 'undefined') this.x = x;
@@ -52,10 +53,12 @@ game.Editor.Window = game.Class.extend({
     },
 
     show: function() {
+        this.visible = true;
         document.body.appendChild(this.windowDiv);
     },
 
     hide: function() {
+        this.visible = false;
         document.body.removeChild(this.windowDiv);
     },
 

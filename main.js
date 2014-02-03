@@ -9,12 +9,5 @@ game.module(
 .body(function() {
 
 game.editor = new game.Editor();
-
-game.editor.addWindow(0, 0, 54, 'window')
-    .addImageButton('cursor.png')
-    .addImageButton('pencil.png')
-    .addImageButton('play.png')
-    .addImageButton('gear.png')
-    .show();
     
 });
