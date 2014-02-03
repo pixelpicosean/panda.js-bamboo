@@ -1,10 +1,12 @@
 game.module(
-    'editor.window',
-    '1.0.0'
+    'editor.window'
+)
+.require(
+    'editor.core'
 )
 .body(function() {
    
-game.Window = game.Class.extend({
+game.Editor.Window = game.Class.extend({
     x: 'center',
     y: 'center',
     width: 400,
@@ -36,12 +38,11 @@ game.Window = game.Class.extend({
 
     update: function() {
         if(this.width === 'window') this.windowDiv.style.width = window.innerWidth - this.borderSize * 2 + 'px';
-        else this.windowDiv.style.width = this.width + 'px';
+        else this.windowDiv.style.width = (this.width - this.borderSize * 2) + 'px';
 
         if(this.height === 'window') this.windowDiv.style.height = window.innerHeight - this.borderSize * 2 + 'px';
-        else this.windowDiv.style.width = this.width + 'px';
+        else this.windowDiv.style.height = (this.height - this.borderSize * 2) + 'px';
 
-        this.windowDiv.style.height = this.height + 'px';
         if(this.x === 'center') this.windowDiv.style.left = window.innerWidth / 2 - this.width / 2 + 'px';
         else this.windowDiv.style.left = this.x + 'px';
 
@@ -80,6 +81,17 @@ game.Window = game.Class.extend({
         var buttonDiv = document.createElement('div');
         buttonDiv.className = 'button';
         buttonDiv.innerHTML = title;
+        if(callback) buttonDiv.addEventListener('click', callback.bind(this), false);
+        this.contentDiv.appendChild(buttonDiv);
+        return this;
+    },
+
+    addImageButton: function(url, callback) {
+        var img = new Image();
+        img.src = game.Editor.mediaFolder + url;
+        var buttonDiv = document.createElement('div');
+        buttonDiv.appendChild(img);
+        buttonDiv.className = 'imageButton';
         if(callback) buttonDiv.addEventListener('click', callback.bind(this), false);
         this.contentDiv.appendChild(buttonDiv);
         return this;

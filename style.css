@@ -10,47 +10,42 @@ body {
     -ms-user-select: none;
     user-select: none;
 }
-
+body.notready div {
+    display: none;
+}
 .window {
     /*pointer-events: auto;*/
     background: #393939;
     z-index: 9999;
     position: absolute;
     border: 1px solid #202020;
-    box-shadow: 0px 2px 0px rgba(0,0,0,0.2);
+    /*box-shadow: 0px 2px 0px rgba(0,0,0,0.2);*/
 }
-
 .window .content {
     padding: 10px;
 }
-
 .window .content .text {
     margin-bottom: 10px;
 }
-
 .window .content .input {
     margin-bottom: 10px;
 }
-
 .window .content .button {
     color: #eee;
     background: #6b6b6b;
     border: 1px solid #282828;
     border-radius: 5px;
     padding: 5px 10px;
-/*    margin-top: 20px;
-    margin-right: 0px;
-    margin-left: 11px;*/
     margin-right: 10px;
     box-shadow: 0px 2px 0px #282828;
     cursor: pointer;
+    float: left;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    float: left;
 }
 .window .content .button:hover {
     background: #535353;
@@ -63,6 +58,23 @@ body {
     /*margin-top: 12px;*/
     /*margin-bottom: -2px;*/
 }
+.window .content .imageButton {
+    margin-bottom: 10px;
+}
+.window .content .imageButton img {
+    width: 32px;
+    height: 32px;
+    display: block;
+}
+.window .content .imageButton img:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+.window .content .imageButton img:active {
+    opacity: 0.5;
+}
+
+
 
 
 
