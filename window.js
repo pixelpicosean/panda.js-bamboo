@@ -55,6 +55,7 @@ game.Editor.Window = game.Class.extend({
     show: function() {
         this.visible = true;
         document.body.appendChild(this.windowDiv);
+        return this;
     },
 
     hide: function() {
@@ -100,7 +101,7 @@ game.Editor.Window = game.Class.extend({
         return this;
     },
 
-    addInput: function(name, type, label, value) {
+    addInput: function(name, type, label, value, callback, description) {
         var inputDiv = document.createElement('div');
         var labelElem = document.createElement('label');
         var inputElem;
@@ -109,11 +110,12 @@ game.Editor.Window = game.Class.extend({
         labelElem.innerHTML = label || name + ':';
         type = type || 'text';
 
-        if(type === 'text') {
+        if(type === 'text' || type === 'checkbox') {
             inputElem = document.createElement('input');
             inputElem.type = type;
             inputElem.name = name;
             if(typeof(value) === 'number' || typeof(value) === 'string') inputElem.value = value;
+            if(type === 'checkbox') inputElem.checked = !!value;
         }
         else if(type === 'select') {
             inputElem = document.createElement('select');
@@ -126,13 +128,38 @@ game.Editor.Window = game.Class.extend({
         inputDiv.appendChild(labelElem);
         inputDiv.appendChild(inputElem);
 
+        if(typeof(callback) === 'function') inputElem.addEventListener('change', callback.bind(this), false);
+
         this.contentDiv.appendChild(inputDiv);
         return this;
     },
 
     addInputText: function(name, value, label) {
         return this.addInput(name, 'text', label, value);
-    } 
+    },
+
+    addInputCheckbox: function(name, value, label, callback) {
+        return this.addInput(name, 'checkbox', label, value, callback);
+    },
+
+    addInputSelect: function(name, label, callback) {
+        return this.addInput(name, 'select', label, null, callback);
+    },
+
+    addInputSelectOption: function(name, value, label, selected) {
+        var elem = document.createElement('option');
+        elem.value = value;
+        elem.innerHTML = label;
+        elem.selected = !!selected;
+
+        this.inputs[name].appendChild(elem);
+        return this;
+    },
+
+    setInputSelectValue: function(name, value) {
+        this.inputs[name].value = value;
+        return this;
+    }
 });
 
 });
