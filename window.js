@@ -128,7 +128,7 @@ game.Editor.Window = game.Class.extend({
         inputDiv.appendChild(labelElem);
         inputDiv.appendChild(inputElem);
 
-        if(typeof(callback) === 'function') inputElem.addEventListener('change', callback.bind(this), false);
+        if(typeof(callback) === 'function') inputElem.addEventListener('change', callback.bind(this, name), false);
 
         this.contentDiv.appendChild(inputDiv);
         return this;
