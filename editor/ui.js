@@ -1,12 +1,28 @@
 game.module(
-    'editor.window'
+    'bamboo.editor.ui'
 )
 .require(
-    'editor.core'
+
 )
 .body(function() {
-   
-game.Editor.Window = game.Class.extend({
+
+bamboo.Ui = game.Class.extend({
+    windows: [],
+    
+    addWindow: function(x, y, width, height) {
+        var obj = new bamboo.UiWindow(x, y, width, height);
+        this.windows.push(obj);
+        return obj;
+    },
+
+    hideAll: function() {
+        for (var i = 0; i < this.windows.length; i++) {
+            this.windows[i].hide();
+        };
+    }
+});
+
+bamboo.UiWindow = game.Class.extend({
     x: 'center',
     y: 'center',
     width: 400,
