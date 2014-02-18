@@ -22,7 +22,7 @@ bamboo.Property.TYPE = {
     STRING: 1,
     BOOLEAN: 2,
     VECTOR: 3,
-    OBJECT: 4,
+    NODE: 4,
     ARRAY: 5,
     EASING: 6,
     ENUM: 7,
@@ -37,29 +37,55 @@ bamboo.Property.parse = function(world, obj, name, desc) {
         case bamboo.Property.TYPE.FILE:
         case bamboo.Property.TYPE.BOOLEAN:
         case bamboo.Property.TYPE.ENUM:
+        case bamboo.Property.TYPE.TRIGGER:
             return obj[name];
 
         case bamboo.Property.TYPE.VECTOR:
             if(obj[name] instanceof Array) return new game.Vector(obj[name][0], obj[name][1]);
             return new game.Vector(obj[name].x, obj[name].y);
 
-        case bamboo.Property.TYPE.OBJECT:
+        case bamboo.Property.TYPE.NODE:
             if(obj[name] === null) return world;
-            return world.findObject(obj[name]);
+            return world.findNode(obj[name]);
 
         case bamboo.Property.TYPE.EASING:
-            return getEasingFromName(obj[name]);
+            return game.Tween.Easing.getByName(obj[name]);
 
         case bamboo.Property.TYPE.ARRAY:
             var a = [];
             for(var i=0; i<obj[name].length; i++)
-                a.push(parseProperty(world, obj[name], i, desc.options));
+                a.push(bamboo.Property.parse(world, obj[name], i, desc.options));
             return a;
-
-        case bamboo.Property.TYPE.TRIGGER:
-            return obj[name];
     }
     return null;
+};
+
+bamboo.Property.toJSON = function(obj, name, desc) {
+    switch(desc.type) {
+        case bamboo.Property.TYPE.NUMBER:
+        case bamboo.Property.TYPE.STRING:
+        case bamboo.Property.TYPE.FILE:
+        case bamboo.Property.TYPE.BOOLEAN:
+        case bamboo.Property.TYPE.ENUM:
+        case bamboo.Property.TYPE.TRIGGER:
+            return obj[name];
+
+        case bamboo.Property.TYPE.VECTOR:
+            return {x: obj[name].x, y: obj[name].y};
+
+        case bamboo.Property.TYPE.NODE:
+            return obj[name].name;
+
+        case bamboo.Property.TYPE.EASING:
+            return game.Tween.Easing.getName(obj[name]);
+
+        case bamboo.Property.TYPE.ARRAY:
+            var a = [];
+            for(var i=0; i<obj[name].length; i++) {
+                a.push(bamboo.Property.toJSON(obj[name], i, desc.options));
+            }
+            return a;
+    }
 };
 
 });

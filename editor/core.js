@@ -6,7 +6,6 @@ game.module(
 .require(
     'bamboo.runtime.core',
     'bamboo.editor.ui',
-    'bamboo.editor.object'
 )
 .body(function() {
 
