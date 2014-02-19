@@ -20,9 +20,9 @@ bamboo.editor.State = game.Class.extend({
 
     onmousemove: function(p) {
     },
-    onkeydown: function(keycode) {
+    onkeydown: function(keycode, p) {
     },
-    onkeyup: function(keycode) {
+    onkeyup: function(keycode, p) {
     }
 });
 

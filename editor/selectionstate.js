@@ -44,11 +44,13 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     },
 
     onkeydown: function(keycode) {
+    onkeydown: function(keycode, p) {
         switch(keycode) {
         }
         return false;
     },
     onkeyup: function(keycode) {
+    onkeyup: function(keycode, p) {
         switch(keycode) {
         }
         return false;

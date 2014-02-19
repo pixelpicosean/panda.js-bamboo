@@ -112,7 +112,7 @@ bamboo.Editor = game.Class.extend({
         }
 
         // if not overridden, pass to state
-        return this.state.onkeydown(keycode);
+        return this.state.onkeydown(keycode, this.prevMousePos.clone());
     },
     onkeyup: function(keycode) {
         // if in game, ignore keyboard (except esc)
@@ -134,7 +134,7 @@ bamboo.Editor = game.Class.extend({
         }
 
         // if not overridden, pass to state
-        return this.state.onkeyup(keycode);
+        return this.state.onkeyup(keycode, this.prevMousePos.clone());
     }
 });
 
