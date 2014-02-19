@@ -2,7 +2,8 @@ game.module(
     'bamboo.editor.selectionstate'
 )
 .require(
-    'bamboo.editor.state'
+    'bamboo.editor.state',
+    'bamboo.editor.movenodestate'
 )
 .body(function() {
 
@@ -43,15 +44,20 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         this.hoverNode(this.editor.getNodeAt(p));
     },
 
-    onkeydown: function(keycode) {
     onkeydown: function(keycode, p) {
         switch(keycode) {
+            case 71:// G
+                return true;
         }
         return false;
     },
-    onkeyup: function(keycode) {
     onkeyup: function(keycode, p) {
         switch(keycode) {
+            case 71:// G
+                if(this.editor.selectedNode) {
+                    this.editor.controller.changeState(new bamboo.editor.MoveNodeState(this.editor, p, this.editor.selectedNode));
+                }
+                return true;
         }
         return false;
     }
