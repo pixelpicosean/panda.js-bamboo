@@ -7,8 +7,13 @@ game.module(
 .body(function() {
 
 bamboo.nodes.Rotator = bamboo.Node.extend({
-    initialAngle: 0,
-    angleVelocity: 0,
+    duration: 1,
+    timeOffset: 0,
+    beginAngle: 0,
+    endAngle: Math.PI*2.0,
+    mode: 'loop',
+    easing: game.Tween.Easing.Linear.None,
+
 
     init: function(world, properties) {
         this.displayObject = new game.Container();
@@ -17,14 +22,26 @@ bamboo.nodes.Rotator = bamboo.Node.extend({
     },
 
     update: function(worldTime) {
-        // TODO: add easings
-        this.rotation = this.initialAngle + this.angleVelocity*worldTime;
+
+        var f = ((worldTime+this.startOffset) % this.duration) / this.duration;
+
+        if (this.mode === 'backAndForth') {
+            f *= 2.0;
+            if (f > 1.0)
+                f = 2.0 - f;
+        }
+        f = this.easing(f);
+        this.rotation = this.beginAngle + this.endAngle * f;
     }
 });
 
 bamboo.nodes.Rotator.desc = {
-    initialAngle: new bamboo.Property(true, 'Starting angle', bamboo.Property.TYPE.NUMBER),
-    angleVelocity: new bamboo.Property(true, 'Angle velocity (can be negative)', bamboo.Property.TYPE.NUMBER)
+    duration: new bamboo.Property(true, 'Duration', 'Duration.', bamboo.Property.TYPE.NUMBER),
+    timeOffset: new bamboo.Property(true, 'Offset (s)', 'Time offset.', bamboo.Property.TYPE.NUMBER),
+    beginAngle: new bamboo.Property(true, 'Begin angle', 'Begin angle.', bamboo.Property.TYPE.ANGLE),
+    endAngle: new bamboo.Property(true, 'End angle', 'End angle.', bamboo.Property.TYPE.ANGLE),
+    mode: new bamboo.Property(true, 'Loop mode', 'Loop mode', bamboo.Property.TYPE.ENUM, ['loop','backAndForth']),
+    easing: new bamboo.Property(true, 'Easing', 'Easing curve', bamboo.Property.TYPE.EASING)
 };
 
 });

@@ -5,12 +5,14 @@ game.module(
     
 bamboo.Property = game.Class.extend({
     editable: false,
+    name: null,
     description: null,
     type: null,
     options: null,
 
-    init: function(editable, desc, type, options) {
+    init: function(editable, name, desc, type, options) {
         this.editable = editable;
+        this.name = name;
         this.description = desc;
         this.type = type;
         this.options = options;
@@ -19,20 +21,22 @@ bamboo.Property = game.Class.extend({
 
 bamboo.Property.TYPE = {
     NUMBER: 0,
-    STRING: 1,
-    BOOLEAN: 2,
-    VECTOR: 3,
-    NODE: 4,
-    ARRAY: 5,
-    EASING: 6,
-    ENUM: 7,
-    FILE: 8,
-    TRIGGER: 9
+    ANGLE: 1,
+    STRING: 2,
+    BOOLEAN: 3,
+    VECTOR: 4,
+    NODE: 5,
+    ARRAY: 6,
+    EASING: 7,
+    ENUM: 8,
+    FILE: 9,
+    TRIGGER: 10
 };
 
 bamboo.Property.parse = function(world, obj, name, desc) {
     switch(desc.type) {
         case bamboo.Property.TYPE.NUMBER:
+        case bamboo.Property.TYPE.ANGLE:
         case bamboo.Property.TYPE.STRING:
         case bamboo.Property.TYPE.FILE:
         case bamboo.Property.TYPE.BOOLEAN:
@@ -63,6 +67,7 @@ bamboo.Property.parse = function(world, obj, name, desc) {
 bamboo.Property.toJSON = function(obj, name, desc) {
     switch(desc.type) {
         case bamboo.Property.TYPE.NUMBER:
+        case bamboo.Property.TYPE.ANGLE:
         case bamboo.Property.TYPE.STRING:
         case bamboo.Property.TYPE.FILE:
         case bamboo.Property.TYPE.BOOLEAN:

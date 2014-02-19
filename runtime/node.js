@@ -167,11 +167,11 @@ Object.defineProperty(bamboo.Node.prototype, 'connectedTo', {
 });
 
 bamboo.Node.desc = {
-    name: new bamboo.Property(true, 'Name of the node', bamboo.Property.TYPE.STRING),
-    position: new bamboo.Property(true, 'Position of the node', bamboo.Property.TYPE.VECTOR),
-    rotation: new bamboo.Property(true, 'Rotation of the node in radians', bamboo.Property.TYPE.NUMBER),
-    scale: new bamboo.Property(true, 'Scale of the node', bamboo.Property.TYPE.VECTOR),
-    connectedTo: new bamboo.Property(true, 'Node that this node will follow', bamboo.Property.TYPE.NODE)
+    name: new bamboo.Property(true, 'Name', 'Name of the node', bamboo.Property.TYPE.STRING),
+    position: new bamboo.Property(true, 'Position', 'Position of the node', bamboo.Property.TYPE.VECTOR),
+    rotation: new bamboo.Property(true, 'Rotation', 'Rotation of the node in degrees', bamboo.Property.TYPE.ANGLE),
+    scale: new bamboo.Property(true, 'Scale', 'Scale of the node', bamboo.Property.TYPE.VECTOR),
+    connectedTo: new bamboo.Property(true, 'Follow', 'Node that this node will follow', bamboo.Property.TYPE.NODE)
 };
 
 });

@@ -201,9 +201,9 @@ bamboo.nodes.Path = bamboo.Node.extend({
 });
 
 bamboo.nodes.Path.desc = {
-    loop: new bamboo.Property(true, 'Connect endpoints', bamboo.Property.TYPE.BOOLEAN),
-    spline: new bamboo.Property(true, 'Use spline-smoothing', bamboo.Property.TYPE.BOOLEAN),
-    points: new bamboo.Property(false, '', bamboo.Property.TYPE.ARRAY, new bamboo.Property(false, '',bamboo.Property.TYPE.VECTOR))
+    loop: new bamboo.Property(true, 'Loop', 'Connect endpoints', bamboo.Property.TYPE.BOOLEAN),
+    spline: new bamboo.Property(true, 'Spline', 'Use spline-smoothing', bamboo.Property.TYPE.BOOLEAN),
+    points: new bamboo.Property(false, '', '', bamboo.Property.TYPE.ARRAY, new bamboo.Property(false, '','',bamboo.Property.TYPE.VECTOR))
 };
 
 });

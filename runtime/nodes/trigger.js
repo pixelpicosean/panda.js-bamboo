@@ -19,7 +19,7 @@ bamboo.nodes.Trigger = bamboo.Node.extend({
     }
 });
 bamboo.nodes.Trigger.desc = {
-    target: new bamboo.Property(true, 'Target', bamboo.Property.TYPE.TRIGGER)
+    target: new bamboo.Property(true, 'Target', 'Target', bamboo.Property.TYPE.TRIGGER)
 };
 
 });

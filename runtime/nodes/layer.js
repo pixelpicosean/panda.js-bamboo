@@ -21,7 +21,7 @@ bamboo.nodes.Layer = bamboo.Node.extend({
 });
 
 bamboo.nodes.Layer.desc = {
-    speedFactor: new bamboo.Property(true, 'Speed relative to camera', bamboo.Property.TYPE.NUMBER)
+    speedFactor: new bamboo.Property(true, 'Parallax multipliel', 'Speed relative to camera', bamboo.Property.TYPE.NUMBER)
 };
 
 });

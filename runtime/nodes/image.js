@@ -26,7 +26,7 @@ Object.defineProperty(bamboo.nodes.Image.prototype, 'image', {
 });
 
 bamboo.nodes.Image.desc = {
-    image: new bamboo.Property(true, 'Filename of the image', bamboo.Property.TYPE.FILE)
+    image: new bamboo.Property(true, 'Image', 'Filename of the image', bamboo.Property.TYPE.FILE)
 };
 
 });

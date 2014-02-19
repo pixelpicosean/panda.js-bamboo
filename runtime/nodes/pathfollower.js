@@ -50,11 +50,11 @@ bamboo.nodes.PathFollower = bamboo.Node.extend({
 });
 
 bamboo.nodes.PathFollower.desc = {
-    duration: new bamboo.Property(true, 'Duration for one round', bamboo.Property.TYPE.NUMBER),
-    timeOffset: new bamboo.Property(true, 'Time offset from the start', bamboo.Property.TYPE.NUMBER),
-    mode: new bamboo.Property(true, 'Loop mode', bamboo.Property.TYPE.ENUM, ['loop','backAndForth']),
-    direction: new bamboo.Property(true, 'Starting direction', bamboo.Property.TYPE.ENUM, ['forward','backward']),
-    easing: new bamboo.Property(true, 'Easing curve', bamboo.Property.TYPE.EASING)
+    duration: new bamboo.Property(true, 'Duration', 'Duration for one round', bamboo.Property.TYPE.NUMBER),
+    timeOffset: new bamboo.Property(true, 'Offset (s)', 'Time offset from the start', bamboo.Property.TYPE.NUMBER),
+    mode: new bamboo.Property(true, 'Loop mode', 'Loop mode', bamboo.Property.TYPE.ENUM, ['loop','backAndForth']),
+    direction: new bamboo.Property(true, 'Direction', 'Starting direction', bamboo.Property.TYPE.ENUM, ['forward','backward']),
+    easing: new bamboo.Property(true, 'Easing', 'Easing curve', bamboo.Property.TYPE.EASING)
 };
 
 });
