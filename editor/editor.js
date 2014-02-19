@@ -69,7 +69,8 @@ bamboo.Editor = game.Class.extend({
             this.state.onclick(this.prevMousePos);
             return;
         }
-        this.controller.changeState(true, new bamboo.editor.SelectionState(this, this.prevMousePos));
+        this.state.apply();
+        this.controller.changeState(new bamboo.editor.SelectionState(this, this.prevMousePos));
     },
     onmousedown: function(button) {
         if(this.state instanceof bamboo.editor.GameState)
@@ -117,7 +118,8 @@ bamboo.Editor = game.Class.extend({
         // if in game, ignore keyboard (except esc)
         if(this.state instanceof bamboo.editor.GameState) {
             if(keycode === 27) {// ESC
-                this.controller.changeState(false, new bamboo.editorSelectionState(this. this.prevMousePos));
+                this.state.cancel();
+                this.controller.changeState(new bamboo.editorSelectionState(this. this.prevMousePos));
                 return true;
             }
             return false;
@@ -126,7 +128,8 @@ bamboo.Editor = game.Class.extend({
         // overrides from editor
         switch(keycode) {
             case 27:// ESC
-                this.controller.changeState(false, new bamboo.editor.SelectionState(this, this.prevMousePos));
+                this.state.cancel();
+                this.controller.changeState(new bamboo.editor.SelectionState(this, this.prevMousePos));
                 return true;
         }
 

@@ -31,11 +31,7 @@ bamboo.EditorController = game.Class.extend({
         node.world = null;
     },
 
-    changeState: function(applyPrevious, newState) {
-        if(applyPrevious)
-            this.editor.state.apply();
-        else
-            this.editor.state.cancel();
+    changeState: function(newState) {
         this.editor.state = newState;
     },
 
