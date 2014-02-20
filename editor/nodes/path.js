@@ -151,12 +151,13 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         }
     },
 
-    propertyChanged: function(property, value) {
+    propertyChanged: function(property, value, oldValue) {
         if(property === 'loop' || property === 'spline') {
             this.updateRect();
             this.redrawPath();
             this.node.calculateLength();
         }
+        this.super(property, value, oldValue);
     },
 
     onkeydown: function(keycode) {

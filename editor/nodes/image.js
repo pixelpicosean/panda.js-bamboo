@@ -10,15 +10,18 @@ game.module(
 bamboo.nodes.Image.editor = bamboo.Node.editor.extend({
     init: function(node) {
         this.super(node);
+        if(!node.image)
+            this.setProperty('image', 'media/bird.png');
     },
 
     getBounds: function() {
-        return {x: 0, y: 0, width: this.node.displayObject.width, height: this.node.displayObject.height };
+        return {x: 0, y: 0, width: this.node.displayObject.texture.width, height: this.node.displayObject.texture.height };
     },
 
-    propertyChanged: function(key) {
+    propertyChanged: function(key, value, oldValue) {
         if(key === 'image')
             this.sizeChanged();
+        this.super(key, value, oldValue);
     }
 });
 
