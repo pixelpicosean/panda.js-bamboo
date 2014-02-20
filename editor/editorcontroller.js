@@ -12,13 +12,13 @@ bamboo.EditorController = game.Class.extend({
         this.editor = editor;
     },
 
-    createNode: function(className, properties) {
+    createNode: function(className, properties, editorNodeProperties) {
         // make sure name is unique
         properties.name = this.editor.getUniqueName(properties.name);
 
         var node = new bamboo.nodes[className](this.editor.world, properties);
-        var editorNode = new bamboo.nodes[className].editor(node);
-
+        var editorNode = new bamboo.nodes[className].editor(node, editorNodeProperties);
+        node.displayObject.updateTransform();
         this.editor.nodes.push(editorNode);
         this.editor.nodeAdded(node);
         return node;

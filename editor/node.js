@@ -17,7 +17,7 @@ bamboo.Node.editor = game.Class.extend({
     _cachedRect: null,
     _cachedScale: null,
     editEnabled: false,
-    selectable: true,
+    properties: {selectable: true, linkable: false},
 
     init: function(node) {
         this.node = node;

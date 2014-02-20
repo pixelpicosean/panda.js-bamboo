@@ -12,7 +12,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
 
     init: function(editor, p) {
         this.super(editor);
-        this.hoverNode(this.editor.getNodeAt(p));
+        this.hoverNode(this.editor.getNodeAt(p, true));
     },
 
     hoverNode: function(node) {
@@ -41,7 +41,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     },
 
     onmousemove: function(p) {
-        this.hoverNode(this.editor.getNodeAt(p));
+        this.hoverNode(this.editor.getNodeAt(p, true));
     },
 
     onkeydown: function(keycode, p) {
@@ -55,6 +55,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         switch(keycode) {
             case 71:// G
                 if(this.editor.selectedNode) {
+                    this.hoverNode(null);
                     this.editor.controller.changeState(new bamboo.editor.MoveNodeState(this.editor, p, this.editor.selectedNode));
                 }
                 return true;

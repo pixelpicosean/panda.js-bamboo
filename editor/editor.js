@@ -75,7 +75,7 @@ bamboo.Editor = game.Class.extend({
             var r = n._cachedRect;
             if(l.x >= r.x && l.x <= r.x+r.width &&
                l.y >= r.y && l.y <= r.y+r.height) {
-                if(!selectable || n.selectable)
+                if(!selectable || n.properties.selectable)
                     return n.node;
             }
         }
