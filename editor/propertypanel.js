@@ -39,7 +39,7 @@ bamboo.PropertyPanel = game.Class.extend({
                     this.window.addInputCheckbox(key, node[key], props[key].name, props[key].description, this.booleanPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.VECTOR:
-                    this.window.addInputText(key, node[key].x, props[key].name, props[key].description, this.vectorPropertyChanged.bind(this));
+                    this.window.addMultiInput(key, [node[key].x, node[key].y], 2, props[key].name, props[key].description, this.vectorPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.NODE:
                     this.window.addInputSelect(key, props[key].name, props[key].description, this.nodePropertyChanged.bind(this));
@@ -91,6 +91,14 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     vectorPropertyChanged: function(key) {
+        var value = this.window.inputs[key].value;
+        var parts = key.split('.');
+        var i = parts[parts.length-1];
+        var keyName = key.slice(0, key.length - 1 - i.length);
+        if(i === '0')
+            this.editor.selectedNode._editorNode.setProperty(keyName, new game.Vector(value, this.editor.selectedNode[keyName].y));
+        else if(i === '1')
+            this.editor.selectedNode._editorNode.setProperty(keyName, new game.Vector(this.editor.selectedNode[keyName].x, value));
     },
 
     nodePropertyChanged: function(key) {

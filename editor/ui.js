@@ -152,6 +152,41 @@ bamboo.UiWindow = game.Class.extend({
         return this;
     },
 
+    addMultiInput: function(name, values, count, label, tooltip, callback)
+    {
+        var inputDiv = document.createElement('div');
+        inputDiv.className = 'input';
+
+        var labelElem = document.createElement('label');
+        labelElem.innerHTML = label || name + ':';
+        inputDiv.appendChild(labelElem);
+
+        var multiDiv = document.createElement('div');
+        multiDiv.className = 'multiInput';
+
+        for (var i=0; i < count; i++) {
+            var inputName = name + '.' + i;
+
+            var inputElem = document.createElement('input');
+            inputElem.type = 'text';
+            inputElem.name = inputName;
+            inputElem.title = tooltip;
+            inputElem.value = values[i];
+            inputElem.className = 'multiInputValue';
+
+            this.inputs[inputName] = inputElem;
+
+            multiDiv.appendChild(inputElem);
+
+            if(typeof(callback) === 'function') inputElem.addEventListener('change', callback.bind(this, inputName), false);
+        }
+
+        inputDiv.appendChild(multiDiv);
+        this.contentDiv.appendChild(inputDiv);
+
+        return this;
+    },
+
     addInputText: function(name, value, label, tooltip, callback) {
         return this.addInput(name, 'text', label, tooltip, value, callback);
     },
