@@ -14,7 +14,7 @@ bamboo.EditorController = game.Class.extend({
 
     createNode: function(className, properties) {
         // make sure name is unique
-        properties.name = this.editor.world.getUniqueName(properties.name);
+        properties.name = this.editor.getUniqueName(properties.name);
 
         var node = new bamboo.nodes[className](this.editor.world, properties);
         var editorNode = new bamboo.nodes[className].editor(node);
@@ -26,7 +26,7 @@ bamboo.EditorController = game.Class.extend({
 
     deleteNode: function(node) {
         this.editor.nodeRemoved(node);
-        this.editor.nodes.splice(this.editor.nodes.indexOf(node), 1);
+        this.editor.nodes.splice(this.editor.nodes.indexOf(node._editorNode), 1);
         node.connectedTo = null;
         node.world = null;
     },

@@ -25,25 +25,6 @@ bamboo.World = bamboo.Node.extend({
         this.cameraPosition = new game.Vector();
     },
 
-    getUniqueName: function(name) {
-        var i = 1;
-        var newName = name;
-        while(true) {
-            var found = false;
-            for(var j=0; j<this.nodes.length; j++) {
-                if(this.nodes[j].name === newName) {
-                    found = true;
-                    break;
-                }
-            }
-            if(!found)
-                return newName;
-
-            newName = name+'.'+('000'+i).slice(-4);
-            i++;
-        }
-    },
-
     findNode: function(name) {
         for(var i=0; i<this.nodes.length; i++) {
             if(this.nodes[i].name === name)

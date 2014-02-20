@@ -31,6 +31,30 @@ bamboo.Editor = game.Class.extend({
         this.displayObject.addChild(this.world.displayObject);
     },
 
+    getUniqueName: function(name) {
+        if(!this.world.findNode(name))
+            return name;
+
+        var i = 1;
+        var newName = name;
+        var parts = name.split('.');
+        if(parts.length > 1) {
+            var suffix = parts[parts.length-1];
+            if(suffix.length === 4 && !isNaN(parseFloat(suffix)) && isFinite(suffix))
+                newName = name.slice(0, name.length-5);
+        }
+
+        while(true) {
+            newName = name+'.'+('000'+i).slice(-4);
+            if(!this.world.findNode(newName))
+                return newName;
+
+            i++;
+        }
+    },
+
+
+
     nodeAdded: function(node) {
         if(node instanceof bamboo.nodes.Layer)
             this.layers.push(node);

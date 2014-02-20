@@ -52,6 +52,10 @@ bamboo.Node.editor = game.Class.extend({
         this.editableRect.visible = false;
     },
 
+    sizeChanged: function() {
+        this.updateRect();
+    },
+
     updateRect: function() {
         var r = this.getBounds();
         if(this._cachedRect === r && this._cachedScale === this.node.scale)
@@ -97,7 +101,11 @@ bamboo.Node.editor = game.Class.extend({
         this.propertyChanged(property, value);
     },
 
-    propertyChanged: function(property, value) {},
+    propertyChanged: function(property, value) {
+        if(property === 'scale')
+            this.sizeChanged();
+    },
+
     onkeydown: function(keycode) {},
     onkeyup: function(keycode) {},
     onmousedown: function(pos) {},

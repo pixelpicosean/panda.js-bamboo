@@ -18,7 +18,7 @@ bamboo.nodes.Image.editor = bamboo.Node.editor.extend({
 
     propertyChanged: function(key) {
         if(key === 'image')
-            this.updateRect();
+            this.sizeChanged();
     }
 });
 

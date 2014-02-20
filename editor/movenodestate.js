@@ -8,18 +8,19 @@ game.module(
 
 bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
     node: null,
+    startValue: null,
     offset: null,
-    startPos: null,
 
     init: function(editor, p, node) {
         this.super(editor);
         this.node = node;
-        this.startPos = node.getWorldPosition();
-        this.offset = p.subtract(this.startPos);
+        this.startValue = node.getWorldPosition();
+        this.offset = p.subtract(this.startValue);
     },
 
     cancel: function() {
-        this.node.position = this.node.connectedTo.toLocalSpace(this.startPos);
+        this.node._editorNode.setProperty('position', this.node.connectedTo.toLocalSpace(this.startValue));
+        this.node.displayObject.updateTransform();
     },
 
     apply: function() {
@@ -27,7 +28,7 @@ bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
     },
 
     onmousemove: function(p) {
-        this.node.position = this.node.connectedTo.toLocalSpace(p.subtract(this.offset));
+        this.node._editorNode.setProperty('position', this.node.connectedTo.toLocalSpace(p.subtract(this.offset)));
     },
 });
 
