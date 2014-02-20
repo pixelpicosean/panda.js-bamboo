@@ -44,7 +44,8 @@ bamboo.PropertyPanel = game.Class.extend({
                 case bamboo.Property.TYPE.NODE:
                     this.window.addInputSelect(key, props[key].name, props[key].description, this.nodePropertyChanged.bind(this));
                     for(var i=0; i<this.editor.world.nodes.length; i++) {
-                        this.window.addInputSelectOption(key, this.editor.world.nodes[i].name, this.editor.world.nodes[i].name);
+                        var n = this.editor.world.nodes[i];
+                        this.window.addInputSelectOption(key, n.name, '['+n.getClassName()+'] - '+n.name);
                     }
                     this.window.setInputSelectValue(key, node[key].name);
                     break;

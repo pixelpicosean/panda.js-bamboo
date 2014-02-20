@@ -22,8 +22,10 @@ bamboo.editor.CreateNodeState = bamboo.editor.State.extend({
 
         this.window.addInputText('name', this.editor.getUniqueName(bamboo.availableNodeTypes[0]), 'Name', this.nodeNameChanged.bind(this));
         this.window.addInputSelect('connectedTo', 'Connected To');
-        for(var i=0; i<this.editor.world.nodes.length; i++)
-            this.window.addInputSelectOption('connectedTo', this.editor.world.nodes[i].name, this.editor.world.nodes[i].name);
+        for(var i=0; i<this.editor.world.nodes.length; i++) {
+            var n = this.editor.world.nodes[i];
+            this.window.addInputSelectOption('connectedTo', n.name, '['+n.getClassName()+'] - '+n.name);
+        }
 
         if(this.editor.selectedNode) {
             this.window.inputs['name'].value = this.editor.getUniqueName(this.editor.selectedNode.name);
