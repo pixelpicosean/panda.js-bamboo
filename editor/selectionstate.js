@@ -6,7 +6,8 @@ game.module(
     'bamboo.editor.movenodestate',
     'bamboo.editor.rotatenodestate',
     'bamboo.editor.scalenodestate',
-    'bamboo.editor.newnodestate'
+    'bamboo.editor.newnodestate',
+    'bamboo.editor.createnodestate'
 )
 .body(function() {
 
@@ -49,6 +50,8 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
 
     onkeydown: function(keycode, p) {
         switch(keycode) {
+            case 46:// DEL
+            case 65:// A
             case 68:// D
             case 71:// G
             case 82:// R
@@ -59,6 +62,16 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     },
     onkeyup: function(keycode, p) {
         switch(keycode) {
+            case 46:// DEL - delete
+                if(this.editor.selectedNode) {
+                    this.editor.controller.deleteNode(this.editor.selectedNode);
+                    this.cancel();
+                    this.editor.controller.changeState(new bamboo.editor.SelectionState(this.editor, p));
+                }
+                return true;
+            case 65:// A - add
+                this.editor.controller.changeState(new bamboo.editor.CreateNodeState(this.editor, p));
+                return true;
             case 68:// D - duplicate
                 if(this.editor.selectedNode) {
                     this.hoverNode(null);

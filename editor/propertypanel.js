@@ -12,7 +12,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
     init: function(editor) {
         this.editor = editor;
-        this.window = bamboo.ui.addWindow(game.system.width-200, 0, 200, game.system.height-40);
+        this.window = new bamboo.UiWindow(game.system.width-200, 0, 200, game.system.height-40);
         this.window.show();
     },
 
