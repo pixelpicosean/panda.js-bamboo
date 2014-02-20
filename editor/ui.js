@@ -10,15 +10,15 @@ bamboo.Ui = game.Class.extend({
     windows: [],
     
     addWindow: function(x, y, width, height) {
-        var obj = new bamboo.UiWindow(x, y, width, height);
-        this.windows.push(obj);
-        return obj;
+        var w = new bamboo.UiWindow(x, y, width, height);
+        this.windows.push(w);
+        return w;
     },
 
     hideAll: function() {
         for (var i = 0; i < this.windows.length; i++) {
             this.windows[i].hide();
-        };
+        }
     }
 });
 
@@ -117,7 +117,7 @@ bamboo.UiWindow = game.Class.extend({
         return this;
     },
 
-    addInput: function(name, type, label, value, callback, description) {
+    addInput: function(name, type, label, tooltip, value, callback) {
         var inputDiv = document.createElement('div');
         var labelElem = document.createElement('label');
         var inputElem;
@@ -130,12 +130,14 @@ bamboo.UiWindow = game.Class.extend({
             inputElem = document.createElement('input');
             inputElem.type = type;
             inputElem.name = name;
+            inputElem.title = tooltip;
             if(typeof(value) === 'number' || typeof(value) === 'string') inputElem.value = value;
             if(type === 'checkbox') inputElem.checked = !!value;
         }
         else if(type === 'select') {
             inputElem = document.createElement('select');
             inputElem.name = name;
+            inputElem.title = tooltip;
         }
         else throw 'Invalid input type';
 
@@ -150,16 +152,16 @@ bamboo.UiWindow = game.Class.extend({
         return this;
     },
 
-    addInputText: function(name, value, label) {
-        return this.addInput(name, 'text', label, value);
+    addInputText: function(name, value, label, tooltip, callback) {
+        return this.addInput(name, 'text', label, tooltip, value, callback);
     },
 
-    addInputCheckbox: function(name, value, label, callback) {
-        return this.addInput(name, 'checkbox', label, value, callback);
+    addInputCheckbox: function(name, value, label, tooltip, callback) {
+        return this.addInput(name, 'checkbox', label, tooltip, value, callback);
     },
 
-    addInputSelect: function(name, label, callback) {
-        return this.addInput(name, 'select', label, null, callback);
+    addInputSelect: function(name, label, tooltip, callback) {
+        return this.addInput(name, 'select', label, tooltip, null, callback);
     },
 
     addInputSelectOption: function(name, value, label, selected) {

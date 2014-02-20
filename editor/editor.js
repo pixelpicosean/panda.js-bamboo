@@ -3,6 +3,8 @@ game.module(
 )
 .require(
     'bamboo.runtime.world',
+    'bamboo.editor.propertypanel',
+    'bamboo.editor.statusbar',
     'bamboo.editor.editorcontroller',
     'bamboo.editor.selectionstate',
     'bamboo.editor.gamestate'
@@ -22,6 +24,10 @@ bamboo.Editor = game.Class.extend({
 
     cameraOffset: null,
 
+    // windows
+    propertyPanel: null,
+    statusBar: null,
+
     init: function(world) {
         this.controller = new bamboo.EditorController(this);
         this.state = new bamboo.editor.SelectionState(this);
@@ -29,23 +35,25 @@ bamboo.Editor = game.Class.extend({
         this.displayObject = new game.Container();
         this.world = world;
         this.displayObject.addChild(this.world.displayObject);
+
+        this.propertyPanel = new bamboo.PropertyPanel(this);
+        this.statusBar = new bamboo.StatusBar();
     },
 
     getUniqueName: function(name) {
         if(!this.world.findNode(name))
             return name;
 
-        var i = 1;
-        var newName = name;
         var parts = name.split('.');
         if(parts.length > 1) {
             var suffix = parts[parts.length-1];
             if(suffix.length === 4 && !isNaN(parseFloat(suffix)) && isFinite(suffix))
-                newName = name.slice(0, name.length-5);
+                name = name.slice(0, name.length-5);
         }
 
+        var i = 1;
         while(true) {
-            newName = name+'.'+('000'+i).slice(-4);
+            var newName = name+'.'+('000'+i).slice(-4);
             if(!this.world.findNode(newName))
                 return newName;
 
@@ -66,6 +74,7 @@ bamboo.Editor = game.Class.extend({
         }
     },
     nodeSelected: function(node) {
+        this.propertyPanel.nodeSelected(node);
     },
 
     getNodeAt: function(p, selectable) {
@@ -132,6 +141,7 @@ bamboo.Editor = game.Class.extend({
         // overrides from editor
         switch(keycode) {
             case 27:// ESC
+            case 84:// T
                 return true;
         }
 
@@ -154,6 +164,9 @@ bamboo.Editor = game.Class.extend({
             case 27:// ESC
                 this.state.cancel();
                 this.controller.changeState(new bamboo.editor.SelectionState(this, this.prevMousePos));
+                return true;
+            case 84:// T - properties
+                this.propertyPanel.visible = !this.propertyPanel.visible;
                 return true;
         }
 
