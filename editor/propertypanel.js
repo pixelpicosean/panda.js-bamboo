@@ -29,17 +29,19 @@ bamboo.PropertyPanel = game.Class.extend({
 
             switch(props[key].type) {
                 case bamboo.Property.TYPE.NUMBER:
+                     this.window.addInputText(key, node[key].toFixed(2), props[key].name, props[key].description, this.textPropertyChanged.bind(this));
+                    break;
                 case bamboo.Property.TYPE.STRING:
                     this.window.addInputText(key, node[key], props[key].name, props[key].description, this.textPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.ANGLE:
-                    this.window.addInputText(key, (180.0*node[key])/Math.PI, props[key].name, props[key].description, this.anglePropertyChanged.bind(this));
+                    this.window.addInputText(key, ((180.0*node[key])/Math.PI).toFixed(2), props[key].name, props[key].description, this.anglePropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.BOOLEAN:
                     this.window.addInputCheckbox(key, node[key], props[key].name, props[key].description, this.booleanPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.VECTOR:
-                    this.window.addMultiInput(key, [node[key].x, node[key].y], 2, props[key].name, props[key].description, this.vectorPropertyChanged.bind(this));
+                    this.window.addMultiInput(key, [node[key].x.toFixed(2), node[key].y.toFixed(2)], 2, props[key].name, props[key].description, this.vectorPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.NODE:
                     this.window.addInputSelect(key, props[key].name, props[key].description, this.nodePropertyChanged.bind(this));
@@ -84,7 +86,9 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     anglePropertyChanged: function(key) {
-        this.editor.selectedNode._editorNode.setProperty(key, this.window.inputs[key].value*Math.PI / 180);
+        var value = this.window.inputs[key].value;
+        value = ((value % 360) + 360) % 360;
+        this.editor.selectedNode._editorNode.setProperty(key, value*Math.PI / 180);
     },
 
     booleanPropertyChanged: function(key) {

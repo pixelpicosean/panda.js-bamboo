@@ -28,8 +28,9 @@ bamboo.editor.RotateNodeState = bamboo.editor.State.extend({
     },
 
     onmousemove: function(p) {
-        var angle = this.offset.angle(p.subtract(this.node.getWorldPosition()));
-        this.node._editorNode.setProperty('rotation', this.startValue + angle);
+        var angle = this.startValue + this.offset.angle(p.subtract(this.node.getWorldPosition()));
+        angle = ((angle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+        this.node._editorNode.setProperty('rotation', angle);
     },
 });
 
