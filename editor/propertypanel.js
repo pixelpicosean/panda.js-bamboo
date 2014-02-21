@@ -9,6 +9,8 @@ game.module(
 bamboo.PropertyPanel = game.Class.extend({
     editor: null,
     window: null,
+    node: null,
+    props: null,
 
     init: function(editor) {
         this.editor = editor;
@@ -17,12 +19,20 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     nodeSelected: function(node) {
+        if(this.node) {
+            this.node._editorNode.removePropertyChangeListener(this.propertyChanged.bind(this));
+            this.props = null;
+        }
 
+        this.node = node;
         this.window.clear();
         if(!node)
             return;
 
+        this.node._editorNode.addPropertyChangeListener(this.propertyChanged.bind(this));
+        
         var props = node.getPropertyDescriptors();
+        this.props = props;
         for(var key in props) {
             if(!props[key].editable)
                 continue;
@@ -79,6 +89,38 @@ bamboo.PropertyPanel = game.Class.extend({
         }
     },
 
+    propertyChanged: function(property, value) {
+        switch(this.props[property].type) {
+            case bamboo.Property.TYPE.NUMBER:
+                this.window.inputs[property].value = value.toFixed(2);
+                break;
+            case bamboo.Property.TYPE.STRING:
+            case bamboo.Property.TYPE.ENUM:
+            case bamboo.Property.TYPE.FILE:
+            case bamboo.Property.TYPE.TRIGGER:
+                this.window.inputs[property].value = value;
+                break;
+            case bamboo.Property.TYPE.ANGLE:
+                this.window.inputs[property].value = ((180.0*value)/Math.PI).toFixed(2);
+                break;
+            case bamboo.Property.TYPE.BOOLEAN:
+                this.window.inputs[property].checked = value;
+                break;
+            case bamboo.Property.TYPE.VECTOR:
+                this.window.inputs[property+'.0'].value = value.x.toFixed(2);
+                this.window.inputs[property+'.1'].value = value.y.toFixed(2);
+                break;
+            case bamboo.Property.TYPE.NODE:
+                this.window.inputs[property].value = value.name;
+                break;
+            case bamboo.Property.TYPE.ARRAY:
+                // do nothing
+                break;
+            case bamboo.Property.TYPE.EASING:
+                this.window.inputs[property].value = game.Tween.Easing.getName(value);
+                break;
+        }
+    },
 
 
     textPropertyChanged: function(key) {
