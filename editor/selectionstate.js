@@ -50,6 +50,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
 
     onkeydown: function(keycode, p) {
         switch(keycode) {
+            case 13:// ENTER
             case 46:// DEL
             case 65:// A
             case 68:// D
@@ -62,6 +63,10 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     },
     onkeyup: function(keycode, p) {
         switch(keycode) {
+            case 13:// ENTER - enter game
+                this.hoverNode(null);
+                this.editor.controller.changeState(new bamboo.editor.GameState(this.editor));
+                return true;
             case 46:// DEL - delete
                 if(this.editor.selectedNode) {
                     this.editor.controller.deleteNode(this.editor.selectedNode);

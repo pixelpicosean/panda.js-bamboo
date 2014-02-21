@@ -104,6 +104,10 @@ bamboo.Editor = game.Class.extend({
     },
 
     update: function(dt) {
+        if(this.state instanceof bamboo.editor.GameState) {
+            this.state.update(dt);
+            return;
+        }
     },
 
     onclick: function() {
@@ -124,6 +128,9 @@ bamboo.Editor = game.Class.extend({
     },
     onmousemove: function(p) {
         this.prevMousePos = p;
+        if(this.state instanceof bamboo.editor.GameState)
+            return;// in game, do nothing
+
         if(this.cameraOffset) {
             var w = this.world;
             w.cameraPosition = this.cameraOffset.clone().subtract(p).add(this.worldTargetPos);
@@ -162,6 +169,9 @@ bamboo.Editor = game.Class.extend({
             this.cameraOffset = null;
     },
     onmouseout: function() {
+        if(this.state instanceof bamboo.editor.GameState)
+            return;// in game, do nothing
+
         if(this.cameraOffset)
             this.cameraOffset = null;
     },
@@ -191,7 +201,7 @@ bamboo.Editor = game.Class.extend({
         if(this.state instanceof bamboo.editor.GameState) {
             if(keycode === 27) {// ESC
                 this.state.cancel();
-                this.controller.changeState(new bamboo.editorSelectionState(this. this.prevMousePos));
+                this.controller.changeState(new bamboo.editor.SelectionState(this, this.prevMousePos));
                 return true;
             }
             return false;
@@ -199,7 +209,7 @@ bamboo.Editor = game.Class.extend({
 
         // overrides from editor
         switch(keycode) {
-            case 27:// ESC
+            case 27:// ESC - cancel
                 this.state.cancel();
                 this.controller.changeState(new bamboo.editor.SelectionState(this, this.prevMousePos));
                 return true;

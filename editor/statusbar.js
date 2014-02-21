@@ -12,8 +12,14 @@ bamboo.StatusBar = game.Class.extend({
     init: function() {
         this.window = new bamboo.UiWindow(0,game.system.height, 'window',40);
         this.window.show();
+    },
+
+    setStatus: function(status) {
+        this.window.clear();
+        this.window.addText(status);
     }
 
 });
+
 
 });
