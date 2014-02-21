@@ -177,7 +177,9 @@ bamboo.Editor = game.Class.extend({
         // overrides from editor
         switch(keycode) {
             case 27:// ESC
+            case 66:// B
             case 84:// T
+            case 90:// Z
                 return true;
         }
 
@@ -201,8 +203,14 @@ bamboo.Editor = game.Class.extend({
                 this.state.cancel();
                 this.controller.changeState(new bamboo.editor.SelectionState(this, this.prevMousePos));
                 return true;
+            case 66:// B - boundaries
+                this.boundaryLayer.boundariesVisible = !this.boundaryLayer.boundariesVisible;
+                return true;
             case 84:// T - properties
                 this.propertyPanel.visible = !this.propertyPanel.visible;
+                return true;
+            case 90:// Z - boundary dim
+                this.boundaryLayer.dimVisible = !this.boundaryLayer.dimVisible;
                 return true;
         }
 

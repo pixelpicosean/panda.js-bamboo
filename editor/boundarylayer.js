@@ -7,12 +7,13 @@ game.module(
 
 bamboo.BoundaryLayer = game.Class.extend({
     editor: null,
+    boundaries: null,
     leftLine: null,
     topLine: null,
     rightLine: null,
     bottomLine: null,
 
-    screen: null,
+    screenRect: null,
     screenDim: null,
 
     init: function(editor) {
@@ -30,11 +31,11 @@ bamboo.BoundaryLayer = game.Class.extend({
         this.rightLine.position.x = w.position.x + w.boundaries.right - w.cameraPosition.x;
         this.bottomLine.position.y = w.position.y + w.boundaries.bottom - w.cameraPosition.y;
 
-        this.screen.position.x = w.position.x;
-        this.screen.position.y = w.position.y;
+        this.screenRect.position.x = w.position.x;
+        this.screenRect.position.y = w.position.y;
 
         this.screenDim.clear();
-        this.screenDim.beginFill(0x000000, 0.8);
+        this.screenDim.beginFill(0x000000, 0.6);
         var miny = 0, maxy = game.system.height;
         if(w.position.y > 0) {
             miny = w.position.y;
@@ -52,6 +53,7 @@ bamboo.BoundaryLayer = game.Class.extend({
     },
 
     createGraphics: function() {
+        this.boundaries = new game.Container();
         this.leftLine = new game.Graphics();
         this.topLine = new game.Graphics();
         this.rightLine = new game.Graphics();
@@ -70,19 +72,38 @@ bamboo.BoundaryLayer = game.Class.extend({
         this.bottomLine.moveTo(0,1);
         this.bottomLine.lineTo(game.system.width,1);
 
-        this.screen = new game.Graphics();
-        this.screen.lineStyle(2, 0xffffff);
-        this.screen.drawRect(-1,-1,this.editor.world.screenSize.width+2, this.editor.world.screenSize.height+2);
+        this.screenRect = new game.Graphics();
+        this.screenRect.lineStyle(2, 0xffffff);
+        this.screenRect.drawRect(-1,-1,this.editor.world.screenSize.width+2, this.editor.world.screenSize.height+2);
 
         this.screenDim = new game.Graphics();
         this.editor.overlay.addChild(this.screenDim);
+        this.editor.overlay.addChild(this.boundaries);
 
-        this.editor.overlay.addChild(this.leftLine);
-        this.editor.overlay.addChild(this.topLine);
-        this.editor.overlay.addChild(this.rightLine);
-        this.editor.overlay.addChild(this.bottomLine);
+        this.boundaries.addChild(this.leftLine);
+        this.boundaries.addChild(this.topLine);
+        this.boundaries.addChild(this.rightLine);
+        this.boundaries.addChild(this.bottomLine);
 
-        this.editor.overlay.addChild(this.screen);
+        this.boundaries.addChild(this.screenRect);
+    }
+});
+
+Object.defineProperty(bamboo.BoundaryLayer.prototype, 'boundariesVisible', {
+    get: function() {
+        return this.boundaries.visible;
+    },
+    set: function(value) {
+        this.boundaries.visible = value;
+    }
+});
+
+Object.defineProperty(bamboo.BoundaryLayer.prototype, 'dimVisible', {
+    get: function() {
+        return this.screenDim.visible;
+    },
+    set: function(value) {
+        this.screenDim.visible = value;
     }
 });
 
