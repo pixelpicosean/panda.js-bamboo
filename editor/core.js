@@ -105,7 +105,7 @@ bamboo.start = function(levelJSON) {
 
     // TODO: read from json?
     game.System.orientation = game.System.LANDSCAPE;
-    game.start(bamboo.EditorScene, window.innerWidth, window.innerHeight);
+    game.start(bamboo.EditorScene, window.innerWidth, window.innerHeight-40);
 };
 
 });

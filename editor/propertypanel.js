@@ -15,7 +15,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
     init: function(editor) {
         this.editor = editor;
-        this.window = new bamboo.UiWindow(game.system.width-200, 0, 200, game.system.height-40);
+        this.window = new bamboo.UiWindow(game.system.width-200, 0, 200, game.system.height);
         this.window.windowDiv.onmouseover = this.mousein.bind(this);
         this.window.windowDiv.onmouseout = this.mouseout.bind(this);
         this.window.show();
