@@ -30,7 +30,8 @@ bamboo.Property.TYPE = {
     EASING: 7,
     ENUM: 8,
     FILE: 9,
-    TRIGGER: 10
+    TRIGGER: 10,
+    COLOR: 11
 };
 
 bamboo.Property.parse = function(world, obj, name, desc) {
@@ -42,6 +43,7 @@ bamboo.Property.parse = function(world, obj, name, desc) {
         case bamboo.Property.TYPE.BOOLEAN:
         case bamboo.Property.TYPE.ENUM:
         case bamboo.Property.TYPE.TRIGGER:
+        case bamboo.Property.TYPE.COLOR:
             return obj[name];
 
         case bamboo.Property.TYPE.VECTOR:
@@ -73,6 +75,7 @@ bamboo.Property.toJSON = function(obj, name, desc) {
         case bamboo.Property.TYPE.BOOLEAN:
         case bamboo.Property.TYPE.ENUM:
         case bamboo.Property.TYPE.TRIGGER:
+        case bamboo.Property.TYPE.COLOR:
             return obj[name];
 
         case bamboo.Property.TYPE.VECTOR:

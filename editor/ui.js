@@ -126,7 +126,7 @@ bamboo.UiWindow = game.Class.extend({
         labelElem.innerHTML = label || name + ':';
         type = type || 'text';
 
-        if(type === 'text' || type === 'checkbox') {
+        if(type === 'text' || type === 'checkbox' || type === 'color') {
             inputElem = document.createElement('input');
             inputElem.type = type;
             inputElem.name = name;
@@ -193,6 +193,10 @@ bamboo.UiWindow = game.Class.extend({
 
     addInputCheckbox: function(name, value, label, tooltip, callback) {
         return this.addInput(name, 'checkbox', label, tooltip, value, callback);
+    },
+
+    addInputColor: function(name, value, label, tooltip, callback) {
+        return this.addInput(name, 'color', label, tooltip, value, callback);
     },
 
     addInputSelect: function(name, label, tooltip, callback) {

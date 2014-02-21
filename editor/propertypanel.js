@@ -55,7 +55,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
             switch(props[key].type) {
                 case bamboo.Property.TYPE.NUMBER:
-                     this.window.addInputText(key, node[key].toFixed(2), props[key].name, props[key].description, this.textPropertyChanged.bind(this));
+                     this.window.addInputText(key, node[key].toFixed(2), props[key].name, props[key].description, this.numberPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.STRING:
                     this.window.addInputText(key, node[key], props[key].name, props[key].description, this.textPropertyChanged.bind(this));
@@ -101,6 +101,9 @@ bamboo.PropertyPanel = game.Class.extend({
                         this.window.addInputSelectOption(key, n, n);
                     this.window.setInputSelectValue(key, node[key]);
                     break;
+                case bamboo.Property.TYPE.COLOR:
+                    this.window.addInputColor(key, '#'+node[key].toString(16), props[key].name, props[key].description, this.colorPropertyChanged.bind(this));
+                    break;
             }
         }
     },
@@ -108,7 +111,7 @@ bamboo.PropertyPanel = game.Class.extend({
     propertyChanged: function(property, value) {
         switch(this.props[property].type) {
             case bamboo.Property.TYPE.NUMBER:
-                this.window.inputs[property].value = value.toFixed(2);
+                this.window.inputs[property].value = parseFloat(value).toFixed(2);
                 break;
             case bamboo.Property.TYPE.STRING:
             case bamboo.Property.TYPE.ENUM:
@@ -135,9 +138,23 @@ bamboo.PropertyPanel = game.Class.extend({
             case bamboo.Property.TYPE.EASING:
                 this.window.inputs[property].value = game.Tween.Easing.getName(value);
                 break;
+            case bamboo.Property.TYPE.COLOR:
+                this.window.inputs[property].value = '#'+value.toString(16);
+                break;
         }
     },
 
+
+    numberPropertyChanged: function(key) {
+        var value = this.window.inputs[key].value;
+        if(this.props[key].options) {
+            var min = this.props[key].options.min;
+            var max = this.props[key].options.max;
+            if(min) value = Math.max(value, min);
+            if(max) value = Math.min(value, max);
+        }
+        this.editor.selectedNode._editorNode.setProperty(key, value);
+    },
 
     textPropertyChanged: function(key) {
         this.editor.selectedNode._editorNode.setProperty(key, this.window.inputs[key].value);
@@ -178,6 +195,18 @@ bamboo.PropertyPanel = game.Class.extend({
 
     triggerPropertyChanged: function(key) {
         this.editor.selectedNode._editorNode.setProperty(key, this.window.inputs[key].value);
+    },
+
+    colorPropertyChanged: function(key) {
+        var value = this.window.inputs[key].value;
+        if(value.length <= 0) {
+            value = 0xffffff;
+        } else {
+            value = parseInt('0x'+value.substr(1));
+            if(isNaN(value))
+                value = 0xffffff;
+        }
+        this.editor.selectedNode._editorNode.setProperty(key, value);
     }
 });
 
