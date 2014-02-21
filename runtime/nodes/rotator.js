@@ -23,7 +23,7 @@ bamboo.nodes.Rotator = bamboo.Node.extend({
 
     update: function(worldTime) {
 
-        var f = ((worldTime+this.startOffset) % this.duration) / this.duration;
+        var f = ((worldTime+this.timeOffset) % this.duration) / this.duration;
 
         if (this.mode === 'backAndForth') {
             f *= 2.0;
