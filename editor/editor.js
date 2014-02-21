@@ -5,6 +5,7 @@ game.module(
     'bamboo.runtime.world',
     'bamboo.editor.propertypanel',
     'bamboo.editor.statusbar',
+    'bamboo.editor.boundarylayer',
     'bamboo.editor.editorcontroller',
     'bamboo.editor.selectionstate',
     'bamboo.editor.gamestate'
@@ -16,13 +17,17 @@ bamboo.Editor = game.Class.extend({
     state: null,
     prevMousePos: null,
     displayObject: null,
+    overlay: null,
     world: null,
     nodes: [],
 
     layers: [],
     selectedNode: null,
 
+    // used during dragging camera (mouse wheel)
     cameraOffset: null,
+    boundaryLayer: null,
+    worldTargetPos: null,
 
     // windows
     propertyPanel: null,
@@ -34,7 +39,14 @@ bamboo.Editor = game.Class.extend({
         this.prevMousePos = new game.Vector();
         this.displayObject = new game.Container();
         this.world = world;
+        this.worldTargetPos = new game.Vector(game.system.width/2 - this.world.screenSize.width/2,
+                                              game.system.height/2 - this.world.screenSize.height/2);
+        this.world.position = this.worldTargetPos.clone();
         this.displayObject.addChild(this.world.displayObject);
+        this.overlay = new game.Container();
+        this.displayObject.addChild(this.overlay);
+
+        this.boundaryLayer = new bamboo.BoundaryLayer(this);
 
         this.propertyPanel = new bamboo.PropertyPanel(this);
         this.statusBar = new bamboo.StatusBar();
@@ -92,8 +104,6 @@ bamboo.Editor = game.Class.extend({
     },
 
     update: function(dt) {
-        for(var i=0; i<this.layers.length; i++)
-            this.layers[i].update(0);
     },
 
     onclick: function() {
@@ -110,12 +120,38 @@ bamboo.Editor = game.Class.extend({
             return;// in game, do nothing
 
         if(button === 1)
-            this.cameraOffset = this.prevMousePos.clone().add(this.world.cameraPosition);
+            this.cameraOffset = this.prevMousePos.clone().add(this.world.cameraPosition.clone().subtract(this.world.position));
     },
     onmousemove: function(p) {
         this.prevMousePos = p;
-        if(this.cameraOffset)
-            this.world.cameraPosition = this.cameraOffset.clone().subtract(p);
+        if(this.cameraOffset) {
+            var w = this.world;
+            w.cameraPosition = this.cameraOffset.clone().subtract(p).add(this.worldTargetPos);
+            if(w.cameraPosition.x < w.boundaries.left) {
+                w.position.x = this.worldTargetPos.x - (w.cameraPosition.x - w.boundaries.left);
+                w.cameraPosition.x = w.boundaries.left;
+            }
+            else if(w.cameraPosition.x > w.boundaries.right - w.screenSize.width) {
+                w.position.x = this.worldTargetPos.x - (w.cameraPosition.x - (w.boundaries.right - w.screenSize.width));
+                w.cameraPosition.x = w.boundaries.right - w.screenSize.width;
+            } else {
+                w.position.x = this.worldTargetPos.x;
+            }
+
+            if(w.cameraPosition.y < w.boundaries.top) {
+                w.position.y = this.worldTargetPos.y - (w.cameraPosition.y - w.boundaries.top);
+                w.cameraPosition.y = w.boundaries.top;
+            } else if(w.cameraPosition.y > w.boundaries.bottom - w.screenSize.height) {
+                w.position.y = this.worldTargetPos.y - (w.cameraPosition.y - (w.boundaries.bottom - w.screenSize.height));
+                w.cameraPosition.y = w.boundaries.bottom - w.screenSize.height;
+            } else {
+                w.position.y = this.worldTargetPos.y;
+            }
+
+            this.boundaryLayer.updateBoundary();
+            for(var i=0; i<this.layers.length; i++)
+                this.layers[i].update(0);
+        }
         this.state.onmousemove(p.clone());
     },
     onmouseup: function(button) {
