@@ -11,14 +11,30 @@ bamboo.PropertyPanel = game.Class.extend({
     window: null,
     node: null,
     props: null,
+    activeElement: null,
 
     init: function(editor) {
         this.editor = editor;
         this.window = new bamboo.UiWindow(game.system.width-200, 0, 200, game.system.height-40);
+        this.window.windowDiv.onmouseover = this.mousein.bind(this);
+        this.window.windowDiv.onmouseout = this.mouseout.bind(this);
         this.window.show();
     },
 
+    mousein: function() {
+        if(this.activeElement)
+            this.activeElement.focus();
+    },
+    mouseout: function() {
+        this.activeElement = null;
+        if(document.activeElement !== document.body) {
+            this.activeElement = document.activeElement;
+            this.activeElement.blur();
+        }
+    },
+
     nodeSelected: function(node) {
+        this.activeElement = null;
         if(this.node) {
             this.node._editorNode.removePropertyChangeListener(this.propertyChanged.bind(this));
             this.props = null;
