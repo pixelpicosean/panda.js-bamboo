@@ -17,6 +17,7 @@ bamboo.Node.editor = game.Class.extend({
     _cachedRect: null,
     _cachedScale: null,
     editEnabled: false,
+    propertyChangeListeners: [],
     properties: {selectable: true, linkable: false},
 
     init: function(node) {
@@ -97,13 +98,28 @@ bamboo.Node.editor = game.Class.extend({
     },
 
     setProperty: function(property, value) {
+        var oldValue = this.node[property];
         this.node[property] = value;
-        this.propertyChanged(property, value);
+        this.propertyChanged(property, value, oldValue);
     },
 
-    propertyChanged: function(property, value) {
-        if(property === 'scale')
+    propertyChanged: function(property, value, oldValue) {
+        if(property === 'scale') {
             this.sizeChanged();
+        } else if(property === 'connectedTo') {
+            var wp = oldValue.toWorldSpace(this.node.position);
+            this.setProperty('position', value.toLocalSpace(wp));
+        }
+        for(var i=0; i<this.propertyChangeListeners.length; i++)
+            this.propertyChangeListeners[i](property, value, oldValue);
+    },
+
+    addPropertyChangeListener: function(listener) {
+        this.propertyChangeListeners.push(listener);
+    },
+    removePropertyChangeListener: function(listener) {
+        var idx = this.propertyChangeListeners.indexOf(listener);
+        this.propertyChangeListeners.splice(idx, 1);
     },
 
     onkeydown: function(keycode) {},
