@@ -122,11 +122,10 @@ bamboo.Node.editor = game.Class.extend({
         this.propertyChangeListeners.splice(idx, 1);
     },
 
-    onkeydown: function(keycode) {},
-    onkeyup: function(keycode) {},
-    onmousedown: function(pos) {},
-    onmousemove: function(pos) {},
-    onmouseup: function(pos) {}
+    onkeydown: function(keycode,p) {},
+    onkeyup: function(keycode,p) {},
+    onclick: function(p) {},
+    onmousemove: function(p) {}
 });
 
 });

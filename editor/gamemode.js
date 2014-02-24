@@ -1,12 +1,12 @@
 game.module(
-    'bamboo.editor.gamestate'
+    'bamboo.editor.gamemode'
 )
 .require(
-    'bamboo.editor.state'
+    'bamboo.editor.mode'
 )
 .body(function() {
 
-bamboo.editor.GameState = bamboo.editor.State.extend({
+bamboo.editor.GameMode = bamboo.editor.Mode.extend({
     world: null,
     wasPropertyPanelOpen: false,
     worldTime: 0,
@@ -41,23 +41,35 @@ bamboo.editor.GameState = bamboo.editor.State.extend({
         this.world.update(0);
     },
 
-    onclick: function(p) {
-    },
-
     update: function(dt) {
         this.worldTime += dt;
         this.world.update(this.worldTime);
     },
 
-    cancel: function() {
-        this.editor.displayObject.addChild(this.editor.world.displayObject);
-        this.editor.displayObject.addChild(this.editor.overlay);
-        this.editor.displayObject.removeChild(this.world.displayObject);
-        this.editor.displayObject.removeChild(this.mask);
+    onclick: function() {
+        this.world.onclick();
+    },
+    onmousemove: function(p) {
+    },
 
-        this.editor.propertyPanel.visible = this.wasPropertyPanelOpen;
+    onkeydown: function(keycode, p) {
+        if(keycode === 27) // ESC
+            return true;
+        return false;
+    },
+    onkeyup: function(keycode, p) {
+        if(keycode === 27) {// ESC
+            this.editor.displayObject.addChild(this.editor.world.displayObject);
+            this.editor.displayObject.addChild(this.editor.overlay);
+            this.editor.displayObject.removeChild(this.world.displayObject);
+            this.editor.displayObject.removeChild(this.mask);
+
+            this.editor.propertyPanel.visible = this.wasPropertyPanelOpen;
+            this.editor.controller.changeMode(new bamboo.editor.NodeMode(this.editor, p));
+            return true;
+        }
+        return false;
     }
-
 });
 
 });

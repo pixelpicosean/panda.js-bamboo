@@ -11,8 +11,8 @@ bamboo.editor.RotateNodeState = bamboo.editor.State.extend({
     startValue: null,
     offset: null,
 
-    init: function(editor, p, node) {
-        this.super(editor);
+    init: function(mode, p, node) {
+        this.super(mode);
         this.node = node;
         this.startValue = node.rotation;
         this.offset = p.subtract(node.getWorldPosition());

@@ -31,8 +31,8 @@ bamboo.EditorController = game.Class.extend({
         node.world = null;
     },
 
-    changeState: function(newState) {
-        this.editor.state = newState;
+    changeMode: function(newMode) {
+        this.editor.mode = newMode;
     },
 
     selectNode: function(node) {
@@ -49,6 +49,16 @@ bamboo.EditorController = game.Class.extend({
             this.editor.selectedNode._editorNode.selectionAxis.visible = true;
         }
         this.editor.nodeSelected(node);
+    },
+
+    enableEditMode: function(enabled) {
+        if(enabled) {
+            this.editor.selectedNode._editorNode.selectionRect.visible = false;
+            this.editor.selectedNode._editorNode.editableRect.visible = true;
+        } else {
+            this.editor.selectedNode._editorNode.selectionRect.visible = true;
+            this.editor.selectedNode._editorNode.editableRect.visible = false;
+        }
     }
 });
 

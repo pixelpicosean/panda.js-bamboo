@@ -31,7 +31,7 @@ bamboo.nodes.Rotator = bamboo.Node.extend({
                 f = 2.0 - f;
         }
         f = this.easing(f);
-        this.rotation = this.beginAngle + this.endAngle * f;
+        this.rotation = this.beginAngle * (1-f) + this.endAngle * f;
     }
 });
 

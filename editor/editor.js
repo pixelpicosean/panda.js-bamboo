@@ -7,14 +7,13 @@ game.module(
     'bamboo.editor.statusbar',
     'bamboo.editor.boundarylayer',
     'bamboo.editor.editorcontroller',
-    'bamboo.editor.selectionstate',
-    'bamboo.editor.gamestate'
+    'bamboo.editor.nodemode'
 )
 .body(function() {
 
 bamboo.Editor = game.Class.extend({
     controller: null,
-    state: null,
+    mode: null,
     prevMousePos: null,
     displayObject: null,
     overlay: null,
@@ -35,7 +34,7 @@ bamboo.Editor = game.Class.extend({
 
     init: function(world) {
         this.controller = new bamboo.EditorController(this);
-        this.state = new bamboo.editor.SelectionState(this);
+        this.mode = new bamboo.editor.NodeMode(this, new game.Vector());
         this.prevMousePos = new game.Vector();
         this.displayObject = new game.Container();
         this.world = world;
@@ -104,23 +103,14 @@ bamboo.Editor = game.Class.extend({
     },
 
     update: function(dt) {
-        if(this.state instanceof bamboo.editor.GameState) {
-            this.state.update(dt);
-            return;
-        }
+        this.mode.update(dt);
     },
 
     onclick: function() {
-        if(this.state instanceof bamboo.editor.GameState) {
-            // in game, just forward to game state and return
-            this.state.onclick(this.prevMousePos);
-            return;
-        }
-        this.state.apply();
-        this.controller.changeState(new bamboo.editor.SelectionState(this, this.prevMousePos));
+        this.mode.onclick(this.prevMousePos.clone());
     },
     onmousedown: function(button) {
-        if(this.state instanceof bamboo.editor.GameState)
+        if(this.mode instanceof bamboo.editor.GameMode)
             return;// in game, do nothing
 
         if(button === 1)
@@ -128,7 +118,7 @@ bamboo.Editor = game.Class.extend({
     },
     onmousemove: function(p) {
         this.prevMousePos = p;
-        if(this.state instanceof bamboo.editor.GameState)
+        if(this.mode instanceof bamboo.editor.GameMode)
             return;// in game, do nothing
 
         if(this.cameraOffset) {
@@ -159,17 +149,17 @@ bamboo.Editor = game.Class.extend({
             for(var i=0; i<this.layers.length; i++)
                 this.layers[i].update(0);
         }
-        this.state.onmousemove(p.clone());
+        this.mode.onmousemove(p.clone());
     },
     onmouseup: function(button) {
-        if(this.state instanceof bamboo.editor.GameState)
+        if(this.mode instanceof bamboo.editor.GameMode)
             return;// in game, do nothing
 
         if(button === 1)
             this.cameraOffset = null;
     },
     onmouseout: function() {
-        if(this.state instanceof bamboo.editor.GameState)
+        if(this.mode instanceof bamboo.editor.GameMode)
             return;// in game, do nothing
 
         if(this.cameraOffset)
@@ -177,42 +167,28 @@ bamboo.Editor = game.Class.extend({
     },
 
     onkeydown: function(keycode) {
-        // if in game, ignore keyboard (except esc)
-        if(this.state instanceof bamboo.editor.GameState) {
-            if(keycode === 27)// ESC
-                return true;
-            return false;
+        if(this.mode instanceof bamboo.editor.GameMode) {
+            return this.mode.onkeydown(keycode, this.prevMousePos.clone());
         }
 
         // overrides from editor
         switch(keycode) {
-            case 27:// ESC
             case 66:// B
             case 84:// T
             case 90:// Z
                 return true;
         }
 
-        // if not overridden, pass to state
-        return this.state.onkeydown(keycode, this.prevMousePos.clone());
+        // if not overridden, pass to mode
+        return this.mode.onkeydown(keycode, this.prevMousePos.clone());
     },
     onkeyup: function(keycode) {
-        // if in game, ignore keyboard (except esc)
-        if(this.state instanceof bamboo.editor.GameState) {
-            if(keycode === 27) {// ESC
-                this.state.cancel();
-                this.controller.changeState(new bamboo.editor.SelectionState(this, this.prevMousePos));
-                return true;
-            }
-            return false;
+        if(this.mode instanceof bamboo.editor.GameMode) {
+            return this.mode.onkeyup(keycode, this.prevMousePos.clone());
         }
 
         // overrides from editor
         switch(keycode) {
-            case 27:// ESC - cancel
-                this.state.cancel();
-                this.controller.changeState(new bamboo.editor.SelectionState(this, this.prevMousePos));
-                return true;
             case 66:// B - boundaries
                 this.boundaryLayer.boundariesVisible = !this.boundaryLayer.boundariesVisible;
                 return true;
@@ -224,8 +200,8 @@ bamboo.Editor = game.Class.extend({
                 return true;
         }
 
-        // if not overridden, pass to state
-        return this.state.onkeyup(keycode, this.prevMousePos.clone());
+        // if not overridden, pass to mode
+        return this.mode.onkeyup(keycode, this.prevMousePos.clone());
     }
 });
 

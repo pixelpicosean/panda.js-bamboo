@@ -11,8 +11,8 @@ bamboo.editor.ScaleNodeState = bamboo.editor.State.extend({
     startValue: null,
     startDistance: null,
 
-    init: function(editor, p, node) {
-        this.super(editor);
+    init: function(mode, p, node) {
+        this.super(mode);
         this.node = node;
         this.startValue = node.scale.clone();
         this.startDistance = node.getWorldPosition().distance(p);

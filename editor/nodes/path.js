@@ -111,7 +111,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
             var p1 = ps[0];
             var p0 = p1;
             if(this.node.loop)
-                p0 = ps[this.object.points.length-1];
+                p0 = ps[this.node.points.length-1];
             var p2,p3;
             this.lineNode.moveTo(p1.x*sx, p1.y*sy);
             for(var i = 1; i < ps.length; i++) {
@@ -160,12 +160,24 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         this.super(property, value, oldValue);
     },
 
+    getClosestPointIndex: function(v) {
+        var closestPointIndex = null;
+        var closestDistance = null;
+        for (var i = 0; i < this.node.points.length; i++) {
+            var dist = v.distance(this.node.points[i]);
+            if(!closestDistance || dist < closestDistance) {
+                closestPointIndex = i;
+                closestDistance = dist;
+            }
+        }
+        return closestPointIndex;
+    },
+
     onkeydown: function(keycode) {
         switch(keycode) {
         case 27:// ESC
         case 46:// DEL
         case 65:// A
-        //case 68:// D
         case 71:// G
             return true;
         default:
@@ -214,7 +226,6 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
             this.redrawPath();
             this.node.calculateLength();
             return true;
-//        case 68:// D - Delete
         case 46:// DEL - Delete
             if(this.moving !== -1)
                 return true;
@@ -245,35 +256,10 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         }
     },
 
-    onmousedown: function(pos) {
-        this.lastMousePos = pos;
-        if(this.moving === -1) {
-            var idx = this.getClosestPointIndex(pos);
-            if(pos.distance(this.node.points[idx]) < 20) {
-                this.hoverCircle.position = this.node.points[idx];
-                this.hoverCircle.visible = true;
-//                this.selectedPointIndex = idx;
-//                this.selectionCircle.position = this.object.points[idx];
-//                this.selectionCircle.visible = true;
-//                this.moving = true;
-            } else {
-                this.hoverCircle.visible = false;
-            }
-            return;
-        }
-
-        // we're moving
-        this.node.points[this.moving] = pos;
-        if(this.selectedPointIndex === this.moving)
-            this.selectionCircle.position = pos;
-        this.updateRect();
-        this.redrawPath();
-        this.node.calculateLength();
-    },
     onmousemove: function(pos) {
         this.lastMousePos = pos;
         if(this.moving === -1) {
-            var idx = this.node.getClosestPointIndex(pos);
+            var idx = this.getClosestPointIndex(pos);
             if(pos.distance(this.node.points[idx]) < 20) {
                 this.hoverCircle.position = this.node.points[idx];
                 this.hoverCircle.visible = true;
@@ -291,10 +277,10 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         this.redrawPath();
         this.node.calculateLength();
     },
-    onmouseup: function(pos) {
+    onclick: function(pos) {
         this.lastMousePos = pos;
         if(this.moving === -1) {
-            var idx = this.node.getClosestPointIndex(pos);
+            var idx = this.getClosestPointIndex(pos);
             if(pos.distance(this.node.points[idx]) < 20) {
                 this.selectedPointIndex = idx;
                 this.selectionCircle.position = this.node.points[idx];

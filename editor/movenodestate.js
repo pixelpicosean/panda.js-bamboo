@@ -11,8 +11,8 @@ bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
     startValue: null,
     offset: null,
 
-    init: function(editor, p, node) {
-        this.super(editor);
+    init: function(mode, p, node) {
+        this.super(mode);
         this.node = node;
         this.startValue = node.getWorldPosition();
         this.offset = p.subtract(this.startValue);

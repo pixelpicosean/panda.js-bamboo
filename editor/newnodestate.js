@@ -11,16 +11,16 @@ bamboo.editor.NewNodeState = bamboo.editor.State.extend({
     offset: null,
     startPos: null,
 
-    init: function(editor, p, node) {
-        this.super(editor);
+    init: function(mode, p, node) {
+        this.super(mode);
         this.node = node;
         this.offset = p.subtract(node.getWorldPosition());
-        this.editor.controller.selectNode(node);
+        this.mode.editor.controller.selectNode(node);
     },
 
     cancel: function() {
-        this.editor.controller.selectNode(null);
-        this.editor.controller.deleteNode(this.node);
+        this.mode.editor.controller.selectNode(null);
+        this.mode.editor.controller.deleteNode(this.node);
     },
 
     apply: function() {
