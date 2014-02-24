@@ -14,6 +14,8 @@ bamboo.editor.EditNodeMode = bamboo.editor.Mode.extend({
         this.node = node;
         this.node._editorNode.enableEditMode(true);
         this.editor.controller.enableEditMode(true);
+
+        this.editor.statusbar.setStatus('Edit mode, TAB to exit');
     },
 
     onclick: function(p) {

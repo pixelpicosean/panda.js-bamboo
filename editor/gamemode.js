@@ -17,7 +17,7 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
         this.world = bamboo.World.createFromJSON(JSON.stringify(this.editor.world.toJSON()));
 
         this.wasPropertyPanelOpen = this.editor.propertyPanel.visible;
-        this.editor.statusBar.setStatus('ESC - return to editor');
+        this.editor.statusbar.setStatus('ESC - return to editor');
         this.editor.propertyPanel.visible = false;
 
         this.mask = new game.Graphics();

@@ -16,6 +16,8 @@ bamboo.editor.NewNodeState = bamboo.editor.State.extend({
         this.node = node;
         this.offset = p.subtract(node.getWorldPosition());
         this.mode.editor.controller.selectNode(node);
+
+        this.mode.editor.statusbar.setStatus('Position new node, ESC to cancel (removes new node)');
     },
 
     cancel: function() {

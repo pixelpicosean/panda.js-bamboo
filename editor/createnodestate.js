@@ -36,6 +36,8 @@ bamboo.editor.CreateNodeState = bamboo.editor.State.extend({
         this.window.addButton('Add', this.addPressed.bind(this));
 
         this.window.show();
+
+        this.mode.editor.statusbar.setStatus('Create new node, ESC to cancel');
     },
 
     cancel: function() {

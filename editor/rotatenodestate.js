@@ -16,6 +16,8 @@ bamboo.editor.RotateNodeState = bamboo.editor.State.extend({
         this.node = node;
         this.startValue = node.rotation;
         this.offset = p.subtract(node.getWorldPosition());
+
+        this.mode.editor.statusbar.setStatus('Rotate node, ESC to cancel | TBD: ctrl to snap 5° increments');
     },
 
     cancel: function() {
@@ -31,7 +33,7 @@ bamboo.editor.RotateNodeState = bamboo.editor.State.extend({
         var angle = this.startValue + this.offset.angle(p.subtract(this.node.getWorldPosition()));
         angle = ((angle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
         this.node._editorNode.setProperty('rotation', angle);
-    },
+    }
 });
 
 });

@@ -19,6 +19,11 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     init: function(mode, p) {
         this.super(mode);
         this.hoverNode(this.mode.editor.getNodeAt(p, true));
+
+        if(this.mode.editor.selectedNode)
+            this.mode.editor.statusbar.setStatus('Select node, ESC clear selection, G(rab), R(otate), S(cale), D(uplicate), DEL(ete), A(dd new node), TAB to edit, ENTER to enter game');
+        else
+            this.mode.editor.statusbar.setStatus('Select node by clicking, ENTER to enter game');
     },
 
     hoverNode: function(node) {

@@ -16,6 +16,8 @@ bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
         this.node = node;
         this.startValue = node.getWorldPosition();
         this.offset = p.subtract(this.startValue);
+
+        this.mode.editor.statusbar.setStatus('Move node, ESC cancel | TBD: X,Y lock to axis, ctrl snap 10px grid');
     },
 
     cancel: function() {

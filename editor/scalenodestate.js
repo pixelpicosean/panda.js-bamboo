@@ -16,6 +16,8 @@ bamboo.editor.ScaleNodeState = bamboo.editor.State.extend({
         this.node = node;
         this.startValue = node.scale.clone();
         this.startDistance = node.getWorldPosition().distance(p);
+
+        this.mode.editor.statusbar.setStatus('Scale node, ESC cancel | TBD: X,Y lock to axis, ctrl snap 0.1 increments');
     },
 
     cancel: function() {

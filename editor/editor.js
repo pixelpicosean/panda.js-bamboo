@@ -30,11 +30,10 @@ bamboo.Editor = game.Class.extend({
 
     // windows
     propertyPanel: null,
-    statusBar: null,
+    statusbar: null,
 
     init: function(world) {
         this.controller = new bamboo.EditorController(this);
-        this.mode = new bamboo.editor.NodeMode(this, new game.Vector());
         this.prevMousePos = new game.Vector();
         this.displayObject = new game.Container();
         this.world = world;
@@ -48,7 +47,10 @@ bamboo.Editor = game.Class.extend({
         this.boundaryLayer = new bamboo.BoundaryLayer(this);
 
         this.propertyPanel = new bamboo.PropertyPanel(this);
-        this.statusBar = new bamboo.StatusBar();
+        this.statusbar = new bamboo.StatusBar();
+
+        // set initial mode
+        this.mode = new bamboo.editor.NodeMode(this, new game.Vector());
     },
 
     getUniqueName: function(name) {

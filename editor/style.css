@@ -25,7 +25,7 @@ body.notready div {
     padding: 10px;
 }
 .window .content .text {
-    margin-bottom: 10px;
+    margin-bottom: 0px;
 }
 .window .content .input {
     margin-bottom: 10px;
