@@ -123,27 +123,10 @@ bamboo.Editor = game.Class.extend({
 
         if(this.cameraOffset) {
             var w = this.world;
-            w.cameraPosition = this.cameraOffset.clone().subtract(p).add(this.worldTargetPos);
-            if(w.cameraPosition.x < w.boundaries.left) {
-                w.position.x = this.worldTargetPos.x - (w.cameraPosition.x - w.boundaries.left);
-                w.cameraPosition.x = w.boundaries.left;
-            }
-            else if(w.cameraPosition.x > w.boundaries.right - w.screenSize.width) {
-                w.position.x = this.worldTargetPos.x - (w.cameraPosition.x - (w.boundaries.right - w.screenSize.width));
-                w.cameraPosition.x = w.boundaries.right - w.screenSize.width;
-            } else {
-                w.position.x = this.worldTargetPos.x;
-            }
-
-            if(w.cameraPosition.y < w.boundaries.top) {
-                w.position.y = this.worldTargetPos.y - (w.cameraPosition.y - w.boundaries.top);
-                w.cameraPosition.y = w.boundaries.top;
-            } else if(w.cameraPosition.y > w.boundaries.bottom - w.screenSize.height) {
-                w.position.y = this.worldTargetPos.y - (w.cameraPosition.y - (w.boundaries.bottom - w.screenSize.height));
-                w.cameraPosition.y = w.boundaries.bottom - w.screenSize.height;
-            } else {
-                w.position.y = this.worldTargetPos.y;
-            }
+            var tgtCamPos = this.cameraOffset.clone().subtract(p).add(this.worldTargetPos);
+            w.setCameraPos(tgtCamPos);
+            w.position.x = this.worldTargetPos.x + (w.cameraPosition.x - tgtCamPos.x);
+            w.position.y = this.worldTargetPos.y + (w.cameraPosition.y - tgtCamPos.y);
 
             this.boundaryLayer.updateBoundary();
             for(var i=0; i<this.layers.length; i++)

@@ -84,6 +84,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                 }
                 return true;
             case 65:// A - add
+                this.hoverNode(null);
                 this.mode.changeState(new bamboo.editor.CreateNodeState(this.mode));
                 return true;
             case 68:// D - duplicate

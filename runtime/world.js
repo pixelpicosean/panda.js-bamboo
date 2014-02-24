@@ -109,6 +109,22 @@ bamboo.World = bamboo.Node.extend({
         this.triggerActivators.splice(idx, 1);
     },
 
+    setCameraPos: function(pos) {
+        if(pos.x < this.boundaries.left)
+            this.cameraPosition.x = this.boundaries.left;
+        else if(pos.x > this.boundaries.right - this.screenSize.width)
+            this.cameraPosition.x = this.boundaries.right - this.screenSize.width;
+        else
+            this.cameraPosition.x = pos.x;
+
+        if(pos.y < this.boundaries.top)
+            this.cameraPosition.y = this.boundaries.top;
+        else if(pos.y > this.boundaries.bottom - this.screenSize.height)
+            this.cameraPosition.y = this.boundaries.bottom - this.screenSize.height;
+        else
+            this.cameraPosition.y = pos.y;
+    },
+
     update: function(worldTime) {
 
         for(var i=0; i<this.updateableNodes.length; i++)
