@@ -39,6 +39,13 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
         this.editor.displayObject.addChild(this.mask);
         this.world.position = this.editor.worldTargetPos.clone();
         this.world.update(0);
+
+        /////////
+        // adds editor graphics to the world
+        for(var i=0; i<this.world.nodes.length; i++) {
+            var node = this.world.nodes[i];
+            new bamboo.nodes[node.getClassName()].editor(node, null);
+        }
     },
 
     update: function(dt) {
