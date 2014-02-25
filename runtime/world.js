@@ -151,10 +151,6 @@ bamboo.World = bamboo.Node.extend({
             }
         }
     },
-
-    onmousedown: function(pos) {},
-    onmousemove: function(pos) {},
-    onmouseup: function(pos) {},
 });
 
 bamboo.World.createFromJSON = function(levelJSON) {
