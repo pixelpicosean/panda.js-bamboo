@@ -11,15 +11,13 @@ bamboo.PropertyPanel = game.Class.extend({
     window: null,
     node: null,
     props: null,
-    activeElement: null,
+
     layerList: null,
     layerProperties: null,
 
     init: function(editor) {
         this.editor = editor;
         this.window = new bamboo.UiWindow(game.system.width-200, 0, 200, game.system.height);
-        this.window.windowDiv.onmouseover = this.mousein.bind(this);
-        this.window.windowDiv.onmouseout = this.mouseout.bind(this);
         this.window.show();
 
         // create layer list
@@ -55,10 +53,6 @@ bamboo.PropertyPanel = game.Class.extend({
         this.window.titleDiv.style.display = 'block';
     },
 
-    mousein: function() {
-        if(this.activeElement)
-            this.activeElement.focus();
-
     updateLayerList: function() {
         this.layerList.innerHTML = '';
         this.layerList.size = Math.max(2, this.editor.layers.length);
@@ -71,11 +65,6 @@ bamboo.PropertyPanel = game.Class.extend({
 
         this.activeLayerChanged(this.editor.activeLayer);
     },
-    mouseout: function() {
-        this.activeElement = null;
-        if(document.activeElement !== document.body) {
-            this.activeElement = document.activeElement;
-            this.activeElement.blur();
 
     activeLayerChanged: function(layer) {
         var self = this;

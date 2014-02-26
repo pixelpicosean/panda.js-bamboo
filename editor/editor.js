@@ -124,6 +124,10 @@ bamboo.Editor = game.Class.extend({
         this.mode.onclick(this.prevMousePos.clone());
     },
     onmousedown: function(button) {
+        // if mouse down in canvas, unfocus element
+        if(document.activeElement !== document.body)
+            document.activeElement.blur();
+
         if(this.mode instanceof bamboo.editor.GameMode)
             return;// in game, do nothing
 
