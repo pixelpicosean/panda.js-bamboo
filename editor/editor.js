@@ -98,6 +98,11 @@ bamboo.Editor = game.Class.extend({
         this.propertyPanel.updateLayerList();
     },
 
+    imageAdded: function(name) {
+        // hack to update properties-panel
+        this.propertyPanel.nodeSelected(this.selectedNode);
+    },
+
     nodeSelected: function(node) {
         this.propertyPanel.nodeSelected(node);
     },
@@ -209,6 +214,7 @@ bamboo.Editor = game.Class.extend({
 bamboo.Editor.createFromJSON = function(levelJSON) {
     var jsonWorld = JSON.parse(levelJSON);
     var world = new bamboo[jsonWorld.world]();
+    world.images = jsonWorld.images;
     var editor = new bamboo.Editor(world);
     for(var i=0; i<jsonWorld.nodes.length; i++) {
         var node = jsonWorld.nodes[i];

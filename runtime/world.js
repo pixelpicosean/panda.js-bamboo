@@ -12,11 +12,14 @@ bamboo.World = bamboo.Node.extend({
     updateableNodes: [],
     cameraPosition: null,
 
+    // contains image names and datas
+    images: {},
+
     // area that contains visible content
     boundaries: {left:0,top:0,right:2000,bottom:750},
     screenSize: {width: 1024, height: 672},
 
-    triggers: {},// should be set in extended classes {'kill': this.killplayer.bind(this), 'openDoor':this.opendoor.bind(this)} 
+    triggers: {},// should be set in extended classes {'kill': this.killplayer.bind(this), 'openDoor':this.opendoor.bind(this)}
 
     triggerNodes: [],
     triggerNodesActivated: [],
@@ -58,7 +61,7 @@ bamboo.World = bamboo.Node.extend({
     },
 
     toJSON: function() {
-        var jsonObj = {world: this.getClassName(), nodes: []};
+        var jsonObj = {world: this.getClassName(), images: this.images, nodes: []};
         this.addJSONConnections(this, jsonObj.nodes);
         return jsonObj;
     },
@@ -157,6 +160,7 @@ bamboo.World.createFromJSON = function(levelJSON) {
 
     var jsonWorld = JSON.parse(levelJSON);
     var world = new bamboo[jsonWorld.world]();
+    world.images = jsonWorld.images;
 
     var jsonWorldNodes = jsonWorld.nodes;
     for(var i=0; i<jsonWorldNodes.length; i++) {

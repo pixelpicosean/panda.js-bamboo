@@ -24,6 +24,10 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             this.mode.editor.statusbar.setStatus('Select node, ESC clear selection, G(rab), R(otate), S(cale), D(uplicate), DEL(ete), A(dd new node), TAB to edit, ENTER to enter game');
         else
             this.mode.editor.statusbar.setStatus('Select node by clicking, ENTER to enter game');
+
+        game.system.canvas.ondragover = function() { return false; };
+        game.system.canvas.ondragend = function() { return false; };
+        game.system.canvas.ondrop = this.onFileDrop.bind(this);
     },
 
     hoverNode: function(node) {
@@ -44,11 +48,13 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     cancel: function() {
         this.hoverNode(null);
         this.mode.editor.controller.selectNode(null);
+        game.system.canvas.ondrop = null;
     },
 
     apply: function() {
         this.mode.editor.controller.selectNode(this.hoveredNode);
         this.hoverNode(null);
+        game.system.canvas.ondrop = null;
     },
 
     onmousemove: function(p) {
@@ -119,6 +125,27 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                 }
                 return true;
         }
+        return false;
+    },
+
+    onFileDrop: function(e) {
+        e.preventDefault();
+
+        for(var i=0; i<e.dataTransfer.files.length; i++) {
+            var file = e.dataTransfer.files[i];
+
+            var reader = new FileReader();
+            var editorController = this.mode.editor.controller;
+            reader.onload = function(e) {
+                var imgData = e.target.result;
+                var texture = PIXI.Texture.fromImage(imgData, true);
+                PIXI.TextureCache[this.filename] = texture;
+                editorController.addImage(this.filename, imgData);
+            };
+            reader.filename = file.name;
+            reader.readAsDataURL(file);
+        }
+
         return false;
     }
 });

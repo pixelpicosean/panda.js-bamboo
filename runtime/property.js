@@ -29,7 +29,7 @@ bamboo.Property.TYPE = {
     ARRAY: 6,
     EASING: 7,
     ENUM: 8,
-    FILE: 9,
+    IMAGE: 9,
     TRIGGER: 10,
     COLOR: 11
 };
@@ -39,7 +39,7 @@ bamboo.Property.parse = function(world, obj, name, desc) {
         case bamboo.Property.TYPE.NUMBER:
         case bamboo.Property.TYPE.ANGLE:
         case bamboo.Property.TYPE.STRING:
-        case bamboo.Property.TYPE.FILE:
+        case bamboo.Property.TYPE.IMAGE:
         case bamboo.Property.TYPE.BOOLEAN:
         case bamboo.Property.TYPE.ENUM:
         case bamboo.Property.TYPE.TRIGGER:
@@ -71,7 +71,7 @@ bamboo.Property.toJSON = function(obj, name, desc) {
         case bamboo.Property.TYPE.NUMBER:
         case bamboo.Property.TYPE.ANGLE:
         case bamboo.Property.TYPE.STRING:
-        case bamboo.Property.TYPE.FILE:
+        case bamboo.Property.TYPE.IMAGE:
         case bamboo.Property.TYPE.BOOLEAN:
         case bamboo.Property.TYPE.ENUM:
         case bamboo.Property.TYPE.TRIGGER:

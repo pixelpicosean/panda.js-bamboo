@@ -201,8 +201,13 @@ bamboo.PropertyPanel = game.Class.extend({
                         this.window.addInputSelectOption(key, props[key].options[i], props[key].options[i]);
                     this.window.setInputSelectValue(key, node[key]);
                     break;
-                case bamboo.Property.TYPE.FILE:
-                    this.window.addInputText(key, node[key], props[key].name, props[key].description, this.textPropertyChanged.bind(this));
+                case bamboo.Property.TYPE.IMAGE:
+                    this.window.addInputSelect(key, props[key].name, props[key].description, this.imagePropertyChanged.bind(this));
+                    var images = this.editor.world.images;
+                    for(var name in images) {
+                        this.window.addInputSelectOption(key, name, name);
+                    }
+                    this.window.setInputSelectValue(key, node[key]);
                     break;
                 case bamboo.Property.TYPE.TRIGGER:
                     this.window.addInputSelect(key, props[key].name, props[key].description, this.triggerPropertyChanged.bind(this));
@@ -224,7 +229,7 @@ bamboo.PropertyPanel = game.Class.extend({
                 break;
             case bamboo.Property.TYPE.STRING:
             case bamboo.Property.TYPE.ENUM:
-            case bamboo.Property.TYPE.FILE:
+            case bamboo.Property.TYPE.IMAGE:
             case bamboo.Property.TYPE.TRIGGER:
                 this.window.inputs[property].value = value;
                 break;
@@ -299,6 +304,10 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     enumPropertyChanged: function(key) {
+        this.editor.selectedNode._editorNode.setProperty(key, this.window.inputs[key].value);
+    },
+
+    imagePropertyChanged: function(key) {
         this.editor.selectedNode._editorNode.setProperty(key, this.window.inputs[key].value);
     },
 

@@ -42,6 +42,12 @@ bamboo.start = function(levelJSON) {
 
     bamboo.levelJSON = levelJSON;
 
+    // load level images
+    var images = JSON.parse(levelJSON).images;
+    for(var name in images) {
+        PIXI.TextureCache[name] = PIXI.Texture.fromImage(images[name], true);
+    }
+
     // TODO: read from json?
     game.System.orientation = game.System.LANDSCAPE;
     game.start(bamboo.Scene);

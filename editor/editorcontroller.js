@@ -31,6 +31,11 @@ bamboo.EditorController = game.Class.extend({
         this.editor.nodeRemoved(node);
     },
 
+    addImage: function(name, imgData) {
+        this.editor.world.images[name] = imgData;
+        this.editor.imageAdded(name);
+    },
+
     changeMode: function(newMode) {
         this.editor.mode = newMode;
     },
