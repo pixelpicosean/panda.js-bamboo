@@ -19,6 +19,12 @@ bamboo.EditorScene = game.Scene.extend({
         this.installEventListeners();
         this.editor = bamboo.Editor.createFromJSON(bamboo.levelJSON);
         this.stage.addChild(this.editor.displayObject);
+
+        window.setInterval(this.doBackup.bind(this), 1000);
+    },
+
+    doBackup: function() {
+        localStorage.setItem('backup', JSON.stringify(this.editor.world.toJSON()));
     },
 
     update: function() {
@@ -100,6 +106,12 @@ bamboo.start = function(levelJSON) {
     document.getElementsByTagName('head')[0].appendChild(style);
 
     this.ui = new bamboo.Ui();
+
+    var backup = localStorage.getItem('backup');
+    if(!!backup) {
+        if(confirm('Load from backup?'))
+            levelJSON = backup;
+    }
 
     bamboo.levelJSON = levelJSON;
 
