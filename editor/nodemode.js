@@ -10,13 +10,48 @@ game.module(
 bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     state: null,
 
+    timeDisplay: null,
+    animationRunning: false,
+
+
     init: function(editor, p) {
         this.super(editor);
         this.state = new bamboo.editor.SelectionState(this, p);
+
+        this.timeDisplay = new PIXI.BitmapText('', {font:'28px Buu'});
+        this.timeDisplay.position = new game.Vector(20,20);
+        this.editor.overlay.addChild(this.timeDisplay);
+        this.timeDisplay.visible = false;
+    },
+
+    exit: function() {
+        if(this.animationRunning)
+            this.stopAnimation();
+        this.editor.overlay.removeChild(this.timeDisplay);
     },
 
     update: function(dt) {
+        if(this.animationRunning) {
+            this.setAnimationTime(this.animationTime + dt);
+        }
     },
+
+    startAnimation: function() {
+        this.animationRunning = true;
+        this.setAnimationTime(0);
+        this.timeDisplay.visible = true;
+    },
+    stopAnimation: function() {
+        this.animationRunning = false;
+        this.setAnimationTime(0);
+        this.timeDisplay.visible = false;
+    },
+    setAnimationTime: function(time) {
+        this.animationTime = time;
+        this.editor.world.update(this.animationTime);
+        this.timeDisplay.setText(this.animationTime.toFixed(1)+'s');
+    },
+
 
     onclick: function(p) {
         this.state.apply();
@@ -29,6 +64,7 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
         // overrides from mode
         switch(keycode) {
             case 27:// ESC
+            case 32:// SPACE
                 return true;
         }
         return this.state.onkeydown(keycode, p);
@@ -39,6 +75,12 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
             case 27:// ESC - cancel
                 this.state.cancel();
                 this.changeState(new bamboo.editor.SelectionState(this, p));
+                return true;
+            case 32:// SPACE - start/stop animation
+                if(this.animationRunning)
+                    this.stopAnimation();
+                else
+                    this.startAnimation();
                 return true;
         }
         return this.state.onkeyup(keycode, p);

@@ -22,6 +22,11 @@ bamboo.nodes.Rotator.editor = bamboo.Node.editor.extend({
     getBounds: function() {
         return {x: -32, y: -32, width: 64, height: 64};
     },
+
+    propertyChanged: function(property, value) {
+        if(property === 'rotation' && value !== 0)
+            this.setProperty('rotation', 0);
+    }
 });
 
 });

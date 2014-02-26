@@ -37,6 +37,7 @@ bamboo.EditorController = game.Class.extend({
     },
 
     changeMode: function(newMode) {
+        this.editor.mode.exit();
         this.editor.mode = newMode;
     },
 
