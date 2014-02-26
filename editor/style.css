@@ -21,6 +21,26 @@ body.notready div {
     border: 1px solid #202020;
     /*box-shadow: 0px 2px 0px rgba(0,0,0,0.2);*/
 }
+.window .title .input {
+    margin-bottom: 10px;
+}
+.window .title .button {
+    color: #eee;
+    background: #6b6b6b;
+    border: 1px solid #282828;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 10px;
+    box-shadow: 0px 2px 0px #282828;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 .window .content {
     padding: 10px;
 }

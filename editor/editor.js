@@ -21,6 +21,7 @@ bamboo.Editor = game.Class.extend({
     nodes: [],
 
     layers: [],
+    activeLayer: null,
     selectedNode: null,
 
     // used during dragging camera (mouse wheel)
@@ -77,27 +78,38 @@ bamboo.Editor = game.Class.extend({
 
 
     nodeAdded: function(node) {
-        if(node instanceof bamboo.nodes.Layer)
+        if(node instanceof bamboo.nodes.Layer) {
             this.layers.push(node);
+            this.layerAdded(node);
+        }
     },
     nodeRemoved: function(node) {
         if(node instanceof bamboo.nodes.Layer) {
             var idx = this.layers.indexOf(node);
             this.layers.splice(idx, 1);
+            this.layerRemoved(node);
         }
     },
+    layerAdded: function(layer) {
+        this.activeLayer = layer;
+        this.propertyPanel.updateLayerList();
+    },
+    layerRemoved: function(layer) {
+        this.propertyPanel.updateLayerList();
+    },
+
     nodeSelected: function(node) {
         this.propertyPanel.nodeSelected(node);
     },
 
-    getNodeAt: function(p, selectable) {
+    getNodeAt: function(p, layer) {
         for(var i=this.nodes.length-1; i>=0; i--) {
             var n = this.nodes[i];
             var l = n.node.toLocalSpace(p);
             var r = n._cachedRect;
             if(l.x >= r.x && l.x <= r.x+r.width &&
                l.y >= r.y && l.y <= r.y+r.height) {
-                if(!selectable || n.properties.selectable)
+                if(!layer || n.layer === layer)
                     return n.node;
             }
         }

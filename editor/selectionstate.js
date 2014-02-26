@@ -52,7 +52,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     },
 
     onmousemove: function(p) {
-        this.hoverNode(this.mode.editor.getNodeAt(p, true));
+        this.hoverNode(this.mode.editor.getNodeAt(p, this.mode.editor.activeLayer));
     },
 
     onkeydown: function(keycode, p) {

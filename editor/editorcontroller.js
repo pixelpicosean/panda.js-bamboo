@@ -25,10 +25,10 @@ bamboo.EditorController = game.Class.extend({
     },
 
     deleteNode: function(node) {
-        this.editor.nodeRemoved(node);
         this.editor.nodes.splice(this.editor.nodes.indexOf(node._editorNode), 1);
         node.connectedTo = null;
         node.world = null;
+        this.editor.nodeRemoved(node);
     },
 
     changeMode: function(newMode) {
@@ -49,6 +49,32 @@ bamboo.EditorController = game.Class.extend({
             this.editor.selectedNode._editorNode.selectionAxis.visible = true;
         }
         this.editor.nodeSelected(node);
+    },
+
+    setActiveLayer: function(layer) {
+        this.editor.activeLayer = layer;
+        this.editor.propertyPanel.activeLayerChanged(layer);
+    },
+
+    moveLayerUp: function(layer) {
+        var idx = layer.displayObject.parent.children.indexOf(layer.displayObject);
+        if(idx === 0)
+            return;// already behind everything
+        layer.displayObject.parent.addChildAt(layer.displayObject, idx-1);
+        idx = this.editor.layers.indexOf(layer);
+        this.editor.layers.splice(idx, 1);
+        this.editor.layers.splice(idx-1, 0, layer);
+        this.editor.propertyPanel.updateLayerList();
+    },
+    moveLayerDown: function(layer) {
+        var idx = layer.displayObject.parent.children.indexOf(layer.displayObject);
+        if(idx === layer.displayObject.parent.children.length-1)
+            return;// already on front of everything
+        layer.displayObject.parent.addChildAt(layer.displayObject, idx+1);
+        idx = this.editor.layers.indexOf(layer);
+        this.editor.layers.splice(idx, 1);
+        this.editor.layers.splice(idx+1, 0, layer);
+        this.editor.propertyPanel.updateLayerList();
     },
 
     enableEditMode: function(enabled) {

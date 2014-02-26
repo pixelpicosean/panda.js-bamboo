@@ -12,6 +12,8 @@ bamboo.PropertyPanel = game.Class.extend({
     node: null,
     props: null,
     activeElement: null,
+    layerList: null,
+    layerProperties: null,
 
     init: function(editor) {
         this.editor = editor;
@@ -19,17 +21,135 @@ bamboo.PropertyPanel = game.Class.extend({
         this.window.windowDiv.onmouseover = this.mousein.bind(this);
         this.window.windowDiv.onmouseout = this.mouseout.bind(this);
         this.window.show();
+
+        // create layer list
+        var newLayerButton = document.createElement('div');
+        newLayerButton.className = 'button';
+        newLayerButton.innerHTML = 'New Layer';
+        newLayerButton.addEventListener('click', this.newLayerButtonClicked.bind(this), false);
+        this.window.titleDiv.appendChild(newLayerButton);
+        this.layerList = document.createElement('select');
+        this.layerList.addEventListener('change', this.layerSelectionChanged.bind(this), false);
+        this.window.titleDiv.appendChild(this.layerList);
+
+        var layerButton = document.createElement('div');
+        layerButton.className = 'button';
+        layerButton.innerHTML = '⬆';
+        layerButton.addEventListener('click', this.moveLayerUpClicked.bind(this), false);
+        this.window.titleDiv.appendChild(layerButton);
+
+        layerButton = document.createElement('div');
+        layerButton.className = 'button';
+        layerButton.innerHTML = '⬇';
+        layerButton.addEventListener('click', this.moveLayerDownClicked.bind(this), false);
+        this.window.titleDiv.appendChild(layerButton);
+
+        layerButton = document.createElement('div');
+        layerButton.className = 'button';
+        layerButton.innerHTML = '×';
+        layerButton.addEventListener('click', this.deleteLayerClicked.bind(this), false);
+        this.window.titleDiv.appendChild(layerButton);
+
+        this.layerProperties = document.createElement('div');
+        this.window.titleDiv.appendChild(this.layerProperties);
+        this.window.titleDiv.style.display = 'block';
     },
 
     mousein: function() {
         if(this.activeElement)
             this.activeElement.focus();
+
+    updateLayerList: function() {
+        this.layerList.innerHTML = '';
+        this.layerList.size = Math.max(2, this.editor.layers.length);
+        for(var i=0; i<this.editor.layers.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = this.editor.layers[i].name;
+            opt.innerHTML = this.editor.layers[i].name;
+            this.layerList.appendChild(opt);
+        }
+
+        this.activeLayerChanged(this.editor.activeLayer);
     },
     mouseout: function() {
         this.activeElement = null;
         if(document.activeElement !== document.body) {
             this.activeElement = document.activeElement;
             this.activeElement.blur();
+
+    activeLayerChanged: function(layer) {
+        var self = this;
+        this.layerList.value = layer.name;
+        this.layerProperties.innerHTML = '';
+
+
+        var inputDiv = document.createElement('div');
+        inputDiv.className = 'input';
+        var labelElem = document.createElement('label');
+        labelElem.innerHTML = 'visible';
+        var inputElem = document.createElement('input');
+        inputElem.type = 'checkbox';
+        inputElem.name = 'visible';
+        inputElem.title = 'Is layer visible';
+        inputElem.checked = layer._editorNode.visible;
+        inputElem.addEventListener('change', function() {layer._editorNode.visible=this.checked;}, false);
+        inputDiv.appendChild(labelElem);
+        inputDiv.appendChild(inputElem);
+        this.layerProperties.appendChild(inputDiv);
+
+        inputDiv = document.createElement('div');
+        inputDiv.className = 'input';
+        labelElem = document.createElement('label');
+        labelElem.innerHTML = 'Name';
+        inputElem = document.createElement('input');
+        inputElem.type = 'text';
+        inputElem.name = 'name';
+        inputElem.title = 'Name of the layer';
+        inputElem.value = layer.name;
+        inputElem.addEventListener('change', function()
+                                   {layer._editorNode.setProperty('name', this.value);
+                                    self.updateLayerList();}, false);
+        inputDiv.appendChild(labelElem);
+        inputDiv.appendChild(inputElem);
+        this.layerProperties.appendChild(inputDiv);
+        
+        inputDiv = document.createElement('div');
+        inputDiv.className = 'input';
+        labelElem = document.createElement('label');
+        labelElem.innerHTML = 'Parallax multiplier';
+        inputElem = document.createElement('input');
+        inputElem.type = 'text';
+        inputElem.name = 'speedFactor';
+        inputElem.title = 'Speed relative to camera';
+        inputElem.value = layer.speedFactor.toFixed(2);
+        inputElem.addEventListener('change', function() {layer._editorNode.setProperty('speedFactor', parseFloat(this.value));}, false);
+        inputDiv.appendChild(labelElem);
+        inputDiv.appendChild(inputElem);
+        this.layerProperties.appendChild(inputDiv);
+    },
+
+    layerSelectionChanged: function() {
+        this.editor.controller.setActiveLayer(this.editor.world.findNode(this.layerList.value));
+        // clear selection!
+    },
+    newLayerButtonClicked: function() {
+        this.editor.controller.createNode('Layer', {name:'Layer', connectedTo:null});
+    },
+    moveLayerUpClicked: function() {
+        this.editor.controller.moveLayerUp(this.editor.activeLayer);
+    },
+    moveLayerDownClicked: function() {
+        this.editor.controller.moveLayerDown(this.editor.activeLayer);
+    },
+    deleteLayerClicked: function() {
+        if(this.editor.layers.length === 1) {
+            alert('Cannot delete last layer!');
+            return;
+        }
+        if(confirm('Delete layer \''+this.editor.activeLayer.name+'\'?')) {
+            var l = this.editor.activeLayer;
+            this.editor.controller.setActiveLayer(l === this.editor.layers[0] ? this.editor.layers[1] : this.editor.layers[0]);
+            this.editor.controller.deleteNode(l);
         }
     },
 

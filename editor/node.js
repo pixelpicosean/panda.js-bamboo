@@ -19,6 +19,7 @@ bamboo.Node.editor = game.Class.extend({
     editEnabled: false,
     propertyChangeListeners: [],
     properties: {selectable: true, linkable: false},
+    layer: null,
 
     init: function(node) {
         this.node = node;
@@ -51,6 +52,19 @@ bamboo.Node.editor = game.Class.extend({
         this.hoverAxis.visible = false;
 
         this.editableRect.visible = false;
+        this.layerChanged();
+    },
+
+    layerChanged: function() {
+        // find new layer
+        var n = this.node;
+        while(n) {
+            if(n instanceof bamboo.nodes.Layer) {
+                this.layer = n;
+                break;
+            }
+            n = n.connectedTo;
+        }
     },
 
     sizeChanged: function() {
@@ -109,6 +123,7 @@ bamboo.Node.editor = game.Class.extend({
         } else if(property === 'connectedTo') {
             var wp = oldValue.toWorldSpace(this.node.position);
             this.setProperty('position', value.toLocalSpace(wp));
+            this.layerChanged();
         }
         for(var i=0; i<this.propertyChangeListeners.length; i++)
             this.propertyChangeListeners[i](property, value, oldValue);
