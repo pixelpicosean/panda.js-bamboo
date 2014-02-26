@@ -164,7 +164,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
             switch(props[key].type) {
                 case bamboo.Property.TYPE.NUMBER:
-                     this.window.addInputText(key, node[key].toFixed(2), props[key].name, props[key].description, this.numberPropertyChanged.bind(this));
+                     this.window.addInputText(key, parseFloat(node[key]).toFixed(2), props[key].name, props[key].description, this.numberPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.STRING:
                     this.window.addInputText(key, node[key], props[key].name, props[key].description, this.textPropertyChanged.bind(this));
@@ -234,7 +234,7 @@ bamboo.PropertyPanel = game.Class.extend({
                 this.window.inputs[property].value = value;
                 break;
             case bamboo.Property.TYPE.ANGLE:
-                this.window.inputs[property].value = ((180.0*value)/Math.PI).toFixed(2);
+                this.window.inputs[property].value = ((180.0*parseFloat(value))/Math.PI).toFixed(2);
                 break;
             case bamboo.Property.TYPE.BOOLEAN:
                 this.window.inputs[property].checked = value;
@@ -260,7 +260,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
 
     numberPropertyChanged: function(key) {
-        var value = this.window.inputs[key].value;
+        var value = parseFloat(this.window.inputs[key].value);
         if(this.props[key].options) {
             var min = this.props[key].options.min;
             var max = this.props[key].options.max;
@@ -275,7 +275,7 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     anglePropertyChanged: function(key) {
-        var value = this.window.inputs[key].value;
+        var value = parseFloat(this.window.inputs[key].value);
         value = ((value % 360) + 360) % 360;
         this.editor.selectedNode._editorNode.setProperty(key, value*Math.PI / 180);
     },
@@ -285,7 +285,7 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     vectorPropertyChanged: function(key) {
-        var value = this.window.inputs[key].value;
+        var value = parseFloat(this.window.inputs[key].value);
         var parts = key.split('.');
         var i = parts[parts.length-1];
         var keyName = key.slice(0, key.length - 1 - i.length);
