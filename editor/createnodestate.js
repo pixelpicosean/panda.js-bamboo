@@ -16,7 +16,7 @@ bamboo.editor.CreateNodeState = bamboo.editor.State.extend({
 
         this.window = new bamboo.UiWindow(game.system.width/2-200, game.system.height/2-100, 400, 'auto');
         this.window.addTitle('Add Node');
-        this.window.addInputSelect('type', 'Node Type', this.nodeTypeChanged.bind(this));
+        this.window.addInputSelect('type', 'Node Type', 'Type of the node', this.nodeTypeChanged.bind(this));
         for(var i=0; i<bamboo.availableNodeTypes.length; i++)
             this.window.addInputSelectOption('type', bamboo.availableNodeTypes[i], bamboo.availableNodeTypes[i]);
 
@@ -57,17 +57,27 @@ bamboo.editor.CreateNodeState = bamboo.editor.State.extend({
         if(this.nameHasChanged)
             return;
 
-        this.window.inputs['name'] = this.mode.editor.getUniqueName(this.window.inputs['type'].value);
+        this.window.inputs['name'].value = this.mode.editor.getUniqueName(this.window.inputs['type'].value);
     },
 
     addPressed: function() {
-        var node = this.mode.editor.controller.createNode(this.window.inputs['type'].value, {
-            name: this.window.inputs['name'].value,
-            position: this.mode.editor.world.findNode(this.window.inputs['connectedTo'].value).toLocalSpace(new game.Vector()),
-            connectedTo: this.window.inputs['connectedTo'].value});
+        try {
 
-        this.window.hide();
-        this.mode.changeState(new bamboo.editor.NewNodeState(this.mode, new game.Vector(), node));
+            var node = this.mode.editor.controller.createNode(this.window.inputs['type'].value, {
+                name: this.window.inputs['name'].value,
+                position: this.mode.editor.world.findNode(this.window.inputs['connectedTo'].value).toLocalSpace(new game.Vector()),
+                connectedTo: this.window.inputs['connectedTo'].value});
+
+            this.window.hide();
+            this.mode.changeState(new bamboo.editor.NewNodeState(this.mode, new game.Vector(), node));
+
+        } catch(err) {
+            var node = this.mode.editor.world.findNode(this.window.inputs['name'].value);
+            if(node) {
+                this.mode.editor.controller.deleteNode(node);
+            }
+            alert(err);
+        }
     }
 });
 

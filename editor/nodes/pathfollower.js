@@ -22,6 +22,11 @@ bamboo.nodes.PathFollower.editor = bamboo.Node.editor.extend({
     getBounds: function() {
         return {x: -32, y: -32, width: 64, height: 64};
     },
+
+    propertyChanged: function(property, value) {
+        if(property === 'position' && (value.x !== 0 || value.y !== 0))
+            this.setProperty('position', new game.Vector());
+    }
 });
 
 });
