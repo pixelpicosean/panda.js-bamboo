@@ -6,6 +6,9 @@ game.module(
 )
 .body(function() {
 
+game.addAsset('src/bamboo/editor/media/axis.png');
+game.addAsset('src/bamboo/editor/media/axis_hover.png');
+
 bamboo.Node.editor = game.Class.extend({
     node: null,
     displayObject: null,
@@ -30,13 +33,13 @@ bamboo.Node.editor = game.Class.extend({
         this.node.displayObject.addChild(this.displayObject);
 
         this.selectionRect = new game.Graphics();
-        this.selectionAxis = new game.Sprite(0,0, 'media/origin_axis.png');
+        this.selectionAxis = new game.Sprite(0,0, 'src/bamboo/editor/media/axis.png');
         this.selectionAxis.anchor = {x: 0.305, y: 0.305};
         this.displayObject.addChild(this.selectionRect);
         this.displayObject.addChild(this.selectionAxis);
 
         this.hoverRect = new game.Graphics();
-        this.hoverAxis = new game.Sprite(0,0,'media/origin_axis_highlight.png');
+        this.hoverAxis = new game.Sprite(0,0,'src/bamboo/editor/media/axis_hover.png');
         this.hoverAxis.anchor = {x: 0.305, y: 0.305};
         this.displayObject.addChild(this.hoverRect);
         this.displayObject.addChild(this.hoverAxis);
