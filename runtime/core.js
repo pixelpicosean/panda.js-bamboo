@@ -25,9 +25,8 @@ bamboo.Scene = game.Scene.extend({
         this.super();
     },
 
-    click: function(me) {
-        if(me.originalEvent.button === 0)
-            this.world.onclick();
+    click: function() {
+        this.world.onclick();
     },
 });
 
