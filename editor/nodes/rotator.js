@@ -24,8 +24,8 @@ bamboo.nodes.Rotator.editor = bamboo.Node.editor.extend({
     },
 
     propertyChanged: function(property, value) {
-        if(property === 'rotation' && value !== 0)
-            this.setProperty('rotation', 0);
+        if(property === 'rotation')
+            this.node.startAngle = value;
     }
 });
 
