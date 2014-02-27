@@ -25,15 +25,10 @@ bamboo.Scene = game.Scene.extend({
         this.super();
     },
 
-    mousedown: function(p) {
-        this.world.onmousedown(p);
+    click: function(me) {
+        if(me.originalEvent.button === 0)
+            this.world.onclick();
     },
-    mousemove: function(p) {
-        this.world.onmousemove(p);
-    },
-    mouseup: function(p) {
-        this.world.onmouseup(p);
-    }
 });
 
 bamboo.start = function(levelJSON) {
