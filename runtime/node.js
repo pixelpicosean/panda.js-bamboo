@@ -40,7 +40,7 @@ bamboo.Node = game.Class.extend({
                p[key] = proto.constructor.desc[key];
             }
             proto = Object.getPrototypeOf(proto);
-            if(proto.constructor.name !== 'Class')
+            if(proto !== bamboo.Node.prototype)
                 break;
         }
         var props = {};
