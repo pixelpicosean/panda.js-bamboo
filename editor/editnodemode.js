@@ -13,7 +13,7 @@ bamboo.editor.EditNodeMode = bamboo.editor.Mode.extend({
         this.super(editor);
         this.node = node;
         this.node._editorNode.enableEditMode(true);
-        this.editor.controller.enableEditMode(true);
+        this.editor.controller.enableEditMode(this.node, true);
 
         this.editor.statusbar.setStatus('Edit mode, TAB to exit');
     },
@@ -34,8 +34,9 @@ bamboo.editor.EditNodeMode = bamboo.editor.Mode.extend({
     onkeyup: function(keycode, p) {
         switch(keycode) {
             case 9:// TAB - exit edit mode
-                this.editor.controller.enableEditMode(false);
+                this.editor.controller.enableEditMode(this.node, false);
                 this.node._editorNode.enableEditMode(false);
+                this.editor.controller.selectNode(this.node);
                 this.editor.controller.changeMode(new bamboo.editor.NodeMode(this.editor, p));
                 return true;
         }

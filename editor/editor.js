@@ -34,6 +34,7 @@ bamboo.Editor = game.Class.extend({
     statusbar: null,
 
     init: function(world) {
+        world.inEditor = true;
         this.controller = new bamboo.EditorController(this);
         this.prevMousePos = new game.Vector();
         this.displayObject = new game.Container();
@@ -52,6 +53,12 @@ bamboo.Editor = game.Class.extend({
 
         // set initial mode
         this.mode = new bamboo.editor.NodeMode(this, new game.Vector());
+    },
+
+    exit: function() {
+        this.propertyPanel.visible = false;
+        this.statusbar.window.hide();
+        this.statusbar.saveWindow.hide();
     },
 
     getUniqueName: function(name) {

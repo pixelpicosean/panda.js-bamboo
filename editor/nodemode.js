@@ -28,6 +28,7 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
         if(this.animationRunning)
             this.stopAnimation();
         this.editor.overlay.removeChild(this.timeDisplay);
+        this.state.cancel();
     },
 
     update: function(dt) {

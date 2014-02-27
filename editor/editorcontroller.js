@@ -83,13 +83,13 @@ bamboo.EditorController = game.Class.extend({
         this.editor.propertyPanel.updateLayerList();
     },
 
-    enableEditMode: function(enabled) {
+    enableEditMode: function(node, enabled) {
         if(enabled) {
-            this.editor.selectedNode._editorNode.selectionRect.visible = false;
-            this.editor.selectedNode._editorNode.editableRect.visible = true;
+            node._editorNode.selectionRect.visible = false;
+            node._editorNode.editableRect.visible = true;
         } else {
-            this.editor.selectedNode._editorNode.selectionRect.visible = true;
-            this.editor.selectedNode._editorNode.editableRect.visible = false;
+            node._editorNode.selectionRect.visible = true;
+            node._editorNode.editableRect.visible = false;
         }
     }
 });

@@ -15,6 +15,7 @@ game.module(
 
 bamboo.editor.SelectionState = bamboo.editor.State.extend({
     hoveredNode: null,
+    previousDropHandler: null,
 
     init: function(mode, p) {
         this.super(mode);
@@ -25,8 +26,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         else
             this.mode.editor.statusbar.setStatus('Select node by clicking, ENTER to enter game');
 
-        game.system.canvas.ondragover = function() { return false; };
-        game.system.canvas.ondragend = function() { return false; };
+        this.previousDropHandler = game.system.canvas.ondrop;
         game.system.canvas.ondrop = this.onFileDrop.bind(this);
     },
 
@@ -48,13 +48,13 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     cancel: function() {
         this.hoverNode(null);
         this.mode.editor.controller.selectNode(null);
-        game.system.canvas.ondrop = null;
+        game.system.canvas.ondrop = this.previousDropHandler;
     },
 
     apply: function() {
         this.mode.editor.controller.selectNode(this.hoveredNode);
         this.hoverNode(null);
-        game.system.canvas.ondrop = null;
+        game.system.canvas.ondrop = this.previousDropHandler;
     },
 
     onmousemove: function(p) {
@@ -131,8 +131,22 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     onFileDrop: function(e) {
         e.preventDefault();
 
+        if(e.dataTransfer.files.length === 1) {
+            var parts = e.dataTransfer.files[0].name.split('.');
+            if(parts[parts.length-1] === 'json') {
+                this.previousDropHandler(e);
+                return false;
+            }
+        }
+
         for(var i=0; i<e.dataTransfer.files.length; i++) {
             var file = e.dataTransfer.files[i];
+            var parts = file.name.split('.');
+            var suffix = parts[parts.length-1];
+            if(suffix !== 'png') {
+                alert('Only png images are supported!');
+                continue;
+            }
 
             var reader = new FileReader();
             var editorController = this.mode.editor.controller;
