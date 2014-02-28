@@ -146,6 +146,10 @@ bamboo.EditorScene = game.Scene.extend({
         if(this.editor)
             this.editor.onmouseout();
     },
+    onmousewheel: function(e) {
+        if(this.editor)
+            this.editor.onmousewheel(e.wheelDelta);
+    },
     onkeydown: function(e) {
         if(!this.editor)
             return;
@@ -190,6 +194,7 @@ bamboo.EditorScene = game.Scene.extend({
         canvas.addEventListener('mousemove', this.onmousemove.bind(this), false);
         canvas.addEventListener('mouseup', this.onmouseup.bind(this), false);
         canvas.addEventListener('mouseout', this.onmouseout.bind(this), false);
+        canvas.addEventListener('mousewheel', this.onmousewheel.bind(this), false);
         window.addEventListener('keydown', this.onkeydown.bind(this), false);
         window.addEventListener('keyup', this.onkeyup.bind(this), false);
 

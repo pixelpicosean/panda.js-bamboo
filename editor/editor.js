@@ -20,6 +20,11 @@ bamboo.Editor = game.Class.extend({
     world: null,
     nodes: [],
 
+    // for zooming
+    _zoom: 1,
+    targetZoom: 1,
+    targetCameraWorldPosition: null,
+
     layers: [],
     activeLayer: null,
     selectedNode: null,
@@ -47,6 +52,7 @@ bamboo.Editor = game.Class.extend({
         this.displayObject.addChild(this.overlay);
 
         this.boundaryLayer = new bamboo.BoundaryLayer(this);
+        this.overlay.addChild(this.boundaryLayer.displayObject);
 
         this.propertyPanel = new bamboo.PropertyPanel(this);
         this.statusbar = new bamboo.StatusBar();
@@ -143,8 +149,9 @@ bamboo.Editor = game.Class.extend({
         if(this.mode instanceof bamboo.editor.GameMode)
             return;// in game, do nothing
 
-        if(button === 1)
-            this.cameraOffset = this.prevMousePos.clone().add(this.world.cameraPosition.clone().subtract(this.world.position));
+        if(button === 1) {
+            this.cameraOffset = this.prevMousePos.clone().subtract(this.cameraWorldPosition);
+        }
     },
     onmousemove: function(p) {
         this.prevMousePos = p;
@@ -152,15 +159,8 @@ bamboo.Editor = game.Class.extend({
             return;// in game, do nothing
 
         if(this.cameraOffset) {
-            var w = this.world;
-            var tgtCamPos = this.cameraOffset.clone().subtract(p).add(this.worldTargetPos);
-            w.setCameraPos(tgtCamPos);
-            w.position.x = this.worldTargetPos.x + (w.cameraPosition.x - tgtCamPos.x);
-            w.position.y = this.worldTargetPos.y + (w.cameraPosition.y - tgtCamPos.y);
-
-            this.boundaryLayer.updateBoundary();
-            for(var i=0; i<this.layers.length; i++)
-                this.layers[i].update(0);
+            this.targetCameraWorldPosition = p.clone().subtract(this.cameraOffset);
+            this.cameraWorldPosition = this.targetCameraWorldPosition;
         }
         this.mode.onmousemove(p.clone());
     },
@@ -177,6 +177,25 @@ bamboo.Editor = game.Class.extend({
 
         if(this.cameraOffset)
             this.cameraOffset = null;
+    },
+    onmousewheel: function(delta) {
+        delta = Math.max(-1, Math.min(1, delta));
+
+        var zoom = this.targetZoom * Math.pow(1.5, delta);
+        if(zoom < 0.05 || zoom > 6)
+            return;
+
+        var offset = this.prevMousePos.clone().subtract(this.targetCameraWorldPosition);
+        this.targetCameraWorldPosition = this.prevMousePos.clone().subtract(offset.multiply(Math.pow(1.5, delta)));
+
+        if(this.zoomTween) this.zoomTween.stop();
+        if(this.zoomPosTween) this.zoomPosTween.stop();
+
+        var self = this;
+        this.zoomTween = new game.Tween(this, {zoom: zoom}, 250, {easing: game.Tween.Easing.Quadratic.Out, onComplete: function() {self.zoomTween = null;}}).start();
+        this.zoomPosTween = new game.Tween(this.cameraWorldPosition, {x: this.targetCameraWorldPosition.x, y: this.targetCameraWorldPosition.y}, 250, {easing: game.Tween.Easing.Quadratic.Out, onUpdate: function() {self.cameraWorldPosition = this;}, onComplete: function() {self.zoomPosTween = null;}}).start();
+
+        this.targetZoom = zoom;
     },
 
     onkeydown: function(keycode) {
@@ -217,6 +236,39 @@ bamboo.Editor = game.Class.extend({
         return this.mode.onkeyup(keycode, this.prevMousePos.clone());
     }
 });
+
+Object.defineProperty(bamboo.Editor.prototype, 'zoom', {
+    get: function() {
+        return this._zoom;
+    },
+    set: function(value) {
+        this._zoom = value;
+        this.world.displayObject.scale.x = value;
+        this.world.displayObject.scale.y = value;
+        this.worldTargetPos.x = game.system.width/2 - value*this.world.screenSize.width/2;
+        this.worldTargetPos.y = game.system.height/2 - value*this.world.screenSize.height/2;
+    }
+});
+
+Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
+    get: function() {
+        return this.world.cameraPosition.clone().multiply(-this.zoom).add(this.world.position);
+    },
+    set: function(value) {
+        var tgtCamPos = value.subtract(this.worldTargetPos);
+
+        var w = this.world;
+        tgtCamPos.multiply(-1/this.zoom);
+        w.setCameraPos(tgtCamPos);
+        w.position.x = this.worldTargetPos.x + this.zoom*(w.cameraPosition.x - tgtCamPos.x);
+        w.position.y = this.worldTargetPos.y + this.zoom*(w.cameraPosition.y - tgtCamPos.y);
+
+        this.boundaryLayer.updateBoundary();
+        for(var i=0; i<this.layers.length; i++)
+            this.layers[i].update(0);
+    }
+});
+
 
 bamboo.Editor.createFromJSON = function(levelJSON) {
     var jsonWorld = JSON.parse(levelJSON);

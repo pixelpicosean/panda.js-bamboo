@@ -22,8 +22,8 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
 
         this.mask = new game.Graphics();
         this.mask.beginFill(0xffffff);
-        var y = this.editor.worldTargetPos.y;
-        var x = this.editor.worldTargetPos.x;
+        var x = game.system.width*0.5 - this.world.screenSize.width*0.5;
+        var y = game.system.height*0.5 - this.world.screenSize.height*0.5;
         var w = game.system.width - x - this.world.screenSize.width;
         var h = game.system.height - y - this.world.screenSize.height;
 
@@ -37,7 +37,7 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
         this.editor.displayObject.removeChild(this.editor.overlay);
         this.editor.displayObject.addChild(this.world.displayObject);
         this.editor.displayObject.addChild(this.mask);
-        this.world.position = this.editor.worldTargetPos.clone();
+        this.world.position = new game.Vector(x,y);
         this.world.update(0);
 
         /////////
