@@ -160,7 +160,7 @@ bamboo.Editor = game.Class.extend({
 
         if(this.cameraOffset) {
             this.targetCameraWorldPosition = p.clone().subtract(this.cameraOffset);
-            this.cameraWorldPosition = this.targetCameraWorldPosition;
+            this.cameraWorldPosition = this.targetCameraWorldPosition.clone();
         }
         this.mode.onmousemove(p.clone());
     },
@@ -179,6 +179,9 @@ bamboo.Editor = game.Class.extend({
             this.cameraOffset = null;
     },
     onmousewheel: function(delta) {
+        if(this.mode instanceof bamboo.editor.GameMode)
+            return;// in game, do nothing
+
         delta = Math.max(-1, Math.min(1, delta));
 
         var zoom = this.targetZoom * Math.pow(1.5, delta);
