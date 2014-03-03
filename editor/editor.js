@@ -133,6 +133,34 @@ bamboo.Editor = game.Class.extend({
         }
         return null;
     },
+    getNextNodeAt: function(p, layer, node) {
+        var farEnough = false;
+        for(var i=this.nodes.length-1; i>=0; i--) {
+            if(!farEnough) {
+                if(this.nodes[i] === node)
+                    farEnough = true;
+                continue;
+            }
+
+            var n = this.nodes[i];
+            var l = n.node.toLocalSpace(p);
+            var r = n._cachedRect;
+            if(l.x >= r.x && l.x <= r.x+r.width &&
+               l.y >= r.y && l.y <= r.y+r.height) {
+                if(!layer || n.layer === layer)
+                    return n.node;
+            }
+        }
+        return null;
+    },
+    isNodeAt: function(p, n) {
+        var l = n.node.toLocalSpace(p);
+        var r = n._cachedRect;
+        if(l.x >= r.x && l.x <= r.x+r.width &&
+           l.y >= r.y && l.y <= r.y+r.height)
+            return true;
+        return false;
+    },
 
     update: function(dt) {
         this.mode.update(dt);

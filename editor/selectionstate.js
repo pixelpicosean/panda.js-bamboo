@@ -19,7 +19,9 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
 
     init: function(mode, p) {
         this.super(mode);
-        this.hoverNode(this.mode.editor.getNodeAt(p, true));
+
+        // hover node at p
+        this.onmousemove(p);
 
         if(this.mode.editor.selectedNode)
             this.mode.editor.statusbar.setStatus('Select node, ESC clear selection, G(rab), R(otate), S(cale), D(uplicate), DEL(ete), A(dd new node), TAB to edit, ENTER to enter game');
@@ -58,7 +60,16 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     },
 
     onmousemove: function(p) {
-        this.hoverNode(this.mode.editor.getNodeAt(p, this.mode.editor.activeLayer));
+        var node = null;
+        // if we have selected node, and its under the cursor, try to find next node
+        if(this.mode.editor.selectedNode && this.mode.editor.isNodeAt(p, this.mode.editor.selectedNode._editorNode))
+            node = this.mode.editor.getNextNodeAt(p, this.mode.editor.activeLayer, this.mode.editor.selectedNode._editorNode);
+
+        // otherwise just pick the one under the cursor
+        if(!node)
+            node = this.mode.editor.getNodeAt(p, this.mode.editor.activeLayer);
+
+        this.hoverNode(node);
     },
 
     onkeydown: function(keycode, p) {
