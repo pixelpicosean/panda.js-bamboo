@@ -9,10 +9,12 @@ game.module(
 
 bamboo.nodes.TriggerCircle.editor = bamboo.nodes.Trigger.editor.extend({
     circle: null,
+    color: 0xffaa00,
+
     init: function(node) {
         this.super(node);
         this.circle = new game.Graphics();
-        this.circle.beginFill(0xffaa00, 0.8);
+        this.circle.beginFill(this.color, 0.8);
         this.circle.drawCircle(0,0,1);
         this.circle.scale = this.node.scale;
         this.displayObject.addChild(this.circle);
