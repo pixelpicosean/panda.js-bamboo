@@ -73,7 +73,7 @@ bamboo.EditorScene = game.Scene.extend({
         this.backupFile.file(function(f) {
             var reader = new FileReader();
             reader.onloadend = function(e) {
-                var json = bamboo.levelJSON;
+                var json = '{"world":"World", "images":{}, "nodes": [{"class":"Layer", "properties":{"name":"main","position":{"x":0,"y":0},"rotation":0,"scale":{"x":1, "y":1},"connectedTo":null, "speedFactor":1 }}]}';
                 if(this.result !== '' && confirm('Load from backup?'))
                     json = this.result;
 
@@ -234,7 +234,7 @@ bamboo.EditorScene = game.Scene.extend({
 });
 
 
-bamboo.start = function(levelJSON) {
+bamboo.start = function() {
     game.Debug.position.desktop = game.Debug.POSITION.TOPRIGHT;
     game.System.resize = false;
     game.System.center = false;
@@ -248,8 +248,6 @@ bamboo.start = function(levelJSON) {
     document.getElementsByTagName('head')[0].appendChild(style);
 
     this.ui = new bamboo.Ui();
-
-    bamboo.levelJSON = levelJSON;
 
     // TODO: read from json?
     game.System.orientation = game.System.LANDSCAPE;
