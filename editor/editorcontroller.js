@@ -62,6 +62,43 @@ bamboo.EditorController = game.Class.extend({
         this.editor.propertyPanel.activeLayerChanged(layer);
     },
 
+    moveNodeUp: function(node) {
+        var idx = node.displayObject.parent.children.indexOf(node.displayObject);
+        if(idx === 0)
+            return;// already behind everything
+
+        node.displayObject.parent.addChildAt(node.displayObject, idx-1);
+        this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
+        this.editor.propertyPanel.nodeSelected(this.editor.selectedNode);
+    },
+    moveNodeDown: function(node) {
+        var idx = node.displayObject.parent.children.indexOf(node.displayObject);
+        if(idx === node.displayObject.parent.children.length-1)
+            return;// already in front of everything
+
+        node.displayObject.parent.addChildAt(node.displayObject, idx+1);
+        this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
+        this.editor.propertyPanel.nodeSelected(this.editor.selectedNode);
+    },
+    moveNodeTopMost: function(node) {
+        var idx = node.displayObject.parent.children.indexOf(node.displayObject);
+        if(idx === node.displayObject.parent.children.length-1)
+            return;// already in front of everything
+
+        node.displayObject.parent.addChildAt(node.displayObject, node.displayObject.parent.children.length-1);
+        this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
+        this.editor.propertyPanel.nodeSelected(this.editor.selectedNode);
+    },
+    moveNodeBottomMost: function(node) {
+        var idx = node.displayObject.parent.children.indexOf(node.displayObject);
+        if(idx === 0)
+            return;// already behind everything
+
+        node.displayObject.parent.addChildAt(node.displayObject, 0);
+        this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
+        this.editor.propertyPanel.nodeSelected(this.editor.selectedNode);
+    },
+
     moveLayerUp: function(layer) {
         var idx = layer.displayObject.parent.children.indexOf(layer.displayObject);
         if(idx === 0)

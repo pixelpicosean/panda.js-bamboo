@@ -24,9 +24,9 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         this.onmousemove(p);
 
         if(this.mode.editor.selectedNode)
-            this.mode.editor.statusbar.setStatus('Select node, ESC clear selection, G(rab), R(otate), S(cale), D(uplicate), DEL(ete), A(dd new node), TAB to edit, ENTER to enter game');
+            this.mode.editor.statusbar.setStatus('Select node, ESC clear selection, G(rab), R(otate), S(cale), D(uplicate), DEL(ete), A(dd new node), T(toggle properties), Z(toggle boundaries), TAB to edit, ENTER to enter game');
         else
-            this.mode.editor.statusbar.setStatus('Select node by clicking, ENTER to enter game');
+            this.mode.editor.statusbar.setStatus('Select node by clicking, A(add new node), T(toggle properties), Z(toggle boundaries), ENTER to enter game');
 
         this.previousDropHandler = game.system.canvas.ondrop;
         game.system.canvas.ondrop = this.onFileDrop.bind(this);
@@ -76,6 +76,10 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         switch(keycode) {
             case 9:// TAB
             case 13:// ENTER
+            case 33:// Page Up
+            case 34:// Page Down
+            case 35:// End
+            case 36:// Home
             case 46:// DEL
             case 65:// A
             case 68:// D
@@ -97,6 +101,26 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             case 13:// ENTER - enter game
                 this.hoverNode(null);
                 this.mode.editor.controller.changeMode(new bamboo.editor.GameMode(this.mode.editor));
+                return true;
+            case 33:// Page Up - sink node
+                if(this.mode.editor.selectedNode) {
+                    this.mode.editor.controller.moveNodeUp(this.mode.editor.selectedNode);
+                }
+                return true;
+            case 34:// Page Down - lift node
+                if(this.mode.editor.selectedNode) {
+                    this.mode.editor.controller.moveNodeDown(this.mode.editor.selectedNode);
+                }
+                return true;
+            case 35:// End - lift to top most
+                if(this.mode.editor.selectedNode) {
+                    this.mode.editor.controller.moveNodeTopMost(this.mode.editor.selectedNode);
+                }
+                return true;
+            case 36:// Home - sink to bottom most
+                if(this.mode.editor.selectedNode) {
+                    this.mode.editor.controller.moveNodeBottomMost(this.mode.editor.selectedNode);
+                }
                 return true;
             case 46:// DEL - delete
                 if(this.mode.editor.selectedNode) {

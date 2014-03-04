@@ -46,14 +46,15 @@ bamboo.World = bamboo.Node.extend({
             if(this.nodes[i].connectedTo === node)
                 nodes.push(this.nodes[i]);
         }
+        nodes.sort(function(a,b) {
+            return a.displayObject.parent.children.indexOf(a.displayObject) - b.displayObject.parent.children.indexOf(b.displayObject);
+        });
+
         return nodes;
     },
     addJSONConnections: function(node, list) {
         // TODO: optimize this, maybe refactor the whole connectedTo thingy
         var nodes = this.getConnectedNodes(node);
-        nodes.sort(function(a,b) {
-            return a.displayObject.parent.children.indexOf(a.displayObject) - b.displayObject.parent.children.indexOf(b.displayObject);
-        });
         for(var i=0; i<nodes.length; i++) {
             list.push(nodes[i].toJSON());
             this.addJSONConnections(nodes[i], list);
