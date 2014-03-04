@@ -24,6 +24,11 @@ bamboo.Node.editor = game.Class.extend({
     properties: {selectable: true, linkable: false},
     layer: null,
 
+    movingOriginOffset: null,
+    startOrigin: null,
+    startMatrix: null,
+    startPos: null,
+
     init: function(node) {
         this.node = node;
         this.node._editorNode = this;
@@ -140,10 +145,83 @@ bamboo.Node.editor = game.Class.extend({
         this.propertyChangeListeners.splice(idx, 1);
     },
 
-    onkeydown: function(keycode,p) {},
-    onkeyup: function(keycode,p) {},
-    onclick: function(p) {},
-    onmousemove: function(p) {}
+    onkeydown: function(keycode,p) {
+        switch(keycode) {
+            case 27:// ESC
+            case 79:// O
+                return true;
+        }
+        return false;
+    },
+    onkeyup: function(keycode,p) {
+        switch(keycode) {
+            case 27:// ESC - exit origin set
+                if(this.movingOriginOffset) {
+                    this.setProperty('position', this.node.connectedTo.toLocalSpace(this.startPos));
+                    this.setOrigin(this.startOrigin);
+                    this.startOrigin = null;
+                    this.startPos = null;
+                    this.startMatrix = null;
+                    this.movingOriginOffset = null;
+                    return true;
+                }
+                return false;
+            case 79:// O - set origin
+                this.startOrigin = this.getOrigin();
+                this.startPos = this.node.getWorldPosition();
+                this.startMatrix = new PIXI.Matrix();
+                this.startMatrix.fromArray(this.node.displayObject.worldTransform.toArray());
+                this.movingOriginOffset = p;
+                return true;
+        }
+        return false;
+    },
+    onclick: function(p) {
+        if(this.movingOriginOffset) {
+            p.subtract(this.movingOriginOffset);// <- origin total delta
+
+            var wt = this.startMatrix;
+            var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
+            var d = new game.Vector((wt.d * p.x - wt.b * p.y) * id,
+                                    (wt.a * p.y - wt.c * p.x) * id);
+            this.setOrigin(d.add(this.startOrigin));
+            this.setProperty('position', this.node.connectedTo.toLocalSpace(p.add(this.startPos)));
+
+            this.startOrigin = null;
+            this.startPos = null;
+            this.startMatrix = null;
+            this.movingOriginOffset = null;
+            return true;
+        }
+        return false;
+    },
+    onmousemove: function(p) {
+        if(this.movingOriginOffset) {
+            p.subtract(this.movingOriginOffset);// <- origin total delta in world space
+
+            var wt = this.startMatrix;
+            var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
+            var d = new game.Vector((wt.d * p.x - wt.b * p.y) * id,
+                                    (wt.a * p.y - wt.c * p.x) * id);
+            this.setOrigin(d.add(this.startOrigin));
+            this.setProperty('position', this.node.connectedTo.toLocalSpace(p.add(this.startPos)));
+
+            return true;
+        }
+        return false;
+    },
+    toLocalSpace: function(v) {
+        var wt = this.displayObject.worldTransform;
+        var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
+
+        return new game.Vector((wt.d * (v.x - wt.tx) - wt.b * (v.y - wt.ty)) * id,
+                               (wt.a * (v.y - wt.ty) - wt.c * (v.x - wt.tx)) * id);
+    },
+
+    toWorldSpace: function(v) {
+        var wt = this.displayObject.worldTransform;
+        return new game.Vector(wt.a * v.x + wt.b * v.y + wt.tx, wt.c * v.x + wt.d * v.y + wt.ty);
+    },
 });
 
 });

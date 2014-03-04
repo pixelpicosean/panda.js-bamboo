@@ -257,6 +257,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
     },
 
     onmousemove: function(pos) {
+        pos = this.node.toLocalSpace(pos);
         this.lastMousePos = pos;
         if(this.moving === -1) {
             var idx = this.getClosestPointIndex(pos);
@@ -278,6 +279,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         this.node.calculateLength();
     },
     onclick: function(pos) {
+        pos = this.node.toLocalSpace(pos);
         this.lastMousePos = pos;
         if(this.moving === -1) {
             var idx = this.getClosestPointIndex(pos);

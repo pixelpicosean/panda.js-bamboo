@@ -39,6 +39,7 @@ bamboo.EditorController = game.Class.extend({
     changeMode: function(newMode) {
         this.editor.mode.exit();
         this.editor.mode = newMode;
+        this.editor.mode.enter();
     },
 
     selectNode: function(node) {
@@ -124,9 +125,11 @@ bamboo.EditorController = game.Class.extend({
         if(enabled) {
             node._editorNode.selectionRect.visible = false;
             node._editorNode.editableRect.visible = true;
+            node._editorNode.selectionAxis.visible = true;
         } else {
             node._editorNode.selectionRect.visible = true;
             node._editorNode.editableRect.visible = false;
+            node._editorNode.selectionAxis.visible = false;
         }
     }
 });

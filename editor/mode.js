@@ -10,6 +10,8 @@ bamboo.editor.Mode = game.Class.extend({
         this.editor = editor;
     },
 
+    enter: function() {
+    },
     exit: function() {
     },
 

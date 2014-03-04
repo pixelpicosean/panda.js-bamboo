@@ -25,6 +25,15 @@ Object.defineProperty(bamboo.nodes.Image.prototype, 'image', {
     }
 });
 
+Object.defineProperty(bamboo.nodes.Image.prototype, 'anchor', {
+    get: function() {
+        return this.displayObject.anchor;
+    },
+    set: function(value) {
+        this.displayObject.anchor = value;
+    }
+});
+
 Object.defineProperty(bamboo.nodes.Image.prototype, 'tint', {
     get: function() {
         return this.displayObject.tint;
@@ -47,7 +56,8 @@ Object.defineProperty(bamboo.nodes.Image.prototype, 'opacity', {
 bamboo.nodes.Image.desc = {
     image: new bamboo.Property(true, 'Image', 'Filename of the image', bamboo.Property.TYPE.IMAGE),
     tint: new bamboo.Property(true, 'Tint', 'Color tint value', bamboo.Property.TYPE.COLOR),
-    opacity: new bamboo.Property(true, 'Opacity', 'Opacity of the image', bamboo.Property.TYPE.NUMBER, {min:0,max:1})
+    opacity: new bamboo.Property(true, 'Opacity', 'Opacity of the image', bamboo.Property.TYPE.NUMBER, {min:0,max:1}),
+    anchor: new bamboo.Property(false, '', '', bamboo.Property.TYPE.VECTOR)
 };
 
 });
