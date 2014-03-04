@@ -254,3 +254,10 @@ select {
 .window .content div.center {
     text-align: center;
 }
+.buttonContainer {
+	height: 40px;
+}
+.buttonContainer .button {
+	float: left;
+	margin-right: 6px;
+}

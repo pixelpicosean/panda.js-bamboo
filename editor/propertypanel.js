@@ -21,32 +21,40 @@ bamboo.PropertyPanel = game.Class.extend({
         this.window.show();
 
         // create layer list
-        var newLayerButton = document.createElement('div');
-        newLayerButton.className = 'button';
-        newLayerButton.innerHTML = 'New Layer';
-        newLayerButton.addEventListener('click', this.newLayerButtonClicked.bind(this), false);
-        this.window.titleDiv.appendChild(newLayerButton);
         this.layerList = document.createElement('select');
+        this.layerList.size = 6;
         this.layerList.addEventListener('change', this.layerSelectionChanged.bind(this), false);
         this.window.titleDiv.appendChild(this.layerList);
 
+        var buttonsDiv = document.createElement('div');
+        buttonsDiv.className = 'buttonContainer';
+
         var layerButton = document.createElement('div');
+
+        layerButton.className = 'button';
+        layerButton.innerHTML = '+';
+        layerButton.addEventListener('click', this.newLayerClicked.bind(this), false);
+        buttonsDiv.appendChild(layerButton);
+
+        layerButton = document.createElement('div');
         layerButton.className = 'button';
         layerButton.innerHTML = '⬆';
         layerButton.addEventListener('click', this.moveLayerUpClicked.bind(this), false);
-        this.window.titleDiv.appendChild(layerButton);
+        buttonsDiv.appendChild(layerButton);
 
         layerButton = document.createElement('div');
         layerButton.className = 'button';
         layerButton.innerHTML = '⬇';
         layerButton.addEventListener('click', this.moveLayerDownClicked.bind(this), false);
-        this.window.titleDiv.appendChild(layerButton);
+        buttonsDiv.appendChild(layerButton);
 
         layerButton = document.createElement('div');
         layerButton.className = 'button';
         layerButton.innerHTML = '×';
         layerButton.addEventListener('click', this.deleteLayerClicked.bind(this), false);
-        this.window.titleDiv.appendChild(layerButton);
+        buttonsDiv.appendChild(layerButton);
+
+        this.window.titleDiv.appendChild(buttonsDiv);
 
         this.layerProperties = document.createElement('div');
         this.window.titleDiv.appendChild(this.layerProperties);
@@ -55,7 +63,6 @@ bamboo.PropertyPanel = game.Class.extend({
 
     updateLayerList: function() {
         this.layerList.innerHTML = '';
-        this.layerList.size = Math.max(2, this.editor.layers.length);
         for(var i=0; i<this.editor.layers.length; i++) {
             var opt = document.createElement('option');
             opt.value = this.editor.layers[i].name;
@@ -121,7 +128,7 @@ bamboo.PropertyPanel = game.Class.extend({
         this.editor.controller.setActiveLayer(this.editor.world.findNode(this.layerList.value));
         // clear selection!
     },
-    newLayerButtonClicked: function() {
+    newLayerClicked: function() {
         this.editor.controller.createNode('Layer', {name:'Layer', connectedTo:null});
     },
     moveLayerUpClicked: function() {
