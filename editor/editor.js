@@ -162,6 +162,33 @@ bamboo.Editor = game.Class.extend({
         return false;
     },
 
+    buildNodeDropdown: function(window, key) {
+        var self = this;
+        var addNodeInputOption = function(window, key, node, prefix) {
+            var nodes = self.world.getConnectedNodes(node);
+            for(var i=0; i<nodes.length; i++) {
+                var p = prefix;
+                var np = prefix;
+                if(i === nodes.length-1) {
+                    p += '┗ ';
+                    np += '  ';
+                } else {
+                    p +=  '┣ ';
+                    np += '┃ ';
+                }
+                window.addInputSelectOption(key, nodes[i].name, p+'['+nodes[i].getClassName()+'] - '+nodes[i].name);
+                addNodeInputOption(window, key, nodes[i], np);
+            }
+        };
+
+        var nodes = this.world.getConnectedNodes(this.world);
+        for(var i=0; i<nodes.length; i++) {
+            window.addInputSelectOption(key, nodes[i].name, '['+nodes[i].getClassName()+'] - '+nodes[i].name);
+            addNodeInputOption(window, key, nodes[i], ' ');
+        }
+    },
+
+
     update: function(dt) {
         this.mode.update(dt);
     },
