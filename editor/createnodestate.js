@@ -22,7 +22,7 @@ bamboo.editor.CreateNodeState = bamboo.editor.State.extend({
 
         this.window.addInputText('name', this.mode.editor.getUniqueName(bamboo.availableNodeTypes[0]), 'Name', this.nodeNameChanged.bind(this));
         this.window.addInputSelect('connectedTo', 'Connected To');
-        this.mode.editor.buildNodeDropdown(this.window, 'connectedTo');
+        this.mode.editor.buildNodeDropdown(this.window, 'connectedTo', this.mode.editor.world);
         this.window.setInputSelectValue('connectedTo', this.mode.editor.activeLayer.name);
 
         if(this.mode.editor.selectedNode) {

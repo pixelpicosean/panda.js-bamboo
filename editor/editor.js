@@ -162,7 +162,7 @@ bamboo.Editor = game.Class.extend({
         return false;
     },
 
-    buildNodeDropdown: function(window, key) {
+    buildNodeDropdown: function(window, key, node) {
         var self = this;
         var addNodeInputOption = function(window, key, node, prefix) {
             var nodes = self.world.getConnectedNodes(node);
@@ -181,7 +181,7 @@ bamboo.Editor = game.Class.extend({
             }
         };
 
-        var nodes = this.world.getConnectedNodes(this.world);
+        var nodes = this.world.getConnectedNodes(node);
         for(var i=0; i<nodes.length; i++) {
             window.addInputSelectOption(key, nodes[i].name, '['+nodes[i].getClassName()+'] - '+nodes[i].name);
             addNodeInputOption(window, key, nodes[i], ' ');
