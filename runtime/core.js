@@ -84,10 +84,10 @@ bamboo.Scene = game.Scene.extend({
     }
 });
 
-bamboo.start = function() {
+bamboo.start = function(scene) {
 
     game.System.orientation = game.System.LANDSCAPE;
-    game.start(bamboo.Scene);
+    game.start(scene || bamboo.Scene);
 };
 
 });
