@@ -16,7 +16,7 @@ bamboo.nodes.Layer = bamboo.Node.extend({
     },
 
     update: function() {
-         this.position = this.world.cameraPosition.clone().multiply(-this.speedFactor);
+         this.position = this.world.cameraPosition.multiplyc(-this.speedFactor);
     },
 });
 

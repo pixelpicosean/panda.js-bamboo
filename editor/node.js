@@ -182,7 +182,7 @@ bamboo.Node.editor = game.Class.extend({
 
             var wt = this.startMatrix;
             var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
-            var d = new game.Vector((wt.d * p.x - wt.b * p.y) * id,
+            var d = new Vec2((wt.d * p.x - wt.b * p.y) * id,
                                     (wt.a * p.y - wt.c * p.x) * id);
             this.setOrigin(d.add(this.startOrigin));
             this.setProperty('position', this.node.connectedTo.toLocalSpace(p.add(this.startPos)));
@@ -201,7 +201,7 @@ bamboo.Node.editor = game.Class.extend({
 
             var wt = this.startMatrix;
             var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
-            var d = new game.Vector((wt.d * p.x - wt.b * p.y) * id,
+            var d = new Vec2((wt.d * p.x - wt.b * p.y) * id,
                                     (wt.a * p.y - wt.c * p.x) * id);
             this.setOrigin(d.add(this.startOrigin));
             this.setProperty('position', this.node.connectedTo.toLocalSpace(p.add(this.startPos)));
@@ -209,19 +209,7 @@ bamboo.Node.editor = game.Class.extend({
             return true;
         }
         return false;
-    },
-    toLocalSpace: function(v) {
-        var wt = this.displayObject.worldTransform;
-        var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
-
-        return new game.Vector((wt.d * (v.x - wt.tx) - wt.b * (v.y - wt.ty)) * id,
-                               (wt.a * (v.y - wt.ty) - wt.c * (v.x - wt.tx)) * id);
-    },
-
-    toWorldSpace: function(v) {
-        var wt = this.displayObject.worldTransform;
-        return new game.Vector(wt.a * v.x + wt.b * v.y + wt.tx, wt.c * v.x + wt.d * v.y + wt.ty);
-    },
+    }
 });
 
 });

@@ -25,7 +25,7 @@ bamboo.nodes.PathFollower.editor = bamboo.Node.editor.extend({
 
     propertyChanged: function(property, value) {
         if(property === 'position' && (value.x !== 0 || value.y !== 0))
-            this.setProperty('position', new game.Vector());
+            this.setProperty('position', new Vec2());
     }
 });
 

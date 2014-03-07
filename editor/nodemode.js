@@ -19,7 +19,7 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
         this.state = new bamboo.editor.SelectionState(this, p);
 
         this.timeDisplay = new PIXI.BitmapText('', {font:'28px Buu'});
-        this.timeDisplay.position = new game.Vector(20,20);
+        this.timeDisplay.position = new Vec2(20,20);
         this.editor.overlay.addChild(this.timeDisplay);
         this.timeDisplay.visible = false;
     },

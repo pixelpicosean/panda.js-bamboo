@@ -18,7 +18,7 @@ bamboo.nodes.Path = bamboo.Node.extend({
         this.displayObject = new game.Container();
         this.super(world, properties);
         if(!this.points || this.points.length === 0)
-            this.points = [new game.Vector()];
+            this.points = [new Vec2()];
         this.calculateLength();
     },
 
@@ -33,14 +33,14 @@ bamboo.nodes.Path = bamboo.Node.extend({
     },
 
     getClosestPoint: function(p) {
-        var closestDistance = null;
+        var closestDistanceSq = Number.MAX_VALUE;
         var closestPoint = null;
         for(var i=1; i<this.points.length; i++) {
             var v = this.getClosestPointOnLineSegment(this.points[i-1], this.points[i], p);
-            var dist = v.distance(p);
-            if(!closestDistance || dist < closestDistance) {
+            var distSq = v.distanceSq(p);
+            if(distSq < closestDistanceSq) {
                 closestPoint = v;
-                closestDistance = dist;
+                closestDistanceSq = distSq;
             }
         }
         return closestPoint;
@@ -133,11 +133,11 @@ bamboo.nodes.Path = bamboo.Node.extend({
             var delta;
             if(i === this.points.length) {
                 // loop
-                delta = this.points[0].clone().subtract(this.points[i-1]).normalize();
+                delta = this.points[0].subtractc(this.points[i-1]).normalize();
             } else {
-                delta = this.points[i].clone().subtract(this.points[i-1]).normalize();
+                delta = this.points[i].subtractc(this.points[i-1]).normalize();
             }
-            return this.points[i-1].clone().add(delta.multiply(l-this.segmentDistances[i-1]));
+            return delta.multiply(l-this.segmentDistances[i-1]).add(this.points[i-1]);
 
 
         } else {
@@ -177,10 +177,10 @@ bamboo.nodes.Path = bamboo.Node.extend({
     },
 
     getClosestPointOnLineSegment: function(a, b, v) {
-        var delta = b.clone().subtract(a);
-        var p = v.clone().subtract(a);
+        var delta = b.subtractc(a);
+        var p = v.subtractc(a);
 
-        var t = delta.dot(p) / delta.dot();
+        var t = delta.dot(p) / delta.lengthSq();
         if(t < 0)
             return a;
         if(t > 1)
@@ -194,7 +194,7 @@ bamboo.nodes.Path = bamboo.Node.extend({
         var c2 = ((-3.0 * t + 4.0) * t + 1.0) * t * 0.5;
         var c3 = ((t - 1.0) * t * t) * 0.5;
 
-        return new game.Vector(
+        return new Vec2(
             p0.x*c0 + p1.x*c1 + p2.x*c2 + p3.x*c3,
             p0.y*c0 + p1.y*c1 + p2.y*c2 + p3.y*c3);
     }

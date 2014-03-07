@@ -72,17 +72,17 @@ bamboo.Node = game.Class.extend({
         var wt = this.displayObject.worldTransform;
         var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
 
-        return new game.Vector((wt.d * (v.x - wt.tx) - wt.b * (v.y - wt.ty)) * id,
+        return new Vec2((wt.d * (v.x - wt.tx) - wt.b * (v.y - wt.ty)) * id,
                                (wt.a * (v.y - wt.ty) - wt.c * (v.x - wt.tx)) * id);
     },
 
     toWorldSpace: function(v) {
         var wt = this.displayObject.worldTransform;
-        return new game.Vector(wt.a * v.x + wt.b * v.y + wt.tx, wt.c * v.x + wt.d * v.y + wt.ty);
+        return new Vec2(wt.a * v.x + wt.b * v.y + wt.tx, wt.c * v.x + wt.d * v.y + wt.ty);
     },
 
     getWorldPosition: function() {
-        return new game.Vector(this.displayObject.worldTransform.tx, this.displayObject.worldTransform.ty);
+        return new Vec2(this.displayObject.worldTransform.tx, this.displayObject.worldTransform.ty);
     },
 });
 

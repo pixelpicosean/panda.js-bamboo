@@ -136,7 +136,7 @@ bamboo.EditorScene = game.Scene.extend({
     },
     onmousemove: function(e) {
         if(this.editor)
-            this.editor.onmousemove(new game.Vector(e.clientX, e.clientY));
+            this.editor.onmousemove(new Vec2(e.clientX, e.clientY));
     },
     onmouseup: function(e) {
         if(this.editor)

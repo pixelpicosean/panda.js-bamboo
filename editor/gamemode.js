@@ -37,7 +37,7 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
         this.editor.displayObject.removeChild(this.editor.overlay);
         this.editor.displayObject.addChild(this.world.displayObject);
         this.editor.displayObject.addChild(this.mask);
-        this.world.position = new game.Vector(x,y);
+        this.world.position = new Vec2(x,y);
         this.world.update(0);
 
         /////////

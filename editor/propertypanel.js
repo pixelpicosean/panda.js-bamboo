@@ -267,9 +267,9 @@ bamboo.PropertyPanel = game.Class.extend({
         var i = parts[parts.length-1];
         var keyName = key.slice(0, key.length - 1 - i.length);
         if(i === '0')
-            this.editor.selectedNode._editorNode.setProperty(keyName, new game.Vector(value, this.editor.selectedNode[keyName].y));
+            this.editor.selectedNode._editorNode.setProperty(keyName, new Vec2(value, this.editor.selectedNode[keyName].y));
         else if(i === '1')
-            this.editor.selectedNode._editorNode.setProperty(keyName, new game.Vector(this.editor.selectedNode[keyName].x, value));
+            this.editor.selectedNode._editorNode.setProperty(keyName, new Vec2(this.editor.selectedNode[keyName].x, value));
     },
 
     nodePropertyChanged: function(key) {

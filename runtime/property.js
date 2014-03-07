@@ -1,6 +1,9 @@
 game.module(
     'bamboo.runtime.property'
 )
+.require(
+    'bamboo.runtime.vec2'
+)
 .body(function() {
     
 bamboo.Property = game.Class.extend({
@@ -47,8 +50,8 @@ bamboo.Property.parse = function(world, obj, name, desc) {
             return obj[name];
 
         case bamboo.Property.TYPE.VECTOR:
-            if(obj[name] instanceof Array) return new game.Vector(obj[name][0], obj[name][1]);
-            return new game.Vector(obj[name].x, obj[name].y);
+            if(obj[name] instanceof Array) return new Vec2(obj[name][0], obj[name][1]);
+            return new Vec2(obj[name].x, obj[name].y);
 
         case bamboo.Property.TYPE.NODE:
             if(obj[name] === null) return world;

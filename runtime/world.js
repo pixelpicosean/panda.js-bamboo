@@ -29,7 +29,7 @@ bamboo.World = bamboo.Node.extend({
     init: function() {
         this.displayObject = new game.Container();
         this.super(null,null);
-        this.cameraPosition = new game.Vector();
+        this.cameraPosition = new Vec2();
     },
 
     findNode: function(name) {

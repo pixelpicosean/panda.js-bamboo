@@ -41,10 +41,10 @@ bamboo.Editor = game.Class.extend({
     init: function(world) {
         world.inEditor = true;
         this.controller = new bamboo.EditorController(this);
-        this.prevMousePos = new game.Vector();
+        this.prevMousePos = new Vec2();
         this.displayObject = new game.Container();
         this.world = world;
-        this.worldTargetPos = new game.Vector(game.system.width/2 - this.world.screenSize.width/2,
+        this.worldTargetPos = new Vec2(game.system.width/2 - this.world.screenSize.width/2,
                                               game.system.height/2 - this.world.screenSize.height/2);
         this.world.position = this.worldTargetPos.clone();
         this.displayObject.addChild(this.world.displayObject);
@@ -58,7 +58,7 @@ bamboo.Editor = game.Class.extend({
         this.statusbar = new bamboo.StatusBar();
 
         // set initial mode
-        this.mode = new bamboo.editor.NodeMode(this, new game.Vector());
+        this.mode = new bamboo.editor.NodeMode(this, new Vec2());
     },
 
     exit: function() {
@@ -205,7 +205,7 @@ bamboo.Editor = game.Class.extend({
             return;// in game, do nothing
 
         if(button === 1) {
-            this.cameraOffset = this.prevMousePos.clone().subtract(this.cameraWorldPosition);
+            this.cameraOffset = this.prevMousePos.subtractc(this.cameraWorldPosition);
         }
     },
     onmousemove: function(p) {
@@ -214,7 +214,7 @@ bamboo.Editor = game.Class.extend({
             return;// in game, do nothing
 
         if(this.cameraOffset) {
-            this.targetCameraWorldPosition = p.clone().subtract(this.cameraOffset);
+            this.targetCameraWorldPosition = p.subtractc(this.cameraOffset);
             this.cameraWorldPosition = this.targetCameraWorldPosition.clone();
         }
         this.mode.onmousemove(p.clone());
@@ -243,8 +243,8 @@ bamboo.Editor = game.Class.extend({
         if(zoom < 0.05 || zoom > 6)
             return;
 
-        var offset = this.prevMousePos.clone().subtract(this.targetCameraWorldPosition);
-        this.targetCameraWorldPosition = this.prevMousePos.clone().subtract(offset.multiply(Math.pow(1.5, delta)));
+        var offset = this.prevMousePos.subtractc(this.targetCameraWorldPosition);
+        this.targetCameraWorldPosition = this.prevMousePos.subtractc(offset.multiply(Math.pow(1.5, delta)));
 
         if(this.zoomTween) this.zoomTween.stop();
         if(this.zoomPosTween) this.zoomPosTween.stop();
@@ -310,7 +310,7 @@ Object.defineProperty(bamboo.Editor.prototype, 'zoom', {
 
 Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
     get: function() {
-        return this.world.cameraPosition.clone().multiply(-this.zoom).add(this.world.position);
+        return this.world.cameraPosition.multiplyc(-this.zoom).add(this.world.position);
     },
     set: function(value) {
         var tgtCamPos = value.subtract(this.worldTargetPos);

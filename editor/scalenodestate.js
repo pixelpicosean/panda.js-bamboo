@@ -37,11 +37,11 @@ bamboo.editor.ScaleNodeState = bamboo.editor.State.extend({
             factor = Math.round(factor*10)/10;
 
         if(this.lockToAxis === 'X')
-            this.node._editorNode.setProperty('scale', new game.Vector(this.startValue.x*factor, this.startValue.y));
+            this.node._editorNode.setProperty('scale', new Vec2(this.startValue.x*factor, this.startValue.y));
         else if(this.lockToAxis === 'Y')
-            this.node._editorNode.setProperty('scale', new game.Vector(this.startValue.x, this.startValue.y*factor));
+            this.node._editorNode.setProperty('scale', new Vec2(this.startValue.x, this.startValue.y*factor));
         else
-            this.node._editorNode.setProperty('scale', this.startValue.clone().multiply(factor));
+            this.node._editorNode.setProperty('scale', this.startValue.multiplyc(factor));
     },
 
     onkeydown: function(keycode) {

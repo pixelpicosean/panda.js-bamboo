@@ -18,7 +18,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
     lastMousePos: null,
 
     init: function(obj) {
-        this.lastMousePos = new game.Vector();
+        this.lastMousePos = new Vec2();
         this.super(obj);
         this.lineNode = new game.Graphics();
         this.displayObject.addChild(this.lineNode);
