@@ -27,6 +27,10 @@ bamboo.EditorScene = game.Scene.extend({
         script.type = 'text/javascript';
         script.src = 'src/bamboo/editor/FileSaver.js';
         head.appendChild(script);
+        script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'src/bamboo/editor/jszip.min.js';
+        head.appendChild(script);
     },
 
     loadEditor: function(json) {
@@ -118,6 +122,36 @@ bamboo.EditorScene = game.Scene.extend({
         //var blob = new Blob([JSON.stringify(this.editor.world.toJSON())], {type: 'text/plain'});
         var blob = new Blob([JSON.stringify(this.editor.world.toJSON(), null, '  ')], {type: 'text/plain'});
         saveAs(blob, 'level.json');
+    },
+
+    export: function() {
+        var json = this.editor.world.toJSON();
+        var images = json.images;
+        var neededImages = {};
+        delete json.images;
+        for(var i=0; i<json.nodes.length; i++) {
+            var node = json.nodes[i];
+            if(node.properties.image && node.properties.image !== '') {
+                if(!neededImages.hasOwnProperty(node.properties.image))
+                    // len('data:image/png;base64.') == 22
+                    neededImages[node.properties.image] = images[node.properties.image].slice(22);
+                node.properties.image = 'level/'+node.properties.image;
+            }
+        }
+        var zip = new JSZip();
+        var folder = zip.folder('level');
+
+        var js = 'game.module(\n    \'level\'\n)\n.body(function() {\n';
+        js += 'game.level = JSON.stringify('+JSON.stringify(json, null, '    ')+');\n\n';
+        for(var name in neededImages) {
+            folder.file(name, neededImages[name], {base64:true});
+            js += '    game.addAsset(\'level/'+name+'\');\n';
+        }
+        js += '\n});\n';
+        zip.file('level.js', js);
+
+        var blob = zip.generate({type: 'blob'});
+        saveAs(blob, 'level.zip');
     },
 
     update: function() {
