@@ -253,7 +253,8 @@ bamboo.PropertyPanel = game.Class.extend({
 
     anglePropertyChanged: function(key) {
         var value = parseFloat(this.nodeWindow.inputs[key].value);
-        value = ((value % 360) + 360) % 360;
+        if(this.props[key].options && this.props[key].options.loop360)
+            value = ((value % 360) + 360) % 360;
         this.editor.selectedNode._editorNode.setProperty(key, value*Math.PI / 180);
     },
 
