@@ -38,6 +38,9 @@ bamboo.Editor = game.Class.extend({
     propertyPanel: null,
     statusbar: null,
 
+    images: [],
+    imageZip: null,
+
     init: function(world) {
         world.inEditor = true;
         this.controller = new bamboo.EditorController(this);
@@ -50,6 +53,8 @@ bamboo.Editor = game.Class.extend({
         this.displayObject.addChild(this.world.displayObject);
         this.overlay = new game.Container();
         this.displayObject.addChild(this.overlay);
+
+        this.targetCameraWorldPosition = new Vec2();
 
         this.boundaryLayer = new bamboo.BoundaryLayer(this);
         this.overlay.addChild(this.boundaryLayer.displayObject);
@@ -111,9 +116,11 @@ bamboo.Editor = game.Class.extend({
         this.propertyPanel.updateLayerList();
     },
 
-    imageAdded: function(name) {
+    imageAdded: function(name, data) {
         // hack to update properties-panel
         this.propertyPanel.nodeSelected(this.selectedNode);
+        this.imageZip.folder('level').file(name.slice(6), data, {base64: true});
+        game.scene.saveImagesZip(this.imageZip);
     },
 
     nodeSelected: function(node) {

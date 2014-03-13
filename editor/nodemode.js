@@ -7,6 +7,8 @@ game.module(
 )
 .body(function() {
 
+game.addAsset('src/bamboo/editor/media/font.fnt');
+
 bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     state: null,
 

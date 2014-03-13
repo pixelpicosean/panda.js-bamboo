@@ -32,8 +32,9 @@ bamboo.EditorController = game.Class.extend({
     },
 
     addImage: function(name, imgData) {
-        this.editor.world.images[name] = imgData;
-        this.editor.imageAdded(name);
+        this.editor.images.push({name: name, data: imgData});
+        this.editor.images = this.editor.images.sort(function(a,b) {return a.name > b.name ? 1 : -1;});
+        this.editor.imageAdded(name, imgData);
     },
 
     changeMode: function(newMode) {

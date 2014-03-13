@@ -168,7 +168,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
 
         if(e.dataTransfer.files.length === 1) {
             var parts = e.dataTransfer.files[0].name.split('.');
-            if(parts[parts.length-1] === 'json') {
+            if(parts[parts.length-1] === 'zip') {
                 this.previousDropHandler(e);
                 return false;
             }
@@ -188,8 +188,9 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             reader.onload = function(e) {
                 var imgData = e.target.result;
                 var texture = PIXI.Texture.fromImage(imgData, true);
-                PIXI.TextureCache[this.filename] = texture;
-                editorController.addImage(this.filename, imgData);
+                PIXI.TextureCache['level/'+this.filename] = texture;
+                // len('data:image/png;base64,') == 22
+                editorController.addImage('level/'+this.filename, imgData.slice(22));
             };
             reader.filename = file.name;
             reader.readAsDataURL(file);

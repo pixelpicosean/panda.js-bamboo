@@ -180,11 +180,12 @@ bamboo.PropertyPanel = game.Class.extend({
                     break;
                 case bamboo.Property.TYPE.IMAGE:
                     this.nodeWindow.addInputSelect(key, props[key].name, props[key].description, this.imagePropertyChanged.bind(this));
-                    var images = this.editor.world.images;
-                    for(var name in images) {
+                    var images = this.editor.images;
+                    for(var i=0; i<images.length; i++) {
+                        var name = images[i].name.slice(6);// 'level/'
                         this.nodeWindow.addInputSelectOption(key, name, name);
                     }
-                    this.nodeWindow.setInputSelectValue(key, node[key]);
+                    this.nodeWindow.setInputSelectValue(key, node[key].slice(6));
                     break;
                 case bamboo.Property.TYPE.TRIGGER:
                     this.nodeWindow.addInputSelect(key, props[key].name, props[key].description, this.triggerPropertyChanged.bind(this));
@@ -206,9 +207,11 @@ bamboo.PropertyPanel = game.Class.extend({
                 break;
             case bamboo.Property.TYPE.STRING:
             case bamboo.Property.TYPE.ENUM:
-            case bamboo.Property.TYPE.IMAGE:
             case bamboo.Property.TYPE.TRIGGER:
                 this.nodeWindow.inputs[property].value = value;
+                break;
+            case bamboo.Property.TYPE.IMAGE:
+                this.nodeWindow.inputs[property].value = value.slice(6);// 'level/'
                 break;
             case bamboo.Property.TYPE.ANGLE:
                 this.nodeWindow.inputs[property].value = ((180.0*parseFloat(value))/Math.PI).toFixed(2);
@@ -286,7 +289,7 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     imagePropertyChanged: function(key) {
-        this.editor.selectedNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
+        this.editor.selectedNode._editorNode.setProperty(key, 'level/'+this.nodeWindow.inputs[key].value);
     },
 
     triggerPropertyChanged: function(key) {

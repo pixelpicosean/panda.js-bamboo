@@ -16,6 +16,7 @@ bamboo.EditorScene = game.Scene.extend({
     editor: null,
     filesystem: null,
     backupFile: null,
+    imagesFile: null,
 
     init: function() {
         this.installEventListeners();
@@ -33,22 +34,43 @@ bamboo.EditorScene = game.Scene.extend({
         head.appendChild(script);
     },
 
-    loadEditor: function(json) {
+    loadEditor: function(json, images) {
         if(this.editor) {
             this.editor.exit();
             this.stage.removeChild(this.editor.displayObject);
         }
 
-
-        // load level images
-        var images = JSON.parse(json).images;
-        for(var name in images) {
-            PIXI.TextureCache[name] = PIXI.Texture.fromImage(images[name], true);
+        for(var i=0; i<images.length; i++) {
+            PIXI.TextureCache[images[i].name] = PIXI.Texture.fromImage('data:image/png;base64,'+images[i].data, true);
         }
 
-
         this.editor = bamboo.Editor.createFromJSON(json);
+        this.editor.images = images.sort(function(a,b) { return a.name > b.name ? 1 : -1;});
         this.stage.addChild(this.editor.displayObject);
+
+    },
+
+    loadFromZip: function(zipData, json) {
+
+        var zip = new JSZip(zipData, {base64: true});
+        var jsonText = json;
+        if(!jsonText)
+            jsonText = zip.file('level.json').asText();
+
+        var zipImages = zip.folder('level').file(/.*/);
+
+        // load level images
+        var images = [];
+        for(var i=0; i<zipImages.length; i++) {
+            var imgData = JSZip.base64.encode(zipImages[i].asBinary());
+            var imgName = zipImages[i].name;//.slice(6);// 'level/'
+            images.push({name:imgName, data:imgData});
+        }
+
+        this.loadEditor(jsonText, images);
+        zip.remove('level.json').remove('level.js');
+        this.editor.imageZip = zip;
+        this.saveImagesZip(zip);
     },
 
     openFilesystem: function() {
@@ -77,14 +99,32 @@ bamboo.EditorScene = game.Scene.extend({
         this.backupFile.file(function(f) {
             var reader = new FileReader();
             reader.onloadend = function(e) {
-                var json = '{"world":"World", "images":{}, "nodes": [{"class":"Layer", "properties":{"name":"main","position":{"x":0,"y":0},"rotation":0,"scale":{"x":1, "y":1},"connectedTo":null, "speedFactor":1 }}]}';
-                if(this.result !== '' && confirm('Load from backup?'))
-                    json = this.result;
+                if(this.result === '' || !confirm('Load from backup?')) {
+                    var json = '{"world":"World", "images":{}, "nodes": [{"class":"Layer", "properties":{"name":"main","position":{"x":0,"y":0},"rotation":0,"scale":{"x":1, "y":1},"connectedTo":null, "speedFactor":1 }}]}';
+                    self.loadEditor(json, []);
 
-                self.loadEditor(json);
+                    // do backup every 10 sec
+                    window.setInterval(self.doBackup.bind(self), 10000);
+                    return;
+                }
 
-                // do backup every 10 sec
-                window.setInterval(self.doBackup.bind(self), 10000);
+                var levelJSON = this.result;
+
+                self.filesystem.root.getFile('images.zip', {create:false}, function(imagesFile) {
+                    self.imagesFile = imagesFile;
+                    imagesFile.file(function(f) {
+                        var imgReader = new FileReader();
+                        imgReader.onloadend = function(e) {
+                            // len('data:;base64,') == 13
+                            self.loadFromZip(this.result.slice(13), levelJSON);
+
+                            // do backup every 10 sec
+                            window.setInterval(self.doBackup.bind(self), 10000);
+                        };
+                        imgReader.readAsDataURL(f);
+                    }, self.onFSError.bind(self));
+                }, self.onFSError.bind(self));
+                
             };
 
             reader.readAsText(f);
@@ -118,37 +158,79 @@ bamboo.EditorScene = game.Scene.extend({
         }, this.onFSError.bind(this));
     },
 
-    save: function() {
-        //var blob = new Blob([JSON.stringify(this.editor.world.toJSON())], {type: 'text/plain'});
-        var blob = new Blob([JSON.stringify(this.editor.world.toJSON(), null, '  ')], {type: 'text/plain'});
-        saveAs(blob, 'level.json');
+    saveImagesZip: function(zip) {
+        var self = this;
+        this.filesystem.root.getFile('tmp_images.zip', {create:true}, function(f) {
+            f.createWriter(function(fw) {
+                fw.onwriteend = function() {
+                    // now we have the tmp_backup.json data ready on fs
+                    // move the old one to oldbackup.json (for safety)
+                    if(self.imagesFile) {
+                        self.imagesFile.moveTo(self.filesystem.root, 'oldimages.zip', function(e){
+                            self.imagesFile = e;
+                            // moving is done, now move the new backup to backup.json
+                            f.moveTo(self.filesystem.root, 'images.zip',function(e){
+                                var oldImages = self.imagesFile;
+                                self.imagesFile = e;
+                                oldImages.remove(function() {}, self.onFSError.bind(self));
+                            }, self.onFSError.bind(self));
+                        }, self.onFSError.bind(self));
+                    } else {
+                        f.moveTo(self.filesystem.root, 'images.zip',function(e){
+                            self.imagesFile = e;
+                        }, self.onFSError.bind(self));
+                    }
+                };
+                fw.onerror = function(e) {
+                    console.log('Images zip write failed: ' + e.toString());
+                    f.remove(function(){}, self.onFSError.bind(self));
+                };
+
+                var blob = zip.generate({type: 'blob'});
+                fw.write(blob);
+            }, self.onFSError.bind(self));
+        }, this.onFSError.bind(this));
     },
 
-    export: function() {
+    save: function() {
+        //var blob = new Blob([JSON.stringify(this.editor.world.toJSON())], {type: 'text/plain'});
+        //var blob = new Blob([JSON.stringify(this.editor.world.toJSON(), null, '  ')], {type: 'text/plain'});
+        //saveAs(blob, 'level.json');
+
         var json = this.editor.world.toJSON();
-        var images = json.images;
+        var images = this.editor.images;
         var neededImages = {};
-        delete json.images;
         for(var i=0; i<json.nodes.length; i++) {
             var node = json.nodes[i];
-            if(node.properties.image && node.properties.image !== '') {
-                if(!neededImages.hasOwnProperty(node.properties.image))
-                    // len('data:image/png;base64.') == 22
-                    neededImages[node.properties.image] = images[node.properties.image].slice(22);
-                node.properties.image = 'level/'+node.properties.image;
+            if(!node.properties.image || node.properties.image === '')
+                continue;
+
+            var imgName = node.properties.image;//.slice(6);
+            if(neededImages.hasOwnProperty(imgName))
+                continue;
+
+            for(var j=0; j<images.length; j++) {
+                if(images[j].name === imgName) {
+                    neededImages[imgName] = images[j].data;
+                    break;
+                }
             }
         }
-        var zip = new JSZip();
-        var folder = zip.folder('level');
 
+        var zip = new JSZip();
+        var levelFolder = zip.folder('level');
+        var jsonText = JSON.stringify(json, null, '    ');
         var js = 'game.module(\n    \'level\'\n)\n.body(function() {\n';
-        js += 'game.level = JSON.stringify('+JSON.stringify(json, null, '    ')+');\n\n';
+        js += 'game.level = JSON.stringify('+jsonText+');\n\n';
+
         for(var name in neededImages) {
-            folder.file(name, neededImages[name], {base64:true});
+            levelFolder.file(name.slice(6), neededImages[name], {base64:true});
             js += '    game.addAsset(\'level/'+name+'\');\n';
         }
+
         js += '\n});\n';
         zip.file('level.js', js);
+        zip.file('level.json', jsonText);
 
         var blob = zip.generate({type: 'blob'});
         saveAs(blob, 'level.zip');
@@ -249,19 +331,21 @@ bamboo.EditorScene = game.Scene.extend({
         var file = e.dataTransfer.files[0];
         var parts = file.name.split('.');
         var suffix = parts[parts.length-1];
-        if(suffix !== 'json') {
-            alert('Project file must have .json suffix!');
+        if(suffix !== 'zip') {
+            alert('Project file must be a zip file!');
             return false;
         }
 
 
         var reader = new FileReader();
         reader.onload = function(e) {
-            var json = e.target.result;
-            self.loadEditor(json);
+            var zipData = e.target.result;
+            // len('data:application/zip;base64.') == 28
+            zipData = zipData.slice(28);
+            self.loadFromZip(zipData);
         };
         reader.filename = file.name;
-        reader.readAsText(file);
+        reader.readAsDataURL(file);
 
         return false;
     }
