@@ -21,8 +21,6 @@ bamboo.EditorScene = game.Scene.extend({
     init: function() {
         this.installEventListeners();
 
-        this.openFilesystem();
-
         var head = document.getElementsByTagName('head')[0];
         var script = document.createElement('script');
         script.type = 'text/javascript';
@@ -32,6 +30,12 @@ bamboo.EditorScene = game.Scene.extend({
         script.type = 'text/javascript';
         script.src = 'src/bamboo/editor/jszip.min.js';
         head.appendChild(script);
+
+        document.body.insertAdjacentHTML('beforeend',
+                                         '<div id="blockUi" style="width:100%;height:100%;background-color:#ffffff;opacity:0.5;position:absolute;z-index:10000;display:block;" onclick=""><img src="src/bamboo/editor/media/spiffygif_38x38.gif" style="left:50%;top:50%;position:absolute;"/></div>');
+
+        // open filesystem and check if we have backup
+        this.openFilesystem();
     },
 
     loadEditor: function(json, images) {
@@ -85,23 +89,34 @@ bamboo.EditorScene = game.Scene.extend({
     },
     onFSInit: function(fs) {
         this.filesystem = fs;
-        fs.root.getFile('backup.json', {create:true}, this.onBackupLoaded.bind(this), this.onFSError.bind(this));
         //console.log('Opened file system: ' + fs.name);
 
+        // load backup json
+        fs.root.getFile('backup.json', {create:true}, this.onBackupLoaded.bind(this), this.onFSError.bind(this));
     },
     onFSError: function(e) {
         console.log('Error: ' + e.name + ' - ' + e.message);
     },
     onBackupLoaded: function(backupFile) {
+        // backup file loaded/created
+
         this.backupFile = backupFile;
         var self = this;
 
+        // try to read file
         this.backupFile.file(function(f) {
             var reader = new FileReader();
             reader.onloadend = function(e) {
+
+                // We have backup.json data available
+
                 if(this.result === '' || !confirm('Load from backup?')) {
+                    // if the file is empty(just created?) or if user doesn't want to use the backup
+
                     var json = '{"world":"World", "images":{}, "nodes": [{"class":"Layer", "properties":{"name":"main","position":{"x":0,"y":0},"rotation":0,"scale":{"x":1, "y":1},"connectedTo":null, "speedFactor":1 }}]}';
                     self.loadEditor(json, []);
+                    self.editor.imageZip = new JSZip();
+                    document.getElementById('blockUi').style.display = 'none';
 
                     // do backup every 10 sec
                     window.setInterval(self.doBackup.bind(self), 10000);
@@ -117,6 +132,8 @@ bamboo.EditorScene = game.Scene.extend({
                         imgReader.onloadend = function(e) {
                             // len('data:;base64,') == 13
                             self.loadFromZip(this.result.slice(13), levelJSON);
+
+                            document.getElementById('blockUi').style.display = 'none';
 
                             // do backup every 10 sec
                             window.setInterval(self.doBackup.bind(self), 10000);
@@ -225,7 +242,7 @@ bamboo.EditorScene = game.Scene.extend({
 
         for(var name in neededImages) {
             levelFolder.file(name.slice(6), neededImages[name], {base64:true});
-            js += '    game.addAsset(\'level/'+name+'\');\n';
+            js += '    game.addAsset(\''+name+'\');\n';
         }
 
         js += '\n});\n';
@@ -336,6 +353,8 @@ bamboo.EditorScene = game.Scene.extend({
             return false;
         }
 
+        document.getElementById('blockUi').style.display = 'block';
+
 
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -343,6 +362,8 @@ bamboo.EditorScene = game.Scene.extend({
             // len('data:application/zip;base64.') == 28
             zipData = zipData.slice(28);
             self.loadFromZip(zipData);
+
+            document.getElementById('blockUi').style.display = 'none';
         };
         reader.filename = file.name;
         reader.readAsDataURL(file);
