@@ -80,12 +80,12 @@ bamboo.PropertyPanel = game.Class.extend({
 
         this.layerWindow.clear();
 
-        this.layerWindow.addInputSelect('selectedNode', 'Selected node', 'Selected node', function() {self.editor.controller.selectNode(self.editor.world.findNode(this.inputs['selectedNode'].value));});
-        this.editor.buildNodeDropdown(this.layerWindow, 'selectedNode', layer);
-        if(!this.editor.selectedNode)
-            this.layerWindow.setInputSelectValue('selectedNode', '');
+        this.layerWindow.addInputSelect('activeNode', 'Active node', 'Active node', function() {self.editor.controller.setActiveNode(self.editor.world.findNode(this.inputs['activeNode'].value));});
+        this.editor.buildNodeDropdown(this.layerWindow, 'activeNode', layer);
+        if(!this.editor.activeNode)
+            this.layerWindow.setInputSelectValue('activeNode', '');
         else
-            this.layerWindow.setInputSelectValue('selectedNode', this.editor.selectedNode.name);
+            this.layerWindow.setInputSelectValue('activeNode', this.editor.activeNode.name);
 
         
         this.layerWindow.addInputCheckbox('visible', layer._editorNode.visible, 'Visible', 'Is layer visible in editor', function() {layer._editorNode.visible=this.inputs['visible'].checked;});
@@ -129,11 +129,11 @@ bamboo.PropertyPanel = game.Class.extend({
         this.node = node;
         this.nodeWindow.clear();
         if(!node) {
-            this.layerWindow.setInputSelectValue('selectedNode', '');
+            this.layerWindow.setInputSelectValue('activeNode', '');
             return;
         }
 
-        this.layerWindow.setInputSelectValue('selectedNode', node.name);
+        this.layerWindow.setInputSelectValue('activeNode', node.name);
         this.node._editorNode.addPropertyChangeListener(this.propertyChanged.bind(this));
         
         var props = node.getPropertyDescriptors();
