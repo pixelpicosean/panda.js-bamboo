@@ -14,6 +14,7 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
 
     timeDisplay: null,
     animationRunning: false,
+    shiftDown: false,
 
 
     init: function(editor, p) {
@@ -66,6 +67,9 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     onkeydown: function(keycode, p) {
         // overrides from mode
         switch(keycode) {
+            case 16:// SHIFT
+                this.shiftDown = true;
+                return true;
             case 27:// ESC
             case 32:// SPACE
                 return true;
@@ -75,6 +79,9 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     onkeyup: function(keycode, p) {
         // overrides from editor
         switch(keycode) {
+            case 16:// SHIFT
+                this.shiftDown = false;
+                return true;
             case 27:// ESC - cancel
                 this.state.cancel();
                 this.changeState(new bamboo.editor.SelectionState(this, p));

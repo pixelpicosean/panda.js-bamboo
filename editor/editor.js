@@ -27,7 +27,9 @@ bamboo.Editor = game.Class.extend({
 
     layers: [],
     activeLayer: null,
-    selectedNode: null,
+
+    activeNode: null,
+    selectedNodes: [],
 
     // used during dragging camera (mouse wheel)
     cameraOffset: null,
@@ -118,13 +120,18 @@ bamboo.Editor = game.Class.extend({
 
     imageAdded: function(name, data) {
         // hack to update properties-panel
-        this.propertyPanel.nodeSelected(this.selectedNode);
+        this.propertyPanel.activeNodeChanged(this.activeNode);
         this.imageZip.folder('level').file(name.slice(6), data, {base64: true});
         game.scene.saveImagesZip(this.imageZip);
     },
 
     nodeSelected: function(node) {
-        this.propertyPanel.nodeSelected(node);
+    },
+    nodeDeselected: function(node) {
+    },
+
+    activeNodeChanged: function(node) {
+        this.propertyPanel.activeNodeChanged(node);
     },
 
     getNodeAt: function(p, layer) {

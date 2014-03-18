@@ -66,7 +66,7 @@ bamboo.editor.CreateNodeState = bamboo.editor.State.extend({
                 connectedTo: this.window.inputs['connectedTo'].value});
 
             this.window.hide();
-            this.mode.changeState(new bamboo.editor.NewNodeState(this.mode, new Vec2(), node));
+            this.mode.changeState(new bamboo.editor.NewNodeState(this.mode, new Vec2(), [node]));
 
         } catch(err) {
             var node = this.mode.editor.world.findNode(this.window.inputs['name'].value);

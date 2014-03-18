@@ -25,6 +25,7 @@ bamboo.EditorController = game.Class.extend({
     },
 
     deleteNode: function(node) {
+        this.deselectNode(node);
         this.editor.nodes.splice(this.editor.nodes.indexOf(node._editorNode), 1);
         node.connectedTo = null;
         node.world = null;
@@ -43,20 +44,77 @@ bamboo.EditorController = game.Class.extend({
         this.editor.mode.enter();
     },
 
+    selectAllNodes: function() {
+        throw 'TODO';
+    },
+    deselectAllNodes: function() {
+        for(var i=this.editor.selectedNodes.length-1; i>=0; i--) {
+            this.deselectNode(this.editor.selectedNodes[i]);
+        }
+    },
     selectNode: function(node) {
-        if(this.editor.selectedNode === node)
+        if(!node)
             return;
 
-        if(this.editor.selectedNode) {
-            this.editor.selectedNode._editorNode.selectionRect.visible = false;
-            this.editor.selectedNode._editorNode.selectionAxis.visible = false;
-        }
-        this.editor.selectedNode = node;
-        if(this.editor.selectedNode) {
-            this.editor.selectedNode._editorNode.selectionRect.visible = true;
-            this.editor.selectedNode._editorNode.selectionAxis.visible = true;
-        }
+        if(this.editor.selectedNodes.indexOf(node) !== -1)
+            return;// node is already selected
+
+        this.editor.selectedNodes.push(node);
+        node._editorNode.selectionRect.visible = true;
+        node._editorNode.selectionAxis.visible = true;
         this.editor.nodeSelected(node);
+
+        var markChildren = function(c) {
+            for(var i=0; i<c.length; i++) {
+                var n = c[i];
+                n._editorNode.parentSelectionRect.visible = true;
+                markChildren(n.world.getConnectedNodes(n));
+            }
+        };
+
+        // mark all children as parent selected
+        markChildren(node.world.getConnectedNodes(node));
+    },
+    deselectNode: function(node) {
+        var idx = this.editor.selectedNodes.indexOf(node);
+        if(idx === -1)
+            return;// node not selected
+
+        this.editor.selectedNodes.splice(idx, 1);
+        node._editorNode.selectionAxis.visible = false;
+        node._editorNode.selectionRect.visible = false;
+        this.editor.nodeDeselected(node);
+
+        if(this.editor.activeNode === node)
+            this.setActiveNode(null);
+
+        var unmarkChildren = function(c, selectedNodes) {
+            for(var i=0; i<c.length; i++) {
+                var n = c[i];
+                if(selectedNodes.indexOf(n) !== -1)
+                    continue;
+
+                n._editorNode.parentSelectionRect.visible = false;
+                unmarkChildren(n.world.getConnectedNodes(n), selectedNodes);
+            }
+        };
+
+        unmarkChildren(node.world.getConnectedNodes(node), this.editor.selectedNodes);
+    },
+    setActiveNode: function(node) {
+        if(this.editor.activeNode === node)
+            return;
+
+        if(this.editor.activeNode) {
+            this.editor.activeNode._editorNode.activeRect.visible = false;
+            this.editor.activeNode._editorNode.activeAxis.visible = false;
+        }
+        this.editor.activeNode = node;
+        if(this.editor.activeNode) {
+            this.editor.activeNode._editorNode.activeAxis.visible = true;
+            this.editor.activeNode._editorNode.activeRect.visible = true;
+        }
+        this.editor.activeNodeChanged(node);
     },
 
     setActiveLayer: function(layer) {

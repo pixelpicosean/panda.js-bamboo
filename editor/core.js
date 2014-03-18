@@ -359,8 +359,8 @@ bamboo.EditorScene = game.Scene.extend({
         var reader = new FileReader();
         reader.onload = function(e) {
             var zipData = e.target.result;
-            // len('data:application/zip;base64.') == 28
-            zipData = zipData.slice(28);
+            var dataBegin = zipData.indexOf(';base64,');
+            zipData = zipData.slice(dataBegin+8);
             self.loadFromZip(zipData);
 
             document.getElementById('blockUi').style.display = 'none';

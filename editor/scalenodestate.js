@@ -7,24 +7,47 @@ game.module(
 .body(function() {
 
 bamboo.editor.ScaleNodeState = bamboo.editor.State.extend({
-    node: null,
-    startValue: null,
+    pivot: null,
+    nodes: [],
+    startValues: [],
     startDistance: null,
     lockToAxis: null,
     snap: false,
 
-    init: function(mode, p, node) {
+    init: function(mode, p, selectedNodes, pivot) {
         this.super(mode);
-        this.node = node;
-        this.startValue = node.scale.clone();
-        this.startDistance = node.getWorldPosition().distance(p);
+
+        this.pivot = pivot;
+
+        for(var i=0; i<selectedNodes.length; i++) {
+            var n = selectedNodes[i];
+            var found = false;
+            var parent = n.connectedTo;
+            while(!(parent instanceof bamboo.nodes.Layer)) {
+                if(selectedNodes.indexOf(parent) !== -1) {
+                    found = true;
+                    break;
+                }
+                parent = parent.connectedTo;
+            }
+            if(!found) {
+                this.nodes.push(n);
+                this.startValues.push({p: n.getWorldPosition(), s:n.scale.clone()});
+            }
+        }
+
+        this.startDistance = pivot.distance(p);
 
         this.mode.editor.statusbar.setStatus('Scale node, ESC cancel, X,Y lock to axis, CTRL snap 0.1 increments');
     },
 
     cancel: function() {
-        this.node._editorNode.setProperty('scale', this.startValue);
-        this.node.displayObject.updateTransform();
+        for(var i=0; i<this.nodes.length; i++) {
+            var n = this.nodes[i];
+            n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(this.startValues[i].p));
+            n._editorNode.setProperty('scale', this.startValues[i].s);
+            n.displayObject.updateTransform();
+        }
     },
 
     apply: function() {
@@ -32,16 +55,25 @@ bamboo.editor.ScaleNodeState = bamboo.editor.State.extend({
     },
 
     onmousemove: function(p) {
-        var factor = this.node.getWorldPosition().distance(p) / this.startDistance;
+        var factor = this.pivot.distance(p) / this.startDistance;
         if(this.snap)
             factor = Math.round(factor*10)/10;
 
+        var s = new Vec2(factor, factor);
         if(this.lockToAxis === 'X')
-            this.node._editorNode.setProperty('scale', new Vec2(this.startValue.x*factor, this.startValue.y));
+            s.y = 1;
         else if(this.lockToAxis === 'Y')
-            this.node._editorNode.setProperty('scale', new Vec2(this.startValue.x, this.startValue.y*factor));
-        else
-            this.node._editorNode.setProperty('scale', this.startValue.multiplyc(factor));
+            s.x = 1;
+
+        for(var i=0; i<this.nodes.length; i++) {
+            var n = this.nodes[i];
+            var p = this.startValues[i].p.subtractc(this.pivot);
+            p.x *= s.x;
+            p.y *= s.y;
+            p.add(this.pivot);
+            n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(p));
+            n._editorNode.setProperty('scale', new Vec2(this.startValues[i].s.x*s.x, this.startValues[i].s.y*s.y));
+        }
     },
 
     onkeydown: function(keycode) {

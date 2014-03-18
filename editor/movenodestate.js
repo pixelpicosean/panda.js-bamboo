@@ -7,28 +7,46 @@ game.module(
 .body(function() {
 
 bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
-    node: null,
-    startValue: null,
+    nodes: [],
+    startValues: [],
     offset: null,
     lockToAxis: null,
     snap: false,
 
-    init: function(mode, p, node) {
+    init: function(mode, p, selectedNodes) {
         this.super(mode);
-        this.node = node;
-        this.startValue = node.getWorldPosition();
+
+        for(var i=0; i<selectedNodes.length; i++) {
+            var n = selectedNodes[i];
+            var found = false;
+            var parent = n.connectedTo;
+            while(!(parent instanceof bamboo.nodes.Layer)) {
+                if(selectedNodes.indexOf(parent) !== -1) {
+                    found = true;
+                    break;
+                }
+                parent = parent.connectedTo;
+            }
+            if(!found) {
+                this.nodes.push(n);
+                this.startValues.push(n.getWorldPosition());
+            }
+        }
         this.offset = p;
 
         this.mode.editor.statusbar.setStatus('Move node, ESC cancel, X,Y lock to axis, CTRL to snap 10px grid');
     },
 
     cancel: function() {
-        this.node._editorNode.setProperty('position', this.node.connectedTo.toLocalSpace(this.startValue));
-        this.node.displayObject.updateTransform();
+        for(var i=0; i<this.nodes.length; i++) {
+            var n = this.nodes[i];
+            n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(this.startValues[i]));
+            n.displayObject.updateTransform();
+        }
     },
 
     apply: function() {
-        // nothing to do, node is alread at right position
+        // nothing to do, nodes are already at right positions
     },
 
     onmousemove: function(p) {
@@ -43,8 +61,10 @@ bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
         else if(this.lockToAxis === 'Y')
             p.x = 0;
 
-
-        this.node._editorNode.setProperty('position', this.node.connectedTo.toLocalSpace(p.add(this.startValue)));
+        for(var i=0; i<this.nodes.length; i++) {
+            var n = this.nodes[i];
+            n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(p.addc(this.startValues[i])));
+        }
     },
 
     onkeydown: function(keycode) {

@@ -119,7 +119,7 @@ bamboo.PropertyPanel = game.Class.extend({
         }
     },
 
-    nodeSelected: function(node) {
+    activeNodeChanged: function(node) {
         this.activeElement = null;
         if(this.node) {
             this.node._editorNode.removePropertyChangeListener(this.propertyChanged.bind(this));
@@ -133,7 +133,7 @@ bamboo.PropertyPanel = game.Class.extend({
             return;
         }
 
-        this.layerWindow.setInputSelectValue('selectedNode', this.editor.selectedNode.name);
+        this.layerWindow.setInputSelectValue('selectedNode', node.name);
         this.node._editorNode.addPropertyChangeListener(this.propertyChanged.bind(this));
         
         var props = node.getPropertyDescriptors();
@@ -247,22 +247,22 @@ bamboo.PropertyPanel = game.Class.extend({
             if(min) value = Math.max(value, min);
             if(max) value = Math.min(value, max);
         }
-        this.editor.selectedNode._editorNode.setProperty(key, value);
+        this.editor.activeNode._editorNode.setProperty(key, value);
     },
 
     textPropertyChanged: function(key) {
-        this.editor.selectedNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
+        this.editor.activeNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
     },
 
     anglePropertyChanged: function(key) {
         var value = parseFloat(this.nodeWindow.inputs[key].value);
         if(this.props[key].options && this.props[key].options.loop360)
             value = ((value % 360) + 360) % 360;
-        this.editor.selectedNode._editorNode.setProperty(key, value*Math.PI / 180);
+        this.editor.activeNode._editorNode.setProperty(key, value*Math.PI / 180);
     },
 
     booleanPropertyChanged: function(key) {
-        this.editor.selectedNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].checked);
+        this.editor.activeNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].checked);
     },
 
     vectorPropertyChanged: function(key) {
@@ -271,29 +271,29 @@ bamboo.PropertyPanel = game.Class.extend({
         var i = parts[parts.length-1];
         var keyName = key.slice(0, key.length - 1 - i.length);
         if(i === '0')
-            this.editor.selectedNode._editorNode.setProperty(keyName, new Vec2(value, this.editor.selectedNode[keyName].y));
+            this.editor.activeNode._editorNode.setProperty(keyName, new Vec2(value, this.editor.activeNode[keyName].y));
         else if(i === '1')
-            this.editor.selectedNode._editorNode.setProperty(keyName, new Vec2(this.editor.selectedNode[keyName].x, value));
+            this.editor.activeNode._editorNode.setProperty(keyName, new Vec2(this.editor.activeNode[keyName].x, value));
     },
 
     nodePropertyChanged: function(key) {
-        this.editor.selectedNode._editorNode.setProperty(key, this.editor.world.findNode(this.nodeWindow.inputs[key].value));
+        this.editor.activeNode._editorNode.setProperty(key, this.editor.world.findNode(this.nodeWindow.inputs[key].value));
     },
 
     easingPropertyChanged: function(key) {
-        this.editor.selectedNode._editorNode.setProperty(key, game.Tween.Easing.getByName(this.nodeWindow.inputs[key].value));
+        this.editor.activeNode._editorNode.setProperty(key, game.Tween.Easing.getByName(this.nodeWindow.inputs[key].value));
     },
 
     enumPropertyChanged: function(key) {
-        this.editor.selectedNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
+        this.editor.activeNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
     },
 
     imagePropertyChanged: function(key) {
-        this.editor.selectedNode._editorNode.setProperty(key, 'level/'+this.nodeWindow.inputs[key].value);
+        this.editor.activeNode._editorNode.setProperty(key, 'level/'+this.nodeWindow.inputs[key].value);
     },
 
     triggerPropertyChanged: function(key) {
-        this.editor.selectedNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
+        this.editor.activeNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
     },
 
     colorPropertyChanged: function(key) {
@@ -305,7 +305,7 @@ bamboo.PropertyPanel = game.Class.extend({
             if(isNaN(value))
                 value = 0xffffff;
         }
-        this.editor.selectedNode._editorNode.setProperty(key, value);
+        this.editor.activeNode._editorNode.setProperty(key, value);
     }
 });
 

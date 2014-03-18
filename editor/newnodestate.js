@@ -7,22 +7,42 @@ game.module(
 .body(function() {
 
 bamboo.editor.NewNodeState = bamboo.editor.State.extend({
-    node: null,
+    nodes: [],
     offset: null,
-    startPos: null,
+    startValues: [],
 
-    init: function(mode, p, node) {
+    init: function(mode, p, nodes) {
         this.super(mode);
-        this.node = node;
-        this.offset = p.subtract(node.getWorldPosition());
-        this.mode.editor.controller.selectNode(node);
 
-        this.mode.editor.statusbar.setStatus('Position new node, ESC to cancel (removes new node)');
+        for(var i=0; i<nodes.length; i++) {
+            var n = nodes[i];
+            var found = false;
+            var parent = n.connectedTo;
+            while(!(parent instanceof bamboo.nodes.Layer)) {
+                if(nodes.indexOf(parent) !== -1) {
+                    found = true;
+                    break;
+                }
+                parent = parent.connectedTo;
+            }
+            if(!found) {
+                this.startValues.push(n.getWorldPosition());
+                this.nodes.push(n);
+                this.mode.editor.controller.selectNode(n);
+            }
+        }
+
+        this.offset = p;//p.subtract(node.getWorldPosition());
+//        this.mode.editor.controller.selectNode(node);
+
+        this.mode.editor.statusbar.setStatus('Position new node, ESC to cancel (removes new node(s))');
     },
 
     cancel: function() {
-        this.mode.editor.controller.selectNode(null);
-        this.mode.editor.controller.deleteNode(this.node);
+        this.mode.editor.controller.deselectAllNodes();
+        for(var i=0; i<this.nodes.length; i++) {
+            this.mode.editor.controller.deleteNode(this.nodes[i]);
+        }
     },
 
     apply: function() {
@@ -30,7 +50,11 @@ bamboo.editor.NewNodeState = bamboo.editor.State.extend({
     },
 
     onmousemove: function(p) {
-        this.node._editorNode.setProperty('position', this.node.connectedTo.toLocalSpace(p.subtract(this.offset)));
+        var delta = p.subtract(this.offset);
+        for(var i=0; i<this.nodes.length; i++) {
+            var n = this.nodes[i];
+            n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(delta.addc(this.startValues[i])));
+        }
     },
 });
 

@@ -14,8 +14,9 @@ bamboo.Node.editor = game.Class.extend({
     displayObject: null,
     selectionRect: null,
     selectionAxis: null,
-    hoverRect: null,
-    hoverAxis: null,
+    parentSelectionRect: null,
+    activeRect: null,
+    activeAxis: null,
     editableRect: null,
     _cachedRect: null,
     _cachedScale: null,
@@ -43,11 +44,14 @@ bamboo.Node.editor = game.Class.extend({
         this.displayObject.addChild(this.selectionRect);
         this.displayObject.addChild(this.selectionAxis);
 
-        this.hoverRect = new game.Graphics();
-        this.hoverAxis = new game.Sprite(0,0,'src/bamboo/editor/media/axis_hover.png');
-        this.hoverAxis.anchor = {x: 0.305, y: 0.305};
-        this.displayObject.addChild(this.hoverRect);
-        this.displayObject.addChild(this.hoverAxis);
+        this.parentSelectionRect = new game.Graphics();
+        this.displayObject.addChild(this.parentSelectionRect);
+
+        this.activeRect = new game.Graphics();
+        this.activeAxis = new game.Sprite(0,0,'src/bamboo/editor/media/axis_hover.png');
+        this.activeAxis.anchor = {x: 0.305, y: 0.305};
+        this.displayObject.addChild(this.activeRect);
+        this.displayObject.addChild(this.activeAxis);
 
         this.editableRect = new game.Graphics();
         this.displayObject.addChild(this.editableRect);
@@ -56,8 +60,10 @@ bamboo.Node.editor = game.Class.extend({
         this.selectionRect.visible = false;
         this.selectionAxis.visible = false;
 
-        this.hoverRect.visible = false;
-        this.hoverAxis.visible = false;
+        this.parentSelectionRect.visible = false;
+
+        this.activeRect.visible = false;
+        this.activeAxis.visible = false;
 
         this.editableRect.visible = false;
         this.layerChanged();
@@ -98,9 +104,13 @@ bamboo.Node.editor = game.Class.extend({
         this.selectionRect.beginFill(0xff0000, 0.2);
         this.selectionRect.drawRect(r.x-6,r.y-6,r.width+12,r.height+12);
 
-        this.hoverRect.clear();
-        this.hoverRect.lineStyle(4, 0xffaa00, 0.5);
-        this.hoverRect.drawRect(r.x-6,r.y-6,r.width+12,r.height+12);
+        this.parentSelectionRect.clear();
+        this.parentSelectionRect.lineStyle(2, 0xff00aa, 0.5);
+        this.parentSelectionRect.drawRect(r.x-3,r.y-3,r.width+6,r.height+6);
+
+        this.activeRect.clear();
+        this.activeRect.lineStyle(4, 0xffaa00, 0.5);
+        this.activeRect.drawRect(r.x-6,r.y-6,r.width+12,r.height+12);
 
         this.editableRect.clear();
         this.editableRect.lineStyle(1, 0x0066ff);
@@ -144,6 +154,9 @@ bamboo.Node.editor = game.Class.extend({
         var idx = this.propertyChangeListeners.indexOf(listener);
         this.propertyChangeListeners.splice(idx, 1);
     },
+
+    setOrigin: function(p) {},
+    getOrigin: function() {return new Vec2();},
 
     onkeydown: function(keycode,p) {
         switch(keycode) {

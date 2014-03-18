@@ -7,23 +7,47 @@ game.module(
 .body(function() {
 
 bamboo.editor.RotateNodeState = bamboo.editor.State.extend({
-    node: null,
-    startValue: null,
+    pivot: null,
+    nodes: [],
+    startValues: [],
     offset: null,
     snap: false,
 
-    init: function(mode, p, node) {
+    init: function(mode, p, selectedNodes, pivot) {
         this.super(mode);
-        this.node = node;
-        this.startValue = node.rotation;
-        this.offset = p.subtract(node.getWorldPosition());
+
+        this.pivot = pivot;
+
+        for(var i=0; i<selectedNodes.length; i++) {
+            var n = selectedNodes[i];
+            var found = false;
+            var parent = n.connectedTo;
+            while(!(parent instanceof bamboo.nodes.Layer)) {
+                if(selectedNodes.indexOf(parent) !== -1) {
+                    found = true;
+                    break;
+                }
+                parent = parent.connectedTo;
+            }
+            if(!found) {
+                this.nodes.push(n);
+                this.startValues.push({p: n.getWorldPosition(), a:n.rotation});
+            }
+        }
+
+
+        this.offset = p.subtract(pivot);
 
         this.mode.editor.statusbar.setStatus('Rotate node, ESC to cancel, CTRL to snap 5° increments');
     },
 
     cancel: function() {
-        this.node._editorNode.setProperty('rotation', this.startValue);
-        this.node.displayObject.updateTransform();
+        for(var i=0; i<this.nodes.length; i++) {
+            var n = this.nodes[i];
+            n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(this.startValues[i].p));
+            n._editorNode.setProperty('rotation', this.startValues[i].a);
+            n.displayObject.updateTransform();
+        }
     },
 
     apply: function() {
@@ -31,16 +55,26 @@ bamboo.editor.RotateNodeState = bamboo.editor.State.extend({
     },
 
     onmousemove: function(p) {
-        var angle = this.offset.angle(p.subtract(this.node.getWorldPosition()));
+        var angle = this.offset.angle(p.subtract(this.pivot));
         if(this.snap) {
             var inDeg = 180 * angle / Math.PI;
             inDeg = Math.round(inDeg/5)*5;
             angle = Math.PI * inDeg / 180;
         }
 
-        angle += this.startValue;
-        angle = ((angle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
-        this.node._editorNode.setProperty('rotation', angle);
+        var c = Math.cos(angle);
+        var s = Math.sin(angle);
+
+        for(var i=0; i<this.nodes.length; i++) {
+            var n = this.nodes[i];
+            var p = this.startValues[i].p.subtractc(this.pivot);
+            var np = new Vec2(c*p.x - s*p.y, s*p.x + c*p.y);
+            np.add(this.pivot);
+            var a = angle + this.startValues[i].a;
+            a = ((a % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+            n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(np));
+            n._editorNode.setProperty('rotation', a);
+        }
     },
     onkeydown: function(keycode) {
         switch(keycode) {
