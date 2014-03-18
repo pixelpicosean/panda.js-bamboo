@@ -32,10 +32,9 @@ bamboo.editor.NewNodeState = bamboo.editor.State.extend({
             }
         }
 
-        this.offset = p;//p.subtract(node.getWorldPosition());
-//        this.mode.editor.controller.selectNode(node);
+        this.offset = p;
 
-        this.mode.editor.statusbar.setStatus('Position new node, ESC to cancel (removes new node(s))');
+        this.mode.editor.statusbar.setStatus('Position new node, C(snap to cursor), ESC to cancel (removes new node(s))');
     },
 
     cancel: function() {
@@ -56,6 +55,28 @@ bamboo.editor.NewNodeState = bamboo.editor.State.extend({
             n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(delta.addc(this.startValues[i])));
         }
     },
+
+    onkeydown: function(keycode,p) {
+        switch(keycode) {
+            case 67://C
+                return true;
+        }
+        return false;
+    },
+    onkeyup: function(keycode,p) {
+        switch(keycode) {
+            case 67:// C - snap to cursor
+                this.offset = new Vec2();
+                for(var i=0; i<this.startValues.length; i++) {
+                    this.offset.add(this.startValues[i]);
+                }
+                this.offset.x /= this.startValues.length;
+                this.offset.y /= this.startValues.length;
+                this.onmousemove(p);
+                return true;
+        }
+        return false;
+    }
 });
 
 });

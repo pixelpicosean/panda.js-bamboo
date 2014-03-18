@@ -111,6 +111,7 @@ bamboo.EditorController = game.Class.extend({
         }
         this.editor.activeNode = node;
         if(this.editor.activeNode) {
+            this.selectNode(this.editor.activeNode);
             this.editor.activeNode._editorNode.activeAxis.visible = true;
             this.editor.activeNode._editorNode.activeRect.visible = true;
         }
