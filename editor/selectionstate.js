@@ -54,6 +54,29 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         game.system.canvas.ondrop = this.previousDropHandler;
     },
 
+    assignGroup: function(number) {
+        if(!bamboo.editor.SelectionGroups) {
+            bamboo.editor.SelectionGroups = [];
+            for(var i=0;i<10;i++) bamboo.editor.SelectionGroups.push([]);
+        }
+
+        // clear previous
+        bamboo.editor.SelectionGroups[number].length = 0;
+        for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
+            bamboo.editor.SelectionGroups[number].push(this.mode.editor.selectedNodes[i]);
+        }
+    },
+    selectGroup: function(number) {
+        this.mode.editor.controller.deselectAllNodes();
+
+        if(!bamboo.editor.SelectionGroups)
+            return;
+
+        for(var i=0; i<bamboo.editor.SelectionGroups[number].length; i++) {
+            this.mode.editor.controller.selectNode(bamboo.editor.SelectionGroups[number][i]);
+        }
+    },
+
     onmousemove: function(p) {
         this.mousePos = p;
     },
@@ -67,6 +90,16 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             case 35:// End
             case 36:// Home
             case 46:// DEL
+            case 48:// 0
+            case 49:// 1
+            case 50:// 2
+            case 51:// 3
+            case 52:// 4
+            case 53:// 5
+            case 54:// 6
+            case 55:// 7
+            case 56:// 8
+            case 57:// 9
             case 65:// A
             case 68:// D
             case 71:// G
@@ -113,6 +146,23 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                     }
                     this.cancel();
                     this.mode.changeState(new bamboo.editor.SelectionState(this.mode, p));
+                }
+                return true;
+            case 48:// 0
+            case 49:// 1
+            case 50:// 2
+            case 51:// 3
+            case 52:// 4
+            case 53:// 5
+            case 54:// 6
+            case 55:// 7
+            case 56:// 8
+            case 57:// 9
+                var number = keycode - 48;
+                if(this.mode.ctrlDown) {
+                    this.assignGroup(number);
+                } else {
+                    this.selectGroup(number);
                 }
                 return true;
             case 65:// A - add

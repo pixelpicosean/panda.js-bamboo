@@ -15,6 +15,7 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     timeDisplay: null,
     animationRunning: false,
     shiftDown: false,
+    ctrlDown: false,
 
 
     init: function(editor, p) {
@@ -70,6 +71,11 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
             case 16:// SHIFT
                 this.shiftDown = true;
                 return true;
+            case 17:// CTRL
+                this.ctrlDown = true;
+                // pass to state
+                this.state.onkeydown(keycode, p);
+                return true;
             case 27:// ESC
             case 32:// SPACE
                 return true;
@@ -81,6 +87,11 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
         switch(keycode) {
             case 16:// SHIFT
                 this.shiftDown = false;
+                return true;
+            case 17:// CTRL
+                this.ctrlDown = false;
+                // pass to state
+                this.state.onkeyup(keycode, p);
                 return true;
             case 27:// ESC - cancel
                 this.state.cancel();
