@@ -6,6 +6,7 @@ game.module(
     'bamboo.editor.movenodestate',
     'bamboo.editor.rotatenodestate',
     'bamboo.editor.scalenodestate',
+    'bamboo.editor.boxselectstate',
     'bamboo.editor.newnodestate',
     'bamboo.editor.createnodestate',
     'bamboo.editor.editnodemode',
@@ -101,6 +102,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             case 56:// 8
             case 57:// 9
             case 65:// A
+            case 66:// B
             case 68:// D
             case 71:// G
             case 82:// R
@@ -168,6 +170,9 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                 return true;
             case 65:// A - add
                 this.mode.changeState(new bamboo.editor.CreateNodeState(this.mode));
+                return true;
+            case 66:// B - box select
+                this.mode.changeState(new bamboo.editor.BoxSelectState(this.mode, p));
                 return true;
             case 68:// D - duplicate
                 if(this.mode.editor.selectedNodes.length !== 0) {

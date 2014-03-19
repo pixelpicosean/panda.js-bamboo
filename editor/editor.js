@@ -95,7 +95,29 @@ bamboo.Editor = game.Class.extend({
         }
     },
 
+    findNodesInside: function(rect, layer) {
+        var nodes = [];
+        for(var i=0; i<this.nodes.length; i++) {
+            var n = this.nodes[i];
+            if(n.layer !== layer || n.node instanceof bamboo.nodes.Layer)
+                continue;
 
+            var r = n._cachedRect;
+            var a = [];
+            a.push(n.node.toWorldSpace(new Vec2(r.x,r.y)));
+            a.push(n.node.toWorldSpace(new Vec2(r.x,r.y+r.height)));
+            a.push(n.node.toWorldSpace(new Vec2(r.x+r.width,r.y)));
+            a.push(n.node.toWorldSpace(new Vec2(r.x+r.width,r.y+r.height)));
+            for(var j=0; j<4; j++) {
+                if(a[j].x >= rect.tl.x && a[j].x <= rect.br.x &&
+                   a[j].y >= rect.tl.y && a[j].y <= rect.br.y) {
+                    nodes.push(n.node);
+                    break;
+                }
+            }
+        }
+        return nodes;
+    },
 
     nodeAdded: function(node) {
         if(node instanceof bamboo.nodes.Layer) {
@@ -277,7 +299,7 @@ bamboo.Editor = game.Class.extend({
 
         // overrides from editor
         switch(keycode) {
-            case 66:// B
+            case 72:// H
             case 84:// T
             case 90:// Z
                 return true;
@@ -293,7 +315,7 @@ bamboo.Editor = game.Class.extend({
 
         // overrides from editor
         switch(keycode) {
-            case 66:// B - boundaries
+            case 72:// H - boundaries
                 this.boundaryLayer.boundariesVisible = !this.boundaryLayer.boundariesVisible;
                 return true;
             case 84:// T - properties
