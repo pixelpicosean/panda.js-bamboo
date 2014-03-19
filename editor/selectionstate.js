@@ -105,6 +105,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             case 71:// G
             case 82:// R
             case 83:// S
+            case 87:// W
                 return true;
         }
         return false;
@@ -224,6 +225,24 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                         pivot.y /= this.mode.editor.selectedNodes.length;
                     }
                     this.mode.changeState(new bamboo.editor.ScaleNodeState(this.mode, p, this.mode.editor.selectedNodes, pivot));
+                }
+                return true;
+            case 87:// W - where is node (move camera there)
+                if(this.mode.editor.selectedNodes.length !== 0) {
+                    var pivot;
+                    if(this.mode.editor.activeNode) {
+                        pivot = this.mode.editor.activeNode._editorNode.layer.toLocalSpace(this.mode.editor.activeNode.getWorldPosition());
+                    } else {
+                        pivot = new Vec2();
+                        for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
+                            var n = this.mode.editor.selectedNodes[i];
+                            pivot.add(n._editorNode.layer.toLocalSpace(n.getWorldPosition()));
+                        }
+                        pivot.x /= this.mode.editor.selectedNodes.length;
+                        pivot.y /= this.mode.editor.selectedNodes.length;
+                    }
+                    
+                    this.mode.editor.controller.moveCameraTo(pivot);
                 }
                 return true;
         }
