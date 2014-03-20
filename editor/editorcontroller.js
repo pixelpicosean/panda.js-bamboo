@@ -137,7 +137,7 @@ bamboo.EditorController = game.Class.extend({
 
         node.displayObject.parent.addChildAt(node.displayObject, idx-1);
         this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
-        this.editor.propertyPanel.nodeSelected(this.editor.selectedNode);
+        this.editor.propertyPanel.activeNodeChanged(node);
     },
     moveNodeDown: function(node) {
         var idx = node.displayObject.parent.children.indexOf(node.displayObject);
@@ -146,7 +146,7 @@ bamboo.EditorController = game.Class.extend({
 
         node.displayObject.parent.addChildAt(node.displayObject, idx+1);
         this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
-        this.editor.propertyPanel.nodeSelected(this.editor.selectedNode);
+        this.editor.propertyPanel.activeNodeChanged(node);
     },
     moveNodeTopMost: function(node) {
         var idx = node.displayObject.parent.children.indexOf(node.displayObject);
@@ -155,7 +155,7 @@ bamboo.EditorController = game.Class.extend({
 
         node.displayObject.parent.addChildAt(node.displayObject, node.displayObject.parent.children.length-1);
         this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
-        this.editor.propertyPanel.nodeSelected(this.editor.selectedNode);
+        this.editor.propertyPanel.activeNodeChanged(node);
     },
     moveNodeBottomMost: function(node) {
         var idx = node.displayObject.parent.children.indexOf(node.displayObject);
@@ -164,7 +164,7 @@ bamboo.EditorController = game.Class.extend({
 
         node.displayObject.parent.addChildAt(node.displayObject, 0);
         this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
-        this.editor.propertyPanel.nodeSelected(this.editor.selectedNode);
+        this.editor.propertyPanel.activeNodeChanged(node);
     },
 
     moveLayerUp: function(layer) {
