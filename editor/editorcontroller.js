@@ -69,12 +69,15 @@ bamboo.EditorController = game.Class.extend({
         this.editor.selectedNodes.push(node);
         node._editorNode.selectionRect.visible = true;
         node._editorNode.selectionAxis.visible = true;
+        node._editorNode.connectedToLine.visible = true;
         this.editor.nodeSelected(node);
 
         var markChildren = function(c) {
             for(var i=0; i<c.length; i++) {
                 var n = c[i];
                 n._editorNode.parentSelectionRect.visible = true;
+                n._editorNode.connectedToLine.visible = true;
+                // TODO: if(selectedNodes.indexOf(n) !== -1) continue
                 markChildren(n.world.getConnectedNodes(n));
             }
         };
@@ -90,6 +93,7 @@ bamboo.EditorController = game.Class.extend({
         this.editor.selectedNodes.splice(idx, 1);
         node._editorNode.selectionAxis.visible = false;
         node._editorNode.selectionRect.visible = false;
+        node._editorNode.connectedToLine.visible = false;
         this.editor.nodeDeselected(node);
 
         if(this.editor.activeNode === node)
@@ -98,10 +102,12 @@ bamboo.EditorController = game.Class.extend({
         var unmarkChildren = function(c, selectedNodes) {
             for(var i=0; i<c.length; i++) {
                 var n = c[i];
+                n._editorNode.parentSelectionRect.visible = false;
+                n._editorNode.connectedToLine.visible = false;
+
                 if(selectedNodes.indexOf(n) !== -1)
                     continue;
 
-                n._editorNode.parentSelectionRect.visible = false;
                 unmarkChildren(n.world.getConnectedNodes(n), selectedNodes);
             }
         };

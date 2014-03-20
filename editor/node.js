@@ -15,6 +15,7 @@ bamboo.Node.editor = game.Class.extend({
     selectionRect: null,
     selectionAxis: null,
     parentSelectionRect: null,
+    connectedToLine: null,
     activeRect: null,
     activeAxis: null,
     editableRect: null,
@@ -46,6 +47,8 @@ bamboo.Node.editor = game.Class.extend({
 
         this.parentSelectionRect = new game.Graphics();
         this.displayObject.addChild(this.parentSelectionRect);
+        this.connectedToLine = new game.Graphics();
+        this.displayObject.addChild(this.connectedToLine);
 
         this.activeRect = new game.Graphics();
         this.activeAxis = new game.Sprite(0,0,'src/bamboo/editor/media/axis_hover.png');
@@ -67,6 +70,9 @@ bamboo.Node.editor = game.Class.extend({
 
         this.editableRect.visible = false;
         this.layerChanged();
+
+        this.redrawConnectedToLine();
+        this.connectedToLine.visible = false;
     },
 
     layerChanged: function() {
@@ -83,6 +89,15 @@ bamboo.Node.editor = game.Class.extend({
 
     sizeChanged: function() {
         this.updateRect();
+    },
+
+    redrawConnectedToLine: function() {
+        this.connectedToLine.clear();
+        if(this.node.connectedTo !== this.layer) {
+            this.connectedToLine.lineStyle(1, 0xffffff);
+            this.connectedToLine.moveTo(0,0);
+            this.connectedToLine.lineTo(-this.node.position.x, -this.node.position.y);
+        }
     },
 
     updateRect: function() {
@@ -140,8 +155,10 @@ bamboo.Node.editor = game.Class.extend({
             this.sizeChanged();
         } else if(property === 'connectedTo') {
             var wp = oldValue.toWorldSpace(this.node.position);
-            this.setProperty('position', value.toLocalSpace(wp));
             this.layerChanged();
+            this.setProperty('position', value.toLocalSpace(wp));
+        } else if(property === 'position') {
+            this.redrawConnectedToLine();
         }
         for(var i=0; i<this.propertyChangeListeners.length; i++)
             this.propertyChangeListeners[i](property, value, oldValue);
