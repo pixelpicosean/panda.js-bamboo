@@ -45,7 +45,14 @@ bamboo.EditorController = game.Class.extend({
     },
 
     selectAllNodes: function() {
-        throw 'TODO';
+        for(var i=0; i<this.editor.nodes.length; i++) {
+            var n = this.editor.nodes[i];
+            if(n instanceof bamboo.nodes.Layer.editor)
+                continue;
+            if(n.layer === this.editor.activeLayer) {
+                this.selectNode(n.node);
+            }
+        }
     },
     deselectAllNodes: function() {
         for(var i=this.editor.selectedNodes.length-1; i>=0; i--) {
