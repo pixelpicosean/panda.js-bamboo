@@ -187,14 +187,18 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                         nodes.push(node);
                     }
 
+                    var active = null;
                     // fix connections
                     for(var i=0; i<nodes.length; i++) {
                         var idx = this.mode.editor.selectedNodes.indexOf(nodes[i].connectedTo);
                         if(idx !== -1) {
                             nodes[i].connectedTo = nodes[idx];
                         }
+                        if(this.mode.editor.selectedNodes[i] === this.mode.editor.activeNode)
+                            active = nodes[i];
                     }
                     this.mode.editor.controller.deselectAllNodes();
+                    this.mode.editor.controller.setActiveNode(active);
                     this.mode.changeState(new bamboo.editor.NewNodeState(this.mode, p, nodes));
                 }
                 return true;
