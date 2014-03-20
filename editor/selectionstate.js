@@ -105,6 +105,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             case 66:// B
             case 68:// D
             case 71:// G
+            case 80:// P
             case 82:// R
             case 83:// S
             case 87:// W
@@ -200,6 +201,23 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             case 71:// G - grab
                 if(this.mode.editor.selectedNodes.length !== 0) {
                     this.mode.changeState(new bamboo.editor.MoveNodeState(this.mode, p, this.mode.editor.selectedNodes));
+                }
+                return true;
+            case 80:// P - parent to / unparent
+                if(this.mode.shiftDown) {
+                    for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
+                        var n = this.mode.editor.selectedNodes[i];
+                        n._editorNode.setProperty('connectedTo', n._editorNode.layer);
+                    }
+                } else {
+                    if(this.mode.editor.selectedNodes.length > 1 && this.mode.editor.activeNode) {
+                        for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
+                            var n = this.mode.editor.selectedNodes[i];
+                            if(n === this.mode.editor.activeNode)
+                                continue;
+                            n._editorNode.setProperty('connectedTo', this.mode.editor.activeNode);
+                        }
+                    }
                 }
                 return true;
             case 82:// R - rotate
