@@ -260,28 +260,58 @@ bamboo.EditorScene = game.Scene.extend({
     },
 
     click: function(me) {
+        var handled = false;
         if(this.editor && me.originalEvent.button === 0)
-            this.editor.onclick();
+            handled = this.editor.onclick();
+        if(handled) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
     },
     onmousedown: function(e) {
+        var handled = false;
         if(this.editor)
-            this.editor.onmousedown(e.button);
+            handled = this.editor.onmousedown(e.button);
+        if(handled) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
     },
     onmousemove: function(e) {
+        var handled = false;
         if(this.editor)
-            this.editor.onmousemove(new Vec2(e.clientX, e.clientY));
+            handled = this.editor.onmousemove(new Vec2(e.clientX, e.clientY));
+        if(handled) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
     },
     onmouseup: function(e) {
+        var handled = false;
         if(this.editor)
-            this.editor.onmouseup(e.button);
+            handled = this.editor.onmouseup(e.button);
+        if(handled) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
     },
     onmouseout: function(e) {
+        var handled = false;
         if(this.editor)
-            this.editor.onmouseout();
+            handled = this.editor.onmouseout();
+        if(handled) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
     },
     onmousewheel: function(e) {
+        var handled = false;
         if(this.editor)
-            this.editor.onmousewheel(e.wheelDelta);
+            handled = this.editor.onmousewheel(e.wheelDelta);
+        if(handled) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
     },
     onkeydown: function(e) {
         if(!this.editor)

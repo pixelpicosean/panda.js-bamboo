@@ -242,6 +242,7 @@ bamboo.Editor = game.Class.extend({
 
         if(button === 1) {
             this.cameraOffset = this.prevMousePos.subtractc(this.cameraWorldPosition);
+            return true;
         }
     },
     onmousemove: function(p) {
@@ -259,8 +260,10 @@ bamboo.Editor = game.Class.extend({
         if(this.mode instanceof bamboo.editor.GameMode)
             return;// in game, do nothing
 
-        if(button === 1)
+        if(button === 1) {
             this.cameraOffset = null;
+            return true;
+        }
     },
     onmouseout: function() {
         if(this.mode instanceof bamboo.editor.GameMode)
