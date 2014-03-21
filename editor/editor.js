@@ -19,6 +19,7 @@ bamboo.Editor = game.Class.extend({
     overlay: null,
     world: null,
     nodes: [],
+    editorNodeVisibility: 2,// 0=hidden, 1=partly visible, 2=fully visible
 
     // for zooming
     _zoom: 1,
@@ -304,6 +305,7 @@ bamboo.Editor = game.Class.extend({
         switch(keycode) {
             case 72:// H
             case 84:// T
+            case 86:// V
             case 90:// Z
                 return true;
         }
@@ -323,6 +325,24 @@ bamboo.Editor = game.Class.extend({
                 return true;
             case 84:// T - properties
                 this.propertyPanel.visible = !this.propertyPanel.visible;
+                return true;
+            case 86:// V - editor node visibility
+                this.editorNodeVisibility = (this.editorNodeVisibility+1)%3;
+                switch(this.editorNodeVisibility) {
+                    case 0:
+                        for(var i=0; i<this.nodes.length; i++) {
+                            this.nodes[i].displayObject.visible = false;
+                        } break;
+                    case 1:
+                        for(var i=0; i<this.nodes.length; i++) {
+                            this.nodes[i].displayObject.visible = true;
+                            this.nodes[i].displayObject.alpha = 0.25;
+                        } break;
+                    case 2:
+                        for(var i=0; i<this.nodes.length; i++) {
+                            this.nodes[i].displayObject.alpha = 1.0;
+                        } break;
+                }
                 return true;
             case 90:// Z - boundary dim
                 this.boundaryLayer.dimVisible = !this.boundaryLayer.dimVisible;

@@ -12,6 +12,9 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
     worldTime: 0,
     mask: null,
 
+    editorNodes: [],
+    editorNodesVisible: false,
+
     init: function(editor) {
         this.super(editor);
         this.world = bamboo.World.createFromJSON(JSON.stringify(this.editor.world.toJSON()));
@@ -44,7 +47,8 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
         // adds editor graphics to the world
         for(var i=0; i<this.world.nodes.length; i++) {
             var node = this.world.nodes[i];
-            new bamboo.nodes[node.getClassName()].editor(node, null);
+            this.editorNodes.push(new bamboo.nodes[node.getClassName()].editor(node, null));
+            this.editorNodes[i].displayObject.visible = false;
         }
     },
 
@@ -62,6 +66,8 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
     onkeydown: function(keycode, p) {
         if(keycode === 27) // ESC
             return true;
+        if(keycode === 86)// V
+            return true;
         return false;
     },
     onkeyup: function(keycode, p) {
@@ -74,6 +80,11 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
             this.editor.propertyPanel.visible = this.wasPropertyPanelOpen;
             this.editor.controller.changeMode(new bamboo.editor.NodeMode(this.editor, p));
             return true;
+        } else if(keycode === 86) {// V
+            this.editorNodesVisible = !this.editorNodesVisible;
+            for(var i=0;i<this.editorNodes.length;i++) {
+                this.editorNodes[i].displayObject.visible = this.editorNodesVisible;
+            }
         }
         return false;
     }

@@ -18,6 +18,19 @@ bamboo.EditorController = game.Class.extend({
 
         var node = new bamboo.nodes[className](this.editor.world, properties);
         var editorNode = new bamboo.nodes[className].editor(node, editorNodeProperties);
+        switch(this.editor.editorNodeVisibility) {
+            case 0:
+                editorNode.displayObject.visible = false;
+                break;
+            case 1:
+                editorNode.displayObject.visible = true;
+                editorNode.displayObject.alpha = 0.25;
+                break;
+            case 2:
+                editorNode.displayObject.visible = true;
+                editorNode.displayObject.alpha = 1.0;
+                break;
+        }
         node.displayObject.updateTransform();
         this.editor.nodes.push(editorNode);
         this.editor.nodeAdded(node);
