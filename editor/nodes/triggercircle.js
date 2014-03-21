@@ -17,7 +17,7 @@ bamboo.nodes.TriggerCircle.editor = bamboo.nodes.Trigger.editor.extend({
         this.circle.beginFill(this.color, 0.8);
         this.circle.drawCircle(0,0,1);
         this.circle.scale = this.node.scale;
-        this.displayObject.addChild(this.circle);
+        this.debugDisplayObject.addChild(this.circle);
     },
 
     sizeChanged: function() {

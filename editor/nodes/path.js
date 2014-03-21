@@ -21,17 +21,17 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         this.lastMousePos = new Vec2();
         this.super(obj);
         this.lineNode = new game.Graphics();
-        this.displayObject.addChild(this.lineNode);
+        this.debugDisplayObject.addChild(this.lineNode);
         this.selectionCircle = new game.Graphics();
         this.selectionCircle.beginFill(0xff0000, 0.9);
         this.selectionCircle.drawCircle(0,0,6);
         this.selectionCircle.visible = false;
-        this.displayObject.addChild(this.selectionCircle);
+        this.debugDisplayObject.addChild(this.selectionCircle);
         this.hoverCircle = new game.Graphics();
         this.hoverCircle.beginFill(0xffff00, 0.6);
         this.hoverCircle.drawCircle(0,0,12);
         this.hoverCircle.visible = false;
-        this.displayObject.addChild(this.hoverCircle);
+        this.debugDisplayObject.addChild(this.hoverCircle);
         this.redrawPath();
     },
 

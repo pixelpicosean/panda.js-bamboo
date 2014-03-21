@@ -16,7 +16,7 @@ bamboo.nodes.Rotator.editor = bamboo.Node.editor.extend({
         this.super(node);
         this.icon = new game.Sprite(0,0,'src/bamboo/editor/media/rotator.png');
         this.icon.anchor = {x: 0.5, y: 0.5};
-        this.displayObject.addChild(this.icon);
+        this.debugDisplayObject.addChild(this.icon);
     },
 
     getBounds: function() {

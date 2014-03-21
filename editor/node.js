@@ -12,6 +12,7 @@ game.addAsset('src/bamboo/editor/media/axis_hover.png');
 bamboo.Node.editor = game.Class.extend({
     node: null,
     displayObject: null,
+    debugDisplayObject: null,
     selectionRect: null,
     selectionAxis: null,
     parentSelectionRect: null,
@@ -39,6 +40,8 @@ bamboo.Node.editor = game.Class.extend({
         this.displayObject = new game.Container();
         this.node.displayObject.addChild(this.displayObject);
 
+        this.debugDisplayObject = new game.Container();
+        this.displayObject.addChild(this.debugDisplayObject);
         this.selectionRect = new game.Graphics();
         this.selectionAxis = new game.Sprite(0,0, 'src/bamboo/editor/media/axis.png');
         this.selectionAxis.anchor = {x: 0.305, y: 0.305};

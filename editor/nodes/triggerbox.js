@@ -17,7 +17,7 @@ bamboo.nodes.TriggerBox.editor = bamboo.nodes.Trigger.editor.extend({
         this.box.beginFill(this.color, 0.8);
         this.box.drawRect(-1,-1,2,2);
         this.box.scale = this.node.scale;
-        this.displayObject.addChild(this.box);
+        this.debugDisplayObject.addChild(this.box);
     },
 
     sizeChanged: function() {

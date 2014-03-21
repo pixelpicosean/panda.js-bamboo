@@ -331,16 +331,16 @@ bamboo.Editor = game.Class.extend({
                 switch(this.editorNodeVisibility) {
                     case 0:
                         for(var i=0; i<this.nodes.length; i++) {
-                            this.nodes[i].displayObject.visible = false;
+                            this.nodes[i].debugDisplayObject.visible = false;
                         } break;
                     case 1:
                         for(var i=0; i<this.nodes.length; i++) {
-                            this.nodes[i].displayObject.visible = true;
-                            this.nodes[i].displayObject.alpha = 0.25;
+                            this.nodes[i].debugDisplayObject.visible = true;
+                            this.nodes[i].debugDisplayObject.alpha = 0.25;
                         } break;
                     case 2:
                         for(var i=0; i<this.nodes.length; i++) {
-                            this.nodes[i].displayObject.alpha = 1.0;
+                            this.nodes[i].debugDisplayObject.alpha = 1.0;
                         } break;
                 }
                 return true;
