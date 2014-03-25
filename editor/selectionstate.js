@@ -46,11 +46,15 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         if(!node)
             node = this.mode.editor.getNodeAt(this.mousePos, this.mode.editor.activeLayer);
 
-        if(!this.mode.shiftDown)
+        if(!this.mode.shiftDown && !this.mode.altDown)
             this.mode.editor.controller.deselectAllNodes();
 
-        this.mode.editor.controller.selectNode(node);
-        this.mode.editor.controller.setActiveNode(node);
+        if(this.mode.altDown) {
+            this.mode.editor.controller.deselectNode(node);
+        } else {
+            this.mode.editor.controller.selectNode(node);
+            this.mode.editor.controller.setActiveNode(node);
+        }
 
         game.system.canvas.ondrop = this.previousDropHandler;
     },
@@ -68,13 +72,23 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         }
     },
     selectGroup: function(number) {
-        this.mode.editor.controller.deselectAllNodes();
+        if(!this.mode.shiftDown && !this.mode.altDown)
+            this.mode.editor.controller.deselectAllNodes();
 
         if(!bamboo.editor.SelectionGroups)
             return;
 
-        for(var i=0; i<bamboo.editor.SelectionGroups[number].length; i++) {
-            this.mode.editor.controller.selectNode(bamboo.editor.SelectionGroups[number][i]);
+        if(this.mode.altDown) {
+            for(var i=0; i<bamboo.editor.SelectionGroups[number].length; i++) {
+                this.mode.editor.controller.deselectNode(bamboo.editor.SelectionGroups[number][i]);
+            }
+        } else {
+            for(var i=0; i<bamboo.editor.SelectionGroups[number].length; i++) {
+                this.mode.editor.controller.selectNode(bamboo.editor.SelectionGroups[number][i]);
+            }
+        }
+    },
+
         }
     },
 
@@ -169,8 +183,15 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                     this.selectGroup(number);
                 }
                 return true;
-            case 65:// A - add
-                this.mode.changeState(new bamboo.editor.CreateNodeState(this.mode));
+            case 65:// A - select all / add
+                if(this.mode.shiftDown) {
+                    this.mode.changeState(new bamboo.editor.CreateNodeState(this.mode));
+                } else {
+                    if(this.mode.editor.selectedNodes.length !== 0)
+                        this.mode.editor.controller.deselectAllNodes();
+                    else
+                        this.mode.editor.controller.selectAllNodes();
+                }
                 return true;
             case 66:// B - box select
                 this.mode.changeState(new bamboo.editor.BoxSelectState(this.mode, p));

@@ -127,7 +127,10 @@ bamboo.Node.editor = game.Class.extend({
         this.parentSelectionRect.drawRect(r.x-3,r.y-3,r.width+6,r.height+6);
 
         this.activeRect.clear();
-        this.activeRect.lineStyle(4, 0xffaa00, 0.5);
+        this.activeRect.beginFill(0xffaa00, 0.5);
+        this.activeRect.drawRect(r.x-10,r.y-10,r.width+20,r.height+20);
+        this.activeRect.endFill();
+        this.activeRect.lineStyle(4, 0xffaa00, 1);
         this.activeRect.drawRect(r.x-6,r.y-6,r.width+12,r.height+12);
 
         this.editableRect.clear();

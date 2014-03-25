@@ -27,8 +27,6 @@ bamboo.editor.BoxSelectState = bamboo.editor.State.extend({
 
     apply: function() {
         this.box.parent.removeChild(this.box);
-        if(!this.mode.shiftDown)
-            this.mode.editor.controller.deselectAllNodes();
 
         var tl = this.mode.editor.activeLayer.toWorldSpace(this.box.position);
         var br = this.mode.editor.activeLayer.toWorldSpace(this.size.add(this.box.position));
@@ -44,8 +42,15 @@ bamboo.editor.BoxSelectState = bamboo.editor.State.extend({
         }
         var r = {tl: tl, br: br};
         var nodes = this.mode.editor.findNodesInside(r, this.mode.editor.activeLayer);
-        for(var i=0; i<nodes.length; i++)
-            this.mode.editor.controller.selectNode(nodes[i]);
+        if(this.mode.altDown) {
+            for(var i=0; i<nodes.length; i++)
+                this.mode.editor.controller.deselectNode(nodes[i]);
+        } else {
+            for(var i=0; i<nodes.length; i++)
+                this.mode.editor.controller.selectNode(nodes[i]);
+            if(nodes.length === 1 && this.mode.editor.selectedNodes.length === 1)
+                this.mode.editor.controller.setActiveNode(nodes[0]);
+        }
     },
 
     onmousemove: function(p) {
