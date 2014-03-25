@@ -74,6 +74,7 @@ bamboo.Node.editor = game.Class.extend({
         this.editableRect.visible = false;
         this.layerChanged();
 
+        this.node.displayObject.updateTransform();
         this.redrawConnectedToLine();
         this.connectedToLine.visible = false;
     },
@@ -99,7 +100,8 @@ bamboo.Node.editor = game.Class.extend({
         if(this.node.connectedTo !== this.layer) {
             this.connectedToLine.lineStyle(1, 0xffffff);
             this.connectedToLine.moveTo(0,0);
-            this.connectedToLine.lineTo(-this.node.position.x, -this.node.position.y);
+            var p = this.node.toLocalSpace(this.node.connectedTo.getWorldPosition());
+            this.connectedToLine.lineTo(p.x*this.node.scale.x, p.y*this.node.scale.y);
         }
     },
 
@@ -164,7 +166,13 @@ bamboo.Node.editor = game.Class.extend({
             this.layerChanged();
             this.setProperty('position', value.toLocalSpace(wp));
         } else if(property === 'position') {
+            this.node.displayObject.updateTransform();
             this.redrawConnectedToLine();
+        } else if(property === 'rotation') {
+            this.node.displayObject.updateTransform();
+            this.redrawConnectedToLine();
+        } else if(property === 'scale') {
+            this.node.displayObject.updateTransform();
         }
         for(var i=0; i<this.propertyChangeListeners.length; i++)
             this.propertyChangeListeners[i](property, value, oldValue);

@@ -171,8 +171,10 @@ bamboo.Editor = game.Class.extend({
 
             var l = n.node.toLocalSpace(p);
             var r = n._cachedRect;
-            if(l.x >= r.x-6 && l.x <= r.x+r.width+6 &&
-               l.y >= r.y-6 && l.y <= r.y+r.height+6) {
+            var sx = 6/n.node.scale.x;
+            var sy = 6/n.node.scale.y;
+            if(l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
+               l.y >= r.y-sy && l.y <= r.y+r.height+sy) {
                 return n.node;
             }
         }
@@ -196,8 +198,10 @@ bamboo.Editor = game.Class.extend({
 
             var l = n.node.toLocalSpace(p);
             var r = n._cachedRect;
-            if(l.x >= r.x-6 && l.x <= r.x+r.width+6 &&
-               l.y >= r.y-6 && l.y <= r.y+r.height+6) {
+            var sx = 6/n.node.scale.x;
+            var sy = 6/n.node.scale.y;
+            if(l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
+               l.y >= r.y-sy && l.y <= r.y+r.height+sy) {
                 return n.node;
             }
         }
@@ -206,8 +210,10 @@ bamboo.Editor = game.Class.extend({
     isNodeAt: function(p, n) {
         var l = n.node.toLocalSpace(p);
         var r = n._cachedRect;
-        if(l.x >= r.x-6 && l.x <= r.x+r.width+6 &&
-           l.y >= r.y-6 && l.y <= r.y+r.height+6)
+        var sx = 6/n.node.scale.x;
+        var sy = 6/n.node.scale.y;
+        if(l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
+           l.y >= r.y-sy && l.y <= r.y+r.height+sy)
             return true;
         return false;
     },
