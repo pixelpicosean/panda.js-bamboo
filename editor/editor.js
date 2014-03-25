@@ -171,6 +171,9 @@ bamboo.Editor = game.Class.extend({
         return null;
     },
     getNextNodeAt: function(p, layer, node) {
+        // far enough flags z-order, so when finding next node, we first
+        // loop until we find the 'starting' node, and start searching from that
+        // TODO: we could probably use indexOf to find the starting index instead of looping
         var farEnough = false;
         for(var i=this.nodes.length-1; i>=0; i--) {
             if(!farEnough) {
@@ -180,12 +183,14 @@ bamboo.Editor = game.Class.extend({
             }
 
             var n = this.nodes[i];
+            if(layer && n.layer !== layer)
+                continue;
+
             var l = n.node.toLocalSpace(p);
             var r = n._cachedRect;
-            if(l.x >= r.x && l.x <= r.x+r.width &&
-               l.y >= r.y && l.y <= r.y+r.height) {
-                if(!layer || n.layer === layer)
-                    return n.node;
+            if(l.x >= r.x-6 && l.x <= r.x+r.width+6 &&
+               l.y >= r.y-6 && l.y <= r.y+r.height+6) {
+                return n.node;
             }
         }
         return null;
