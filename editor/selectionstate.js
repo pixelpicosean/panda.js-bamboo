@@ -89,9 +89,6 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         }
     },
 
-        }
-    },
-
     onmousemove: function(p) {
         this.mousePos = p;
     },
