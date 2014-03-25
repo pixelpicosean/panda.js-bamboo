@@ -50,6 +50,7 @@ bamboo.EditorScene = game.Scene.extend({
 
         this.editor = bamboo.Editor.createFromJSON(json);
         this.editor.images = images.sort(function(a,b) { return a.name > b.name ? 1 : -1;});
+        this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
         this.stage.addChild(this.editor.displayObject);
 
     },

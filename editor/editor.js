@@ -124,6 +124,9 @@ bamboo.Editor = game.Class.extend({
         if(node instanceof bamboo.nodes.Layer) {
             this.layers.push(node);
             this.layerAdded(node);
+        } else {
+            // force update for node-list
+            this.propertyPanel.activeLayerChanged(this.activeLayer);
         }
     },
     nodeRemoved: function(node) {
@@ -131,6 +134,9 @@ bamboo.Editor = game.Class.extend({
             var idx = this.layers.indexOf(node);
             this.layers.splice(idx, 1);
             this.layerRemoved(node);
+        } else {
+            // force update for node-list
+            this.propertyPanel.activeLayerChanged(this.activeLayer);
         }
     },
     layerAdded: function(layer) {
@@ -160,12 +166,14 @@ bamboo.Editor = game.Class.extend({
     getNodeAt: function(p, layer) {
         for(var i=this.nodes.length-1; i>=0; i--) {
             var n = this.nodes[i];
+            if(layer && n.layer !== layer)
+                continue;
+
             var l = n.node.toLocalSpace(p);
             var r = n._cachedRect;
-            if(l.x >= r.x && l.x <= r.x+r.width &&
-               l.y >= r.y && l.y <= r.y+r.height) {
-                if(!layer || n.layer === layer)
-                    return n.node;
+            if(l.x >= r.x-6 && l.x <= r.x+r.width+6 &&
+               l.y >= r.y-6 && l.y <= r.y+r.height+6) {
+                return n.node;
             }
         }
         return null;
@@ -198,8 +206,8 @@ bamboo.Editor = game.Class.extend({
     isNodeAt: function(p, n) {
         var l = n.node.toLocalSpace(p);
         var r = n._cachedRect;
-        if(l.x >= r.x && l.x <= r.x+r.width &&
-           l.y >= r.y && l.y <= r.y+r.height)
+        if(l.x >= r.x-6 && l.x <= r.x+r.width+6 &&
+           l.y >= r.y-6 && l.y <= r.y+r.height+6)
             return true;
         return false;
     },
