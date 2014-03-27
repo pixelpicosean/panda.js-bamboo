@@ -322,9 +322,9 @@ bamboo.Editor = game.Class.extend({
         return true;
     },
 
-    onkeydown: function(keycode, modifiers) {
+    onkeydown: function(keycode) {
         if(this.mode instanceof bamboo.editor.GameMode) {
-            return this.mode.onkeydown(keycode, modifiers, this.prevMousePos.clone());
+            return this.mode.onkeydown(keycode, this.prevMousePos.clone());
         }
 
         // overrides from editor
@@ -337,11 +337,11 @@ bamboo.Editor = game.Class.extend({
         }
 
         // if not overridden, pass to mode
-        return this.mode.onkeydown(keycode, modifiers, this.prevMousePos.clone());
+        return this.mode.onkeydown(keycode, this.prevMousePos.clone());
     },
-    onkeyup: function(keycode, modifiers) {
+    onkeyup: function(keycode) {
         if(this.mode instanceof bamboo.editor.GameMode) {
-            return this.mode.onkeyup(keycode, modifiers, this.prevMousePos.clone());
+            return this.mode.onkeyup(keycode, this.prevMousePos.clone());
         }
 
         // overrides from editor
@@ -376,7 +376,7 @@ bamboo.Editor = game.Class.extend({
         }
 
         // if not overridden, pass to mode
-        return this.mode.onkeyup(keycode, modifiers, this.prevMousePos.clone());
+        return this.mode.onkeyup(keycode, this.prevMousePos.clone());
     }
 });
 

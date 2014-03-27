@@ -93,7 +93,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         this.mousePos = p;
     },
 
-    onkeydown: function(keycode, modifiers, p) {
+    onkeydown: function(keycode, p) {
         switch(keycode) {
             case 9:// TAB
             case 13:// ENTER
@@ -124,7 +124,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         }
         return false;
     },
-    onkeyup: function(keycode, modifiers, p) {
+    onkeyup: function(keycode, p) {
         switch(keycode) {
             case 9:// TAB - edit mode
                 if(this.mode.editor.activeNode) {
@@ -174,14 +174,14 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             case 56:// 8
             case 57:// 9
                 var number = keycode - 48;
-                if(modifiers.ctrl) {
+                if(this.mode.ctrlDown) {
                     this.assignGroup(number);
                 } else {
                     this.selectGroup(number);
                 }
                 return true;
             case 65:// A - select all / add
-                if(modifiers.shift) {
+                if(this.mode.shiftDown) {
                     this.mode.changeState(new bamboo.editor.CreateNodeState(this.mode));
                 } else {
                     if(this.mode.editor.selectedNodes.length !== 0)
@@ -244,7 +244,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                 }
                 return true;
             case 80:// P - parent to / unparent
-                if(modifiers.shift) {
+                if(this.mode.shiftDown) {
                     for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
                         var n = this.mode.editor.selectedNodes[i];
                         n._editorNode.setProperty('connectedTo', n._editorNode.layer);

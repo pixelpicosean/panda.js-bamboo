@@ -14,6 +14,10 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
 
     timeDisplay: null,
     animationRunning: false,
+    shiftDown: false,
+    altDown: false,
+    ctrlDown: false,
+
 
     init: function(editor, p) {
         this.super(editor);
@@ -62,18 +66,40 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     onmousemove: function(p) {
         this.state.onmousemove(p);
     },
-    onkeydown: function(keycode, modifiers, p) {
+    onkeydown: function(keycode, p) {
         // overrides from mode
         switch(keycode) {
+            case 16:// SHIFT
+                this.shiftDown = true;
+                return true;
+            case 17:// CTRL
+                this.ctrlDown = true;
+                // pass to state
+                this.state.onkeydown(keycode, p);
+                return true;
+            case 18:// ALT
+                this.altDown = true;
+                return true;
             case 27:// ESC
             case 32:// SPACE
                 return true;
         }
-        return this.state.onkeydown(keycode, modifiers, p);
+        return this.state.onkeydown(keycode, p);
     },
-    onkeyup: function(keycode, modifiers, p) {
+    onkeyup: function(keycode, p) {
         // overrides from editor
         switch(keycode) {
+            case 16:// SHIFT
+                this.shiftDown = false;
+                return true;
+            case 17:// CTRL
+                this.ctrlDown = false;
+                // pass to state
+                this.state.onkeyup(keycode, p);
+                return true;
+            case 18:// ALT
+                 this.altDown = false;
+                 return true;
             case 27:// ESC - cancel
                 this.state.cancel();
                 this.changeState(new bamboo.editor.SelectionState(this, p));
@@ -85,7 +111,7 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
                     this.startAnimation();
                 return true;
         }
-        return this.state.onkeyup(keycode, modifiers, p);
+        return this.state.onkeyup(keycode, p);
     },
 
     changeState: function(newState) {
