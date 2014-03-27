@@ -326,7 +326,14 @@ bamboo.EditorScene = game.Scene.extend({
             return;
 
         var code = e.keyCode;
-        var handled = this.editor.onkeydown(code);
+        var modifiers = {};
+        if(e.shiftKey)
+            modifiers['shift'] = true;
+        if(e.altKey)
+            modifiers['alt'] = true;
+        if(e.ctrlKey)
+            modifiers['ctrl'] = true;
+        var handled = this.editor.onkeydown(code,modifiers);
         if(handled) {
             e.stopPropagation();
             e.preventDefault();
@@ -344,7 +351,14 @@ bamboo.EditorScene = game.Scene.extend({
             return;
 
         var code = e.keyCode;
-        var handled = this.editor.onkeyup(code);
+        var modifiers = {};
+        if(e.shiftKey)
+            modifiers['shift'] = true;
+        if(e.altKey)
+            modifiers['alt'] = true;
+        if(e.ctrlKey)
+            modifiers['ctrl'] = true;
+        var handled = this.editor.onkeyup(code,modifiers);
         if(handled) {
             e.stopPropagation();
             e.preventDefault();
