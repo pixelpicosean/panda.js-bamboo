@@ -250,15 +250,16 @@ bamboo.Editor = game.Class.extend({
     },
 
     onclick: function() {
-        this.mode.onclick(this.prevMousePos.clone());
+        return this.mode.onclick(this.prevMousePos.clone());
     },
     onmousedown: function(button) {
         // if mouse down in canvas, unfocus element
         if(document.activeElement !== document.body)
             document.activeElement.blur();
 
-        if(this.mode instanceof bamboo.editor.GameMode)
-            return;// in game, do nothing
+        if(this.mode instanceof bamboo.editor.GameMode) {
+            return this.mode.onmousedown();
+        }
 
         if(button === 1) {
             this.cameraOffset = this.prevMousePos.subtractc(this.cameraWorldPosition);
@@ -267,18 +268,20 @@ bamboo.Editor = game.Class.extend({
     },
     onmousemove: function(p) {
         this.prevMousePos = p;
-        if(this.mode instanceof bamboo.editor.GameMode)
-            return;// in game, do nothing
+        if(this.mode instanceof bamboo.editor.GameMode) {
+            return this.mode.onmousemove(p);
+        }
 
         if(this.cameraOffset) {
             this.targetCameraWorldPosition = p.subtractc(this.cameraOffset);
             this.cameraWorldPosition = this.targetCameraWorldPosition.clone();
         }
-        this.mode.onmousemove(p.clone());
+        return this.mode.onmousemove(p.clone());
     },
     onmouseup: function(button) {
-        if(this.mode instanceof bamboo.editor.GameMode)
-            return;// in game, do nothing
+        if(this.mode instanceof bamboo.editor.GameMode) {
+            return this.mode.onmouseup();
+        }
 
         if(button === 1) {
             this.cameraOffset = null;
@@ -286,15 +289,18 @@ bamboo.Editor = game.Class.extend({
         }
     },
     onmouseout: function() {
-        if(this.mode instanceof bamboo.editor.GameMode)
-            return;// in game, do nothing
+        if(this.mode instanceof bamboo.editor.GameMode) {
+            return this.mode.onmouseout();
+        }
 
-        if(this.cameraOffset)
+        if(this.cameraOffset) {
             this.cameraOffset = null;
+            return true;
+        }
     },
     onmousewheel: function(delta) {
         if(this.mode instanceof bamboo.editor.GameMode)
-            return;// in game, do nothing
+            return false;// in game, do nothing
 
         delta = Math.max(-1, Math.min(1, delta));
 
@@ -313,6 +319,7 @@ bamboo.Editor = game.Class.extend({
         this.zoomPosTween = new game.Tween(this.cameraWorldPosition, {x: this.targetCameraWorldPosition.x, y: this.targetCameraWorldPosition.y}, 250, {easing: game.Tween.Easing.Quadratic.Out, onUpdate: function() {self.cameraWorldPosition = this;}, onComplete: function() {self.zoomPosTween = null;}}).start();
 
         this.targetZoom = zoom;
+        return true;
     },
 
     onkeydown: function(keycode) {

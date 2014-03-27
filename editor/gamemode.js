@@ -60,7 +60,17 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
     onclick: function() {
         this.world.onclick();
     },
+    onmousedown: function(p) {
+        this.world.onmousedown();
+    },
     onmousemove: function(p) {
+        this.world.onmousemove(p);
+    },
+    onmouseup: function(p) {
+        this.world.onmouseup();
+    },
+    onmouseout: function() {
+        this.world.onmouseout();
     },
 
     onkeydown: function(keycode, p) {
@@ -68,7 +78,7 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
             return true;
         if(keycode === 86)// V
             return true;
-        return false;
+        return this.world.onkeydown(keycode);
     },
     onkeyup: function(keycode, p) {
         if(keycode === 27) {// ESC
@@ -86,7 +96,7 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
                 this.editorNodes[i].displayObject.visible = this.editorNodesVisible;
             }
         }
-        return false;
+        return this.world.onkeyup(keycode);
     }
 });
 
