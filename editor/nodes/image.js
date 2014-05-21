@@ -11,7 +11,7 @@ game.addAsset('src/bamboo/editor/media/image_placeholder.png');
 
 bamboo.nodes.Image.editor = bamboo.Node.editor.extend({
     init: function(node) {
-        this.super(node);
+        this._super(node);
         if(!node.image)
             this.setProperty('image', 'src/bamboo/editor/media/image_placeholder.png');
     },
@@ -36,7 +36,7 @@ bamboo.nodes.Image.editor = bamboo.Node.editor.extend({
             this.sizeChanged();
         if(key === 'anchor')
             this.updateRect();
-        this.super(key, value, oldValue);
+        this._super(key, value, oldValue);
     }
 });
 

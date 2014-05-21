@@ -9,7 +9,7 @@ game.module(
 
 bamboo.nodes.Trigger.editor = bamboo.Node.editor.extend({
     init: function(node) {
-        this.super(node);
+        this._super(node);
     },
 
     getBounds: function() {

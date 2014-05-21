@@ -28,7 +28,7 @@ bamboo.World = bamboo.Node.extend({
 
     init: function() {
         this.displayObject = new game.Container();
-        this.super(null,null);
+        this._super(null,null);
         this.cameraPosition = new Vec2();
     },
 

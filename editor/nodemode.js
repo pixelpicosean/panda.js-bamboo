@@ -13,6 +13,8 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     state: null,
 
     timeDisplay: null,
+    zoomDisplay: null,
+    zoomTween: null,
     animationRunning: false,
     shiftDown: false,
     altDown: false,
@@ -20,20 +22,38 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
 
 
     init: function(editor, p) {
-        this.super(editor);
+        this._super(editor);
         this.state = new bamboo.editor.SelectionState(this, p);
 
         this.timeDisplay = new PIXI.BitmapText('', {font:'28px Buu'});
         this.timeDisplay.position = new Vec2(20,20);
         this.editor.overlay.addChild(this.timeDisplay);
         this.timeDisplay.visible = false;
+
+        this.zoomDisplay = new PIXI.BitmapText('', {font:'28px Buu'});
+        this.zoomDisplay.position = new Vec2(20, 50);
+        this.editor.overlay.addChild(this.zoomDisplay);
+        this.zoomDisplay.visible = false;
     },
 
     exit: function() {
         if(this.animationRunning)
             this.stopAnimation();
         this.editor.overlay.removeChild(this.timeDisplay);
+        this.editor.overlay.removeChild(this.zoomDisplay);
         this.state.cancel();
+    },
+
+    zoomChanged: function(newZoom) {
+        this.zoomDisplay.visible = true;
+        this.zoomDisplay.alpha = 1.0;
+        this.zoomDisplay.setText((newZoom*100.0).toFixed(2)+'%');
+        if(this.zoomTween)
+            this.zoomTween.stop();
+        this.zoomTween = new game.Tween(this.zoomDisplay).to({alpha:0.0}, 300).easing(game.Tween.Easing.Quadratic.In);
+        self = this;
+        this.zoomTween.onComplete(function() {self.zoomTween = null;});
+        this.zoomTween.start();
     },
 
     update: function(dt) {

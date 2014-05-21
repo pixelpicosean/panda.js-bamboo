@@ -12,7 +12,7 @@ bamboo.nodes.TriggerBox.editor = bamboo.nodes.Trigger.editor.extend({
     color: 0xffaa00,
 
     init: function(node) {
-        this.super(node);
+        this._super(node);
         this.box = new game.Graphics();
         this.box.beginFill(this.color, 0.8);
         this.box.drawRect(-1,-1,2,2);
@@ -22,7 +22,7 @@ bamboo.nodes.TriggerBox.editor = bamboo.nodes.Trigger.editor.extend({
 
     sizeChanged: function() {
         this.box.scale = this.node.scale;
-        this.super();
+        this._super();
     }
 });
 

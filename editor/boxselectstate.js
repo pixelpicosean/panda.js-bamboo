@@ -11,7 +11,7 @@ bamboo.editor.BoxSelectState = bamboo.editor.State.extend({
     size: null,
 
     init: function(mode, p) {
-        this.super(mode);
+        this._super(mode);
 
         this.box = new game.Graphics();
         this.size = new Vec2();

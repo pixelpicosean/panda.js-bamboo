@@ -19,7 +19,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     previousDropHandler: null,
 
     init: function(mode, p) {
-        this.super(mode);
+        this._super(mode);
 
         this.mousePos = p;
 

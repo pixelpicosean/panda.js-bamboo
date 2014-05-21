@@ -12,7 +12,7 @@ bamboo.editor.CreateNodeState = bamboo.editor.State.extend({
     nameHasChanged: false,
 
     init: function(mode) {
-        this.super(mode);
+        this._super(mode);
 
         this.window = new bamboo.UiWindow(game.system.width/2-200, game.system.height/2-100, 400, 'auto');
         this.window.addTitle('Add Node');
@@ -20,8 +20,8 @@ bamboo.editor.CreateNodeState = bamboo.editor.State.extend({
         for(var i=0; i<bamboo.availableNodeTypes.length; i++)
             this.window.addInputSelectOption('type', bamboo.availableNodeTypes[i], bamboo.availableNodeTypes[i]);
 
-        this.window.addInputText('name', this.mode.editor.getUniqueName(bamboo.availableNodeTypes[0]), 'Name', this.nodeNameChanged.bind(this));
-        this.window.addInputSelect('connectedTo', 'Connected To');
+        this.window.addInputText('name', this.mode.editor.getUniqueName(bamboo.availableNodeTypes[0]), 'Name', 'Name of the node', this.nodeNameChanged.bind(this));
+        this.window.addInputSelect('connectedTo', 'Follow', 'Node that this node will follow');
         this.mode.editor.buildNodeDropdown(this.window, 'connectedTo', this.mode.editor.world);
         this.window.setInputSelectValue('connectedTo', this.mode.editor.activeLayer.name);
 

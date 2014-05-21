@@ -15,7 +15,7 @@ bamboo.editor.ScaleNodeState = bamboo.editor.State.extend({
     snap: false,
 
     init: function(mode, p, selectedNodes, pivot) {
-        this.super(mode);
+        this._super(mode);
 
         this.pivot = pivot;
 

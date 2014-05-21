@@ -12,7 +12,7 @@ bamboo.editor.NewNodeState = bamboo.editor.State.extend({
     startValues: [],
 
     init: function(mode, p, nodes) {
-        this.super(mode);
+        this._super(mode);
 
         for(var i=0; i<nodes.length; i++) {
             var n = nodes[i];

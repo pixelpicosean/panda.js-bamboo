@@ -10,8 +10,8 @@ bamboo.nodes.Image = bamboo.Node.extend({
     _image: null,
 
     init: function(world, properties) {
-        this.displayObject = new game.Sprite(0,0, new PIXI.Texture(new PIXI.BaseTexture()));
-        this.super(world, properties);
+        this.displayObject = new game.Sprite(new PIXI.Texture(new PIXI.BaseTexture()), 0,0);
+        this._super(world, properties);
     },
 });
 
@@ -21,7 +21,7 @@ Object.defineProperty(bamboo.nodes.Image.prototype, 'image', {
     },
     set: function(value) {
         this._image = value;
-        this.displayObject.setTexture(PIXI.Texture.fromFrame(this._image));
+        this.displayObject.setTexture(this._image);
     }
 });
 

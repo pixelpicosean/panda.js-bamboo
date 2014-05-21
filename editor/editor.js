@@ -314,9 +314,12 @@ bamboo.Editor = game.Class.extend({
         if(this.zoomTween) this.zoomTween.stop();
         if(this.zoomPosTween) this.zoomPosTween.stop();
 
+        if(this.mode instanceof bamboo.editor.NodeMode)
+            this.mode.zoomChanged(zoom);
+
         var self = this;
-        this.zoomTween = new game.Tween(this, {zoom: zoom}, 250, {easing: game.Tween.Easing.Quadratic.Out, onComplete: function() {self.zoomTween = null;}}).start();
-        this.zoomPosTween = new game.Tween(this.cameraWorldPosition, {x: this.targetCameraWorldPosition.x, y: this.targetCameraWorldPosition.y}, 250, {easing: game.Tween.Easing.Quadratic.Out, onUpdate: function() {self.cameraWorldPosition = this;}, onComplete: function() {self.zoomPosTween = null;}}).start();
+        this.zoomPosTween = new game.Tween(this.cameraWorldPosition).to({x: this.targetCameraWorldPosition.x,y:this.targetCameraWorldPosition.y}, 250).easing(game.Tween.Easing.Quadratic.Out).onUpdate(function() {self.cameraWorldPosition = this;}).onComplete(function() {self.zoomPosTween = null;}).start();
+        this.zoomTween = new game.Tween(this).to({zoom: zoom}, 250).easing(game.Tween.Easing.Quadratic.Out).onComplete(function() {self.zoomTween = null;}).start();
 
         this.targetZoom = zoom;
         return true;

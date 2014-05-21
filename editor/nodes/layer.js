@@ -11,7 +11,7 @@ bamboo.nodes.Layer.editor = bamboo.Node.editor.extend({
     _visible: true,
 
     init: function(node) {
-        this.super(node);
+        this._super(node);
     },
 
     getBounds: function() {

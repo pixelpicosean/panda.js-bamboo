@@ -17,7 +17,7 @@ bamboo.nodes.Rotator = bamboo.Node.extend({
 
     init: function(world, properties) {
         this.displayObject = new game.Container();
-        this.super(world, properties);
+        this._super(world, properties);
         this.needUpdates = true;
     },
 

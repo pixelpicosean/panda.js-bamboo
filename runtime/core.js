@@ -22,7 +22,7 @@ bamboo.Scene = game.Scene.extend({
         if(this.world) {
             this.worldTime += game.system.delta;
             this.world.update(this.worldTime);
-            this.super();
+            this._super();
         }
     },
 

@@ -16,7 +16,7 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
     editorNodesVisible: false,
 
     init: function(editor) {
-        this.super(editor);
+        this._super(editor);
         this.world = bamboo.World.createFromJSON(JSON.stringify(this.editor.world.toJSON()));
 
         this.wasPropertyPanelOpen = this.editor.propertyPanel.visible;

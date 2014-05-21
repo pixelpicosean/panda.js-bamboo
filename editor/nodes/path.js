@@ -19,7 +19,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
 
     init: function(obj) {
         this.lastMousePos = new Vec2();
-        this.super(obj);
+        this._super(obj);
         this.lineNode = new game.Graphics();
         this.debugDisplayObject.addChild(this.lineNode);
         this.selectionCircle = new game.Graphics();
@@ -58,7 +58,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
     enableEditMode: function(enabled) {
         if(enabled === this.editEnabled)
             return;
-        this.super(enabled);
+        this._super(enabled);
         this.editEnabled = enabled;
         if(enabled) {
             this.redrawPath();
@@ -87,7 +87,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
     },
 
     sizeChanged: function() {
-        this.super();
+        this._super();
         this.redrawPath();
     },
 
@@ -157,7 +157,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
             this.redrawPath();
             this.node.calculateLength();
         }
-        this.super(property, value, oldValue);
+        this._super(property, value, oldValue);
     },
 
     getClosestPointIndex: function(v) {

@@ -15,7 +15,7 @@ bamboo.nodes.PathFollower = bamboo.Node.extend({
 
     init: function(world, properties) {
         this.displayObject = new game.Container();
-        this.super(world, properties);
+        this._super(world, properties);
         if(!(this.connectedTo instanceof bamboo.nodes.Path))
             throw 'Path follower must be connected to path!';
         this.needUpdates = true;

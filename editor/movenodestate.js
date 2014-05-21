@@ -14,7 +14,7 @@ bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
     snap: false,
 
     init: function(mode, p, selectedNodes) {
-        this.super(mode);
+        this._super(mode);
 
         for(var i=0; i<selectedNodes.length; i++) {
             var n = selectedNodes[i];

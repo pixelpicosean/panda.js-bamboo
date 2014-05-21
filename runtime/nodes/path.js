@@ -16,7 +16,7 @@ bamboo.nodes.Path = bamboo.Node.extend({
 
     init: function(world, properties) {
         this.displayObject = new game.Container();
-        this.super(world, properties);
+        this._super(world, properties);
         if(!this.points || this.points.length === 0)
             this.points = [new Vec2()];
         this.calculateLength();

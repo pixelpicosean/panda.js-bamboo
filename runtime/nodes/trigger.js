@@ -10,8 +10,9 @@ bamboo.nodes.Trigger = bamboo.Node.extend({
     target: null,
 
     init: function(world, properties) {
-        this.displayObject = new game.Container();
-        this.super(world, properties);
+        if(this.displayObject === null)
+            this.displayObject = new game.Container();
+        this._super(world, properties);
     },
 
     hitTest: function(p) {

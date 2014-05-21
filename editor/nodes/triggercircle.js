@@ -12,7 +12,7 @@ bamboo.nodes.TriggerCircle.editor = bamboo.nodes.Trigger.editor.extend({
     color: 0xffaa00,
 
     init: function(node) {
-        this.super(node);
+        this._super(node);
         this.circle = new game.Graphics();
         this.circle.beginFill(this.color, 0.8);
         this.circle.drawCircle(0,0,1);
@@ -22,7 +22,7 @@ bamboo.nodes.TriggerCircle.editor = bamboo.nodes.Trigger.editor.extend({
 
     sizeChanged: function() {
         this.circle.scale = this.node.scale;
-        this.super();
+        this._super();
     }
 });
 

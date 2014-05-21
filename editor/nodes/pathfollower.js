@@ -13,8 +13,8 @@ bamboo.nodes.PathFollower.editor = bamboo.Node.editor.extend({
     icon: null,
 
     init: function(node) {
-        this.super(node);
-        this.icon = new game.Sprite(0,0,'src/bamboo/editor/media/path_follower.png');
+        this._super(node);
+        this.icon = new game.Sprite('src/bamboo/editor/media/path_follower.png', 0,0);
         this.icon.anchor = {x: 0.5, y: 0.5};
         this.debugDisplayObject.addChild(this.icon);
     },

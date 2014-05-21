@@ -12,6 +12,33 @@ game.module(
 )
 .body(function() {
 
+// TODO: HACKFIX these should be in panda.js
+game.Tween.Easing.getNamesList = function() {
+    var names = [];
+    for(var i in game.Tween.Easing) {
+        for(var o in game.Tween.Easing[i]) {
+            names.push(i + '.' + o);
+        }
+    }
+    return names;
+};
+
+game.Tween.Easing.getByName = function(name) {
+    name = name.split('.');
+    var type = name[1];
+    name = name[0];
+
+    return game.Tween.Easing[name][type];
+};
+
+game.Tween.Easing.getName = function(easing) {
+    for(var i in game.Tween.Easing) {
+        for(var o in game.Tween.Easing[i]) {
+            if(easing === game.Tween.Easing[i][o]) return i + '.' + o;
+        }
+    }
+};
+
 bamboo.EditorScene = game.Scene.extend({
     editor: null,
     filesystem: null,
@@ -45,7 +72,7 @@ bamboo.EditorScene = game.Scene.extend({
         }
 
         for(var i=0; i<images.length; i++) {
-            PIXI.TextureCache[images[i].name] = PIXI.Texture.fromImage('data:image/png;base64,'+images[i].data, true);
+            PIXI.TextureCache[images[i].name] = PIXI.Texture.fromImage('data:image/png;base64,'+images[i].data, false);
         }
 
         this.editor = bamboo.Editor.createFromJSON(json);
@@ -111,6 +138,7 @@ bamboo.EditorScene = game.Scene.extend({
 
                 // We have backup.json data available
 
+                //if(false) {
                 if(this.result === '' || !confirm('Load from backup?')) {
                     // if the file is empty(just created?) or if user doesn't want to use the backup
 
@@ -257,7 +285,7 @@ bamboo.EditorScene = game.Scene.extend({
     update: function() {
         if(this.editor)
             this.editor.update(game.system.delta);
-        this.super();
+        this._super();
     },
 
     click: function(me) {
@@ -405,7 +433,7 @@ bamboo.EditorScene = game.Scene.extend({
 
 
 bamboo.start = function() {
-    game.Debug.position.desktop = game.Debug.POSITION.TOPRIGHT;
+//    game.Debug.position.desktop = game.Debug.POSITION.TOPRIGHT;
     game.System.resize = false;
     game.System.center = false;
     game.System.left = 0;
