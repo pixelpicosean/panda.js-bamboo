@@ -2,12 +2,12 @@ game.module(
     'bamboo.editor.nodes.triggerbox'
 )
 .require(
-    'bamboo.editor.nodes.trigger',
+    'bamboo.editor.nodes.manualtrigger',
     'bamboo.runtime.nodes.triggerbox'
 )
 .body(function() {
 
-bamboo.nodes.TriggerBox.editor = bamboo.nodes.Trigger.editor.extend({
+bamboo.nodes.TriggerBox.editor = bamboo.nodes.ManualTrigger.editor.extend({
     box: null,
     color: 0xffaa00,
 

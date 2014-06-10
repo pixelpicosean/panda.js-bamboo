@@ -84,6 +84,10 @@ Vec2.prototype.multiplyAdd = function(v, f) {
     return this;
 };
 
+Vec2.prototype.multiplyAddc = function(v, f) {
+    return new Vec2(this.x + v.x*f, this.y + v.y*f);
+};
+
 Vec2.prototype.distance = function(v) {
     var x = this.x - v.x;
     var y = this.y - v.y;

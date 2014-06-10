@@ -2,12 +2,12 @@ game.module(
     'bamboo.editor.nodes.triggercircle'
 )
 .require(
-    'bamboo.editor.nodes.trigger',
+    'bamboo.editor.nodes.manualtrigger',
     'bamboo.runtime.nodes.triggercircle'
 )
 .body(function() {
 
-bamboo.nodes.TriggerCircle.editor = bamboo.nodes.Trigger.editor.extend({
+bamboo.nodes.TriggerCircle.editor = bamboo.nodes.ManualTrigger.editor.extend({
     circle: null,
     color: 0xffaa00,
 

@@ -7,12 +7,14 @@ game.module(
 .body(function() {
 
 bamboo.nodes.Trigger = bamboo.Node.extend({
-    target: null,
-
     init: function(world, properties) {
         if(this.displayObject === null)
             this.displayObject = new game.Container();
         this._super(world, properties);
+    },
+
+    trigger: function(activator) {
+        return false;
     },
 
     hitTest: function(p) {
@@ -20,7 +22,6 @@ bamboo.nodes.Trigger = bamboo.Node.extend({
     }
 });
 bamboo.nodes.Trigger.desc = {
-    target: new bamboo.Property(true, 'Target', 'Target', bamboo.Property.TYPE.TRIGGER)
 };
 
 });

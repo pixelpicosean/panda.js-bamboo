@@ -144,9 +144,7 @@ bamboo.World = bamboo.Node.extend({
                     if(this.triggerNodes[j].hitTest(lp)) {
                         // first touch (entry)
                         this.triggerNodesActivated.push(this.triggerNodes[j]);
-                        if(this.triggerNodes[j].target) {
-                            this.triggers[this.triggerNodes[j].target](this.triggerNodes[j], this.triggerActivators[i]);
-                        }
+                        this.triggerNodes[j].trigger(this.triggerActivators[i]);
                     }
                 } else if(!this.triggerNodes[j].hitTest(lp)) {
                     // after last touch (exit)
