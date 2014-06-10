@@ -18,6 +18,13 @@ bamboo.nodes.Layer = bamboo.Node.extend({
     update: function() {
          this.position = this.world.cameraPosition.multiplyc(-this.speedFactor);
     },
+
+    toJSON: function() {
+        var o = this._super();
+        o.properties.position.x = 0;
+        o.properties.position.y = 0;
+        return o;
+    }
 });
 
 bamboo.nodes.Layer.desc = {

@@ -52,12 +52,12 @@ bamboo.Editor = game.Class.extend({
         this.world = world;
         this.worldTargetPos = new Vec2(game.system.width/2 - this.world.screenSize.width/2,
                                               game.system.height/2 - this.world.screenSize.height/2);
-        this.world.position = this.worldTargetPos.clone();
+        this.world.position = new Vec2(0,0);
         this.displayObject.addChild(this.world.displayObject);
         this.overlay = new game.Container();
         this.displayObject.addChild(this.overlay);
 
-        this.targetCameraWorldPosition = new Vec2();
+        this.targetCameraWorldPosition = this.worldTargetPos.clone();
 
         this.boundaryLayer = new bamboo.BoundaryLayer(this);
         this.overlay.addChild(this.boundaryLayer.displayObject);
@@ -67,6 +67,7 @@ bamboo.Editor = game.Class.extend({
 
         // set initial mode
         this.mode = new bamboo.editor.NodeMode(this, new Vec2());
+        this.cameraWorldPosition = this.worldTargetPos.clone();
     },
 
     exit: function() {

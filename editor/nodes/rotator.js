@@ -14,7 +14,7 @@ bamboo.nodes.Rotator.editor = bamboo.Node.editor.extend({
 
     init: function(node) {
         this._super(node);
-        this.icon = new game.Sprite(0,0,'src/bamboo/editor/media/rotator.png');
+        this.icon = new game.Sprite('src/bamboo/editor/media/rotator.png');
         this.icon.anchor = {x: 0.5, y: 0.5};
         this.debugDisplayObject.addChild(this.icon);
     },
@@ -26,6 +26,7 @@ bamboo.nodes.Rotator.editor = bamboo.Node.editor.extend({
     propertyChanged: function(property, value) {
         if(property === 'rotation')
             this.node.startAngle = value;
+        this.node.update(0);
     }
 });
 
