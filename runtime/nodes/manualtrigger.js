@@ -13,6 +13,7 @@ bamboo.nodes.ManualTrigger = bamboo.nodes.Trigger.extend({
         if(this.displayObject === null)
             this.displayObject = new game.Container();
         this._super(world, properties);
+        this.displayObject.updateTransform();
     },
 
     trigger: function(activator) {
