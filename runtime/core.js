@@ -6,6 +6,7 @@ game.module(
 .require(
     'bamboo.runtime.node',
     'bamboo.runtime.world',
+    'bamboo.runtime.nodes.layer',
     'engine.scene'
 )
 .body(function() {

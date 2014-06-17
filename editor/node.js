@@ -6,8 +6,8 @@ game.module(
 )
 .body(function() {
 
-game.addAsset('src/bamboo/editor/media/axis.png');
-game.addAsset('src/bamboo/editor/media/axis_hover.png');
+game.addAsset('../src/bamboo/editor/media/axis.png');
+game.addAsset('../src/bamboo/editor/media/axis_hover.png');
 
 bamboo.Node.editor = game.Class.extend({
     node: null,
@@ -43,7 +43,7 @@ bamboo.Node.editor = game.Class.extend({
         this.debugDisplayObject = new game.Container();
         this.displayObject.addChild(this.debugDisplayObject);
         this.selectionRect = new game.Graphics();
-        this.selectionAxis = new game.Sprite('src/bamboo/editor/media/axis.png', 0,0);
+        this.selectionAxis = new game.Sprite('../src/bamboo/editor/media/axis.png', 0,0);
         this.selectionAxis.anchor = {x: 0.305, y: 0.305};
         this.displayObject.addChild(this.selectionRect);
         this.displayObject.addChild(this.selectionAxis);
@@ -54,7 +54,7 @@ bamboo.Node.editor = game.Class.extend({
         this.displayObject.addChild(this.connectedToLine);
 
         this.activeRect = new game.Graphics();
-        this.activeAxis = new game.Sprite('src/bamboo/editor/media/axis_hover.png', 0,0);
+        this.activeAxis = new game.Sprite('../src/bamboo/editor/media/axis_hover.png', 0,0);
         this.activeAxis.anchor = {x: 0.305, y: 0.305};
         this.displayObject.addChild(this.activeRect);
         this.displayObject.addChild(this.activeAxis);

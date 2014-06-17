@@ -8,6 +8,7 @@ game.module(
     'bamboo.runtime.core',
     'bamboo.editor.editor',
     'bamboo.editor.ui',
+    'bamboo.editor.nodes.layer',
     'bamboo.editor.node'
 )
 .body(function() {
