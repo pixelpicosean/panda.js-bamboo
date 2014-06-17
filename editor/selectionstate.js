@@ -95,6 +95,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
 
     onkeydown: function(keycode, p) {
         switch(keycode) {
+            case 8:// Backspace
             case 9:// TAB
             case 13:// ENTER
             case 33:// Page Up
@@ -155,6 +156,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                 }
                 return true;
             case 46:// DEL - delete
+            case 8:
                 if(this.mode.editor.selectedNodes.length !== 0) {
                     for(var i=this.mode.editor.selectedNodes.length-1; i>=0; i--) {
                         this.mode.editor.controller.deleteNode(this.mode.editor.selectedNodes[i]);
