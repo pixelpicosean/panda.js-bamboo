@@ -129,6 +129,14 @@ bamboo.World = bamboo.Node.extend({
             this.cameraPosition.y = pos.y;
     },
 
+    onclick: function() {},
+    onmousedown: function() {},
+    onmouseup: function() {},
+    onmousemove: function() {},
+    onmouseout: function() {},
+    onkeydown: function() {},
+    onkeyup: function() {},
+
     update: function(worldTime) {
 
         for(var i=0; i<this.updateableNodes.length; i++)
