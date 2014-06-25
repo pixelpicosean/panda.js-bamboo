@@ -61,6 +61,19 @@ Pressing Tab will change the editor to edit node mode. This allows to edit node 
 **Enter Game
 To enter game just press Enter. Press Esc to get back to editor from game.
 
+** Property panel visibility
+Property panel can be hidden/shown by pressing letter T.
+
+** Boundary lines visibility
+Can be toggled with letter H
+
+** Boundary dim visibility
+Can be toggled with letter Z.
+
+** Node editor visual visibility
+There is three states available: Fully visible, party opaque and transparent. The states can be toggled with letter V.
+
+
 
 
 
