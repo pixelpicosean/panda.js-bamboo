@@ -7,14 +7,14 @@ game.module(
 )
 .body(function() {
 
-game.addAsset('src/bamboo/editor/media/path_follower.png');
+game.addAsset('../src/bamboo/editor/media/path_follower.png');
 
 bamboo.nodes.PathFollower.editor = bamboo.Node.editor.extend({
     icon: null,
 
     init: function(node) {
         this._super(node);
-        this.icon = new game.Sprite('src/bamboo/editor/media/path_follower.png', 0,0);
+        this.icon = new game.Sprite('../src/bamboo/editor/media/path_follower.png', 0,0);
         this.icon.anchor = {x: 0.5, y: 0.5};
         this.debugDisplayObject.addChild(this.icon);
     },
