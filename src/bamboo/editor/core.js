@@ -58,14 +58,13 @@ bamboo.EditorScene = game.Scene.extend({
     loadFromZip: function(zipData, json) {
         var zip = new JSZip(zipData, {base64: true});
         var jsonText = json;
-        if(!jsonText)
-            jsonText = zip.file('level.json').asText();
+        if (!jsonText) jsonText = zip.file('level.json').asText();
 
         var zipImages = zip.folder('level').file(/.*/);
 
         // load level images
         var images = [];
-        for(var i=0; i<zipImages.length; i++) {
+        for (var i=0; i<zipImages.length; i++) {
             var imgData = JSZip.base64.encode(zipImages[i].asBinary());
             var imgName = zipImages[i].name;//.slice(6);// 'level/'
             images.push({name:imgName, data:imgData});
@@ -108,7 +107,7 @@ bamboo.EditorScene = game.Scene.extend({
             reader.onloadend = function(e) {
 
                 // We have backup.json data available
-                if(this.result === '' || !confirm('Load from backup?')) {
+                if (this.result === '' || !confirm('Load from backup?')) {
                     // if the file is empty(just created?) or if user doesn't want to use the backup
 
                     var json = '{"world":"World", "images":{}, "nodes": [{"class":"Layer", "properties":{"name":"main","position":{"x":0,"y":0},"rotation":0,"scale":{"x":1, "y":1},"connectedTo":null, "speedFactor":1 }}]}';
@@ -181,7 +180,7 @@ bamboo.EditorScene = game.Scene.extend({
                 fw.onwriteend = function() {
                     // now we have the tmp_backup.json data ready on fs
                     // move the old one to oldbackup.json (for safety)
-                    if(self.imagesFile) {
+                    if (self.imagesFile) {
                         self.imagesFile.moveTo(self.filesystem.root, 'oldimages.zip', function(e){
                             self.imagesFile = e;
                             // moving is done, now move the new backup to backup.json
@@ -212,17 +211,17 @@ bamboo.EditorScene = game.Scene.extend({
         var json = this.editor.world.toJSON();
         var images = this.editor.images;
         var neededImages = {};
-        for(var i=0; i<json.nodes.length; i++) {
+        for (var i=0; i<json.nodes.length; i++) {
             var node = json.nodes[i];
-            if(!node.properties.image || node.properties.image === '')
+            if (!node.properties.image || node.properties.image === '')
                 continue;
 
             var imgName = node.properties.image;//.slice(6);
-            if(neededImages.hasOwnProperty(imgName))
+            if (neededImages.hasOwnProperty(imgName))
                 continue;
 
-            for(var j=0; j<images.length; j++) {
-                if(images[j].name === imgName) {
+            for (var j=0; j<images.length; j++) {
+                if (images[j].name === imgName) {
                     neededImages[imgName] = images[j].data;
                     break;
                 }
@@ -235,7 +234,7 @@ bamboo.EditorScene = game.Scene.extend({
         var js = 'game.module(\n    \'level\'\n)\n.body(function() {\n';
         js += 'game.level = JSON.stringify('+jsonText+');\n\n';
 
-        for(var name in neededImages) {
+        for (var name in neededImages) {
             levelFolder.file(name.slice(6), neededImages[name], {base64:true});
             js += '    game.addAsset(\''+name+'\');\n';
         }
@@ -249,16 +248,16 @@ bamboo.EditorScene = game.Scene.extend({
     },
 
     update: function() {
-        if(this.editor)
+        if (this.editor)
             this.editor.update(game.system.delta);
         this._super();
     },
 
     click: function(me) {
         var handled = false;
-        if(this.editor && me.originalEvent.button === 0)
+        if (this.editor && me.originalEvent.button === 0)
             handled = this.editor.onclick();
-        if(handled) {
+        if (handled) {
             e.stopPropagation();
             e.preventDefault();
         }
@@ -266,9 +265,9 @@ bamboo.EditorScene = game.Scene.extend({
 
     onmousedown: function(e) {
         var handled = false;
-        if(this.editor)
+        if (this.editor)
             handled = this.editor.onmousedown(e.button);
-        if(handled) {
+        if (handled) {
             e.stopPropagation();
             e.preventDefault();
         }
@@ -276,9 +275,9 @@ bamboo.EditorScene = game.Scene.extend({
 
     onmousemove: function(e) {
         var handled = false;
-        if(this.editor)
+        if (this.editor)
             handled = this.editor.onmousemove(new Vec2(e.clientX, e.clientY));
-        if(handled) {
+        if (handled) {
             e.stopPropagation();
             e.preventDefault();
         }
@@ -286,9 +285,9 @@ bamboo.EditorScene = game.Scene.extend({
 
     onmouseup: function(e) {
         var handled = false;
-        if(this.editor)
+        if (this.editor)
             handled = this.editor.onmouseup(e.button);
-        if(handled) {
+        if (handled) {
             e.stopPropagation();
             e.preventDefault();
         }
@@ -296,9 +295,9 @@ bamboo.EditorScene = game.Scene.extend({
 
     onmouseout: function(e) {
         var handled = false;
-        if(this.editor)
+        if (this.editor)
             handled = this.editor.onmouseout();
-        if(handled) {
+        if (handled) {
             e.stopPropagation();
             e.preventDefault();
         }
@@ -306,47 +305,40 @@ bamboo.EditorScene = game.Scene.extend({
 
     onmousewheel: function(e) {
         var handled = false;
-        if(this.editor)
+        if (this.editor)
             handled = this.editor.onmousewheel(e.wheelDelta);
-        if(handled) {
+        if (handled) {
             e.stopPropagation();
             e.preventDefault();
         }
     },
 
     onkeydown: function(e) {
-        if(!this.editor)
-            return;
+        if (!this.editor) return;
 
         var tag = e.target.tagName;
-        if(tag === 'INPUT' || tag === 'TEXTAREA')
-            return;
-
-        if(e.type !== 'keydown')
-            return;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.type !== 'keydown') return;
 
         var code = e.keyCode;
+        if (code === 82) return;
         var handled = this.editor.onkeydown(code);
-        if(handled) {
+        if (handled) {
             e.stopPropagation();
             e.preventDefault();
         }
     },
 
     onkeyup: function(e) {
-        if(!this.editor)
-            return;
+        if (!this.editor) return;
 
         var tag = e.target.tagName;
-        if(tag === 'INPUT' || tag === 'TEXTAREA')
-            return;
-
-        if(e.type !== 'keyup')
-            return;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.type !== 'keyup') return;
 
         var code = e.keyCode;
         var handled = this.editor.onkeyup(code);
-        if(handled) {
+        if (handled) {
             e.stopPropagation();
             e.preventDefault();
         }
@@ -371,7 +363,7 @@ bamboo.EditorScene = game.Scene.extend({
         var self = this;
         e.preventDefault();
 
-        if(e.dataTransfer.files.length !== 1) {
+        if (e.dataTransfer.files.length !== 1) {
             alert('You must drop only one project file!');
             return false;
         }
@@ -379,7 +371,7 @@ bamboo.EditorScene = game.Scene.extend({
         var file = e.dataTransfer.files[0];
         var parts = file.name.split('.');
         var suffix = parts[parts.length-1];
-        if(suffix !== 'zip') {
+        if (suffix !== 'zip') {
             alert('Project file must be a zip file!');
             return false;
         }

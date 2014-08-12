@@ -8,10 +8,9 @@ game.module(
 .body(function() {
 
 bamboo.nodes.ManualTrigger.editor = bamboo.nodes.Trigger.editor.extend({
-
     init: function(node) {
         this._super(node);
-    },
+    }
 });
 
 });

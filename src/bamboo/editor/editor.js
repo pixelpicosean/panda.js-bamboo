@@ -71,20 +71,19 @@ bamboo.Editor = game.Class.extend({
     },
 
     getUniqueName: function(name) {
-        if(!this.world.findNode(name))
-            return name;
+        if (!this.world.findNode(name)) return name;
 
         var parts = name.split('.');
-        if(parts.length > 1) {
+        if (parts.length > 1) {
             var suffix = parts[parts.length-1];
-            if(suffix.length === 4 && !isNaN(parseFloat(suffix)) && isFinite(suffix))
+            if (suffix.length === 4 && !isNaN(parseFloat(suffix)) && isFinite(suffix))
                 name = name.slice(0, name.length-5);
         }
 
         var i = 1;
-        while(true) {
+        while (true) {
             var newName = name+'.'+('000'+i).slice(-4);
-            if(!this.world.findNode(newName))
+            if (!this.world.findNode(newName))
                 return newName;
 
             i++;
@@ -95,7 +94,7 @@ bamboo.Editor = game.Class.extend({
         var nodes = [];
         for(var i=0; i<this.nodes.length; i++) {
             var n = this.nodes[i];
-            if(n.layer !== layer || n.node instanceof bamboo.nodes.Layer)
+            if (n.layer !== layer || n.node instanceof bamboo.nodes.Layer)
                 continue;
 
             var r = n._cachedRect;
@@ -105,7 +104,7 @@ bamboo.Editor = game.Class.extend({
             a.push(n.node.toWorldSpace(new Vec2(r.x+r.width,r.y)));
             a.push(n.node.toWorldSpace(new Vec2(r.x+r.width,r.y+r.height)));
             for(var j=0; j<4; j++) {
-                if(a[j].x >= rect.tl.x && a[j].x <= rect.br.x &&
+                if (a[j].x >= rect.tl.x && a[j].x <= rect.br.x &&
                    a[j].y >= rect.tl.y && a[j].y <= rect.br.y) {
                     nodes.push(n.node);
                     break;
@@ -116,20 +115,23 @@ bamboo.Editor = game.Class.extend({
     },
 
     nodeAdded: function(node) {
-        if(node instanceof bamboo.nodes.Layer) {
+        if (node instanceof bamboo.nodes.Layer) {
             this.layers.push(node);
             this.layerAdded(node);
-        } else {
+        }
+        else {
             // force update for node-list
             this.propertyPanel.activeLayerChanged(this.activeLayer);
         }
     },
+
     nodeRemoved: function(node) {
-        if(node instanceof bamboo.nodes.Layer) {
+        if (node instanceof bamboo.nodes.Layer) {
             var idx = this.layers.indexOf(node);
             this.layers.splice(idx, 1);
             this.layerRemoved(node);
-        } else {
+        }
+        else {
             // force update for node-list
             this.propertyPanel.activeLayerChanged(this.activeLayer);
         }
@@ -162,16 +164,16 @@ bamboo.Editor = game.Class.extend({
     },
 
     getNodeAt: function(p, layer) {
-        for(var i=this.nodes.length-1; i>=0; i--) {
+        for (var i=this.nodes.length-1; i>=0; i--) {
             var n = this.nodes[i];
-            if(layer && n.layer !== layer)
+            if (layer && n.layer !== layer)
                 continue;
 
             var l = n.node.toLocalSpace(p);
             var r = n._cachedRect;
             var sx = 6/n.node.scale.x;
             var sy = 6/n.node.scale.y;
-            if(l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
+            if (l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
                l.y >= r.y-sy && l.y <= r.y+r.height+sy) {
                 return n.node;
             }
@@ -185,21 +187,21 @@ bamboo.Editor = game.Class.extend({
         // TODO: we could probably use indexOf to find the starting index instead of looping
         var farEnough = false;
         for(var i=this.nodes.length-1; i>=0; i--) {
-            if(!farEnough) {
-                if(this.nodes[i] === node)
+            if (!farEnough) {
+                if (this.nodes[i] === node)
                     farEnough = true;
                 continue;
             }
 
             var n = this.nodes[i];
-            if(layer && n.layer !== layer)
+            if (layer && n.layer !== layer)
                 continue;
 
             var l = n.node.toLocalSpace(p);
             var r = n._cachedRect;
             var sx = 6/n.node.scale.x;
             var sy = 6/n.node.scale.y;
-            if(l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
+            if (l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
                l.y >= r.y-sy && l.y <= r.y+r.height+sy) {
                 return n.node;
             }
@@ -212,7 +214,7 @@ bamboo.Editor = game.Class.extend({
         var r = n._cachedRect;
         var sx = 6/n.node.scale.x;
         var sy = 6/n.node.scale.y;
-        if(l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
+        if (l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
            l.y >= r.y-sy && l.y <= r.y+r.height+sy)
             return true;
         return false;
@@ -225,7 +227,7 @@ bamboo.Editor = game.Class.extend({
             for(var i=0; i<nodes.length; i++) {
                 var p = prefix;
                 var np = prefix;
-                if(i === nodes.length-1) {
+                if (i === nodes.length-1) {
                     p += '┗ ';
                     np += '  ';
                 } else {
@@ -254,14 +256,14 @@ bamboo.Editor = game.Class.extend({
 
     onmousedown: function(button) {
         // if mouse down in canvas, unfocus element
-        if(document.activeElement !== document.body)
+        if (document.activeElement !== document.body)
             document.activeElement.blur();
 
-        if(this.mode instanceof bamboo.editor.GameMode) {
+        if (this.mode instanceof bamboo.editor.GameMode) {
             return this.mode.onmousedown();
         }
 
-        if(button === 1) {
+        if (button === 1) {
             this.cameraOffset = this.prevMousePos.subtractc(this.cameraWorldPosition);
             return true;
         }
@@ -269,11 +271,11 @@ bamboo.Editor = game.Class.extend({
 
     onmousemove: function(p) {
         this.prevMousePos = p;
-        if(this.mode instanceof bamboo.editor.GameMode) {
+        if (this.mode instanceof bamboo.editor.GameMode) {
             return this.mode.onmousemove(p);
         }
 
-        if(this.cameraOffset) {
+        if (this.cameraOffset) {
             this.targetCameraWorldPosition = p.subtractc(this.cameraOffset);
             this.cameraWorldPosition = this.targetCameraWorldPosition.clone();
         }
@@ -281,44 +283,44 @@ bamboo.Editor = game.Class.extend({
     },
 
     onmouseup: function(button) {
-        if(this.mode instanceof bamboo.editor.GameMode) {
+        if (this.mode instanceof bamboo.editor.GameMode) {
             return this.mode.onmouseup();
         }
 
-        if(button === 1) {
+        if (button === 1) {
             this.cameraOffset = null;
             return true;
         }
     },
 
     onmouseout: function() {
-        if(this.mode instanceof bamboo.editor.GameMode) {
+        if (this.mode instanceof bamboo.editor.GameMode) {
             return this.mode.onmouseout();
         }
 
-        if(this.cameraOffset) {
+        if (this.cameraOffset) {
             this.cameraOffset = null;
             return true;
         }
     },
 
     onmousewheel: function(delta) {
-        if(this.mode instanceof bamboo.editor.GameMode)
+        if (this.mode instanceof bamboo.editor.GameMode)
             return false;// in game, do nothing
 
         delta = Math.max(-1, Math.min(1, delta));
 
         var zoom = this.targetZoom * Math.pow(1.5, delta);
-        if(zoom < 0.05 || zoom > 6)
+        if (zoom < 0.05 || zoom > 6)
             return;
 
         var offset = this.prevMousePos.subtractc(this.targetCameraWorldPosition);
         this.targetCameraWorldPosition = this.prevMousePos.subtractc(offset.multiply(Math.pow(1.5, delta)));
 
-        if(this.zoomTween) this.zoomTween.stop();
-        if(this.zoomPosTween) this.zoomPosTween.stop();
+        if (this.zoomTween) this.zoomTween.stop();
+        if (this.zoomPosTween) this.zoomPosTween.stop();
 
-        if(this.mode instanceof bamboo.editor.NodeMode)
+        if (this.mode instanceof bamboo.editor.NodeMode)
             this.mode.zoomChanged(zoom);
 
         var self = this;
@@ -330,12 +332,12 @@ bamboo.Editor = game.Class.extend({
     },
 
     onkeydown: function(keycode) {
-        if(this.mode instanceof bamboo.editor.GameMode) {
+        if (this.mode instanceof bamboo.editor.GameMode) {
             return this.mode.onkeydown(keycode, this.prevMousePos.clone());
         }
 
         // overrides from editor
-        switch(keycode) {
+        switch (keycode) {
             case 72:// H
             case 84:// T
             case 86:// V
@@ -348,12 +350,12 @@ bamboo.Editor = game.Class.extend({
     },
 
     onkeyup: function(keycode) {
-        if(this.mode instanceof bamboo.editor.GameMode) {
+        if (this.mode instanceof bamboo.editor.GameMode) {
             return this.mode.onkeyup(keycode, this.prevMousePos.clone());
         }
 
         // overrides from editor
-        switch(keycode) {
+        switch (keycode) {
             case 72:// H - boundaries
                 this.boundaryLayer.boundariesVisible = !this.boundaryLayer.boundariesVisible;
                 return true;
@@ -415,7 +417,7 @@ Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
         w.position.y = this.worldTargetPos.y + this.zoom*(w.cameraPosition.y - tgtCamPos.y);
 
         this.boundaryLayer.updateBoundary();
-        for(var i=0; i<this.layers.length; i++)
+        for (var i=0; i<this.layers.length; i++)
             this.layers[i].update(0);
     }
 });
@@ -425,7 +427,7 @@ bamboo.Editor.createFromJSON = function(levelJSON) {
     var world = new bamboo[jsonWorld.world]();
     world.images = jsonWorld.images;
     var editor = new bamboo.Editor(world);
-    for(var i=0; i<jsonWorld.nodes.length; i++) {
+    for (var i=0; i<jsonWorld.nodes.length; i++) {
         var node = jsonWorld.nodes[i];
         editor.controller.createNode(node.class, node.properties);
     }

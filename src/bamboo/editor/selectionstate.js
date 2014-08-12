@@ -71,6 +71,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             bamboo.editor.SelectionGroups[number].push(this.mode.editor.selectedNodes[i]);
         }
     },
+
     selectGroup: function(number) {
         if(!this.mode.shiftDown && !this.mode.altDown)
             this.mode.editor.controller.deselectAllNodes();
@@ -125,6 +126,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         }
         return false;
     },
+
     onkeyup: function(keycode, p) {
         switch(keycode) {
             case 9:// TAB - edit mode
