@@ -2,9 +2,9 @@ Directory structure
 -------------------
 
     src/
-      game/                    - source files containing game logic and game-specific components
-      engine/                  - source files for panda.js graphics engine
-      bamboo/                  - sources for this framework
+      game/                - source files containing game logic and game-specific components
+      engine/              - source files for panda.js graphics engine
+      bamboo/              - sources for this framework
 
     runtime/               - files required to run the game
 
@@ -29,31 +29,24 @@ Directory structure
       media/               - contains images used in editor ui
       nodes/               - contains the editor node representations of the basic runtime nodes
       
-
-
-
-HOWTO CREATE A NEW NODE ( GAME COMPONENT )
-------------------------------------------
+How to create a new node (game component)
+-----------------------------------------
 
 There is some basic components included in the package. If there is one missing or you just want to add new functionality to some existing one, here is how to do it:
 
-1) Derive your node from either bamboo.Node or some of the existing ones from bamboo.nodes.*
+1. Derive your node from either bamboo.Node or some of the existing ones from bamboo.nodes.*
 In this class you should include code only needed in game side, e.g. drawing, reactions to changes in world, time, etc.
 The class must be placed under bamboo.nodes namespace so the runtime will know from where to instantiate the class.
 
-2) Create property-descriptor for the new node
+2. Create property-descriptor for the new node
 This descriptor will provide the necessary information to the runtime to populate the world during loading phase. The descriptor should list all properties from the node that must be saved to level-JSON.
 
-3) Derive editor node from the same class editor node you derived the node.
+3. Derive editor node from the same class editor node you derived the node.
 E.g if you derived bamboo.nodes.Image you must derive your editor node from bamboo.nodes.Image.editor.
 This class gives you possibility to draw and present some additional information to the editor user. This class will be automatically instantiated only in the editor.
 
-
-
-
-
-HOWTO CREATE A NEW GAME FROM SCRATCH
-------------------------------------
+How to create a new game from scratch
+-------------------------------------
 
 Derive your own world from bamboo.World
 Here you can handle inputs from the user, listen changes in nodes and react to anything that happens in the game.
@@ -62,5 +55,3 @@ This class should as minimum provide a getClassName() method which returns the c
 In bare minimum you can now e.g. create a game in which all nodes try to follow your finger, or tapping the screen will add a new node.
 
 Normally you might want to create a player node (see above) in where you could handle physics, inputs related to player movement, etc.
-
-
