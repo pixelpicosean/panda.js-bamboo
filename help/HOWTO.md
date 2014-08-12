@@ -1,11 +1,10 @@
-HOWTO
------
+How to
+------
 
-**Move Camera
+* Move Camera
 Camera (viewport) can be translated by pressing and holdinf middle mouse button and moving the mouse.
 
-
-**Zoom
+* Zoom
 Scrolling with the mouse wheel zooms the viewport
 
 **Add a Node
