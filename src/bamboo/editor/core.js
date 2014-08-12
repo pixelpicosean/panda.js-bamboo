@@ -264,10 +264,7 @@ bamboo.EditorScene = game.Scene.extend({
     },
 
     onmousedown: function(e) {
-        var handled = false;
-        if (this.editor)
-            handled = this.editor.onmousedown(e.button);
-        if (handled) {
+        if (this.editor && this.editor.onmousedown(e.button)) {
             e.stopPropagation();
             e.preventDefault();
         }

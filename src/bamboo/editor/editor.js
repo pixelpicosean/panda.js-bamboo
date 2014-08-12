@@ -338,6 +338,9 @@ bamboo.Editor = game.Class.extend({
 
         // overrides from editor
         switch (keycode) {
+            case 67:// C
+                this.cameraOffset = this.prevMousePos.subtractc(this.cameraWorldPosition);
+                return true;
             case 72:// H
             case 84:// T
             case 86:// V
@@ -356,6 +359,9 @@ bamboo.Editor = game.Class.extend({
 
         // overrides from editor
         switch (keycode) {
+            case 67:// C
+                this.cameraOffset = null;
+                return true;
             case 72:// H - boundaries
                 this.boundaryLayer.boundariesVisible = !this.boundaryLayer.boundariesVisible;
                 return true;
@@ -366,16 +372,16 @@ bamboo.Editor = game.Class.extend({
                 this.editorNodeVisibility = (this.editorNodeVisibility+1)%3;
                 switch(this.editorNodeVisibility) {
                     case 0:
-                        for(var i=0; i<this.nodes.length; i++) {
+                        for (var i=0; i<this.nodes.length; i++) {
                             this.nodes[i].debugDisplayObject.visible = false;
                         } break;
                     case 1:
-                        for(var i=0; i<this.nodes.length; i++) {
+                        for (var i=0; i<this.nodes.length; i++) {
                             this.nodes[i].debugDisplayObject.visible = true;
                             this.nodes[i].debugDisplayObject.alpha = 0.25;
                         } break;
                     case 2:
-                        for(var i=0; i<this.nodes.length; i++) {
+                        for (var i=0; i<this.nodes.length; i++) {
                             this.nodes[i].debugDisplayObject.alpha = 1.0;
                         } break;
                 }
