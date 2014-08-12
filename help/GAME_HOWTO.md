@@ -1,10 +1,10 @@
-DIRECTORY STRUCTURE
+Directory structure
 -------------------
 
-src/
-  game/                    - source files containing game logic and game-specific components
-  engine/                  - source files for panda.js graphics engine
-  bamboo/                  - sources for this framework
+    src/
+      game/                    - source files containing game logic and game-specific components
+      engine/                  - source files for panda.js graphics engine
+      bamboo/                  - sources for this framework
 
     runtime/               - files required to run the game
 
