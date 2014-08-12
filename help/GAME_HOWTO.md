@@ -49,6 +49,7 @@ How to create a new game from scratch
 -------------------------------------
 
 Derive your own world from bamboo.World
+
 Here you can handle inputs from the user, listen changes in nodes and react to anything that happens in the game.
 This class should as minimum provide a getClassName() method which returns the class name of the world. The world class must be placed under bamboo namespace.
 
