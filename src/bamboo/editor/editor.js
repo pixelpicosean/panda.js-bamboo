@@ -336,8 +336,15 @@ bamboo.Editor = game.Class.extend({
             return this.mode.onkeydown(keycode, this.prevMousePos.clone());
         }
 
+console.log(keycode);
         // overrides from editor
         switch (keycode) {
+            case 187:// +
+                this.onmousewheel(0.5);
+                return true;
+            case 189:// -
+                this.onmousewheel(-0.5);
+                return true;
             case 67:// C
                 this.cameraOffset = this.prevMousePos.subtractc(this.cameraWorldPosition);
                 return true;
