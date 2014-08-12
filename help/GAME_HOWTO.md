@@ -1,5 +1,4 @@
-Directory structure
--------------------
+## Directory structure
 
     src/
       game/                - source files containing game logic and game-specific components
@@ -29,8 +28,7 @@ Directory structure
       media/               - contains images used in editor ui
       nodes/               - contains the editor node representations of the basic runtime nodes
       
-How to create a new node (game component)
------------------------------------------
+## How to create a new node (game component)
 
 There is some basic components included in the package. If there is one missing or you just want to add new functionality to some existing one, here is how to do it:
 
@@ -45,8 +43,7 @@ This descriptor will provide the necessary information to the runtime to populat
 E.g if you derived bamboo.nodes.Image you must derive your editor node from bamboo.nodes.Image.editor.
 This class gives you possibility to draw and present some additional information to the editor user. This class will be automatically instantiated only in the editor.
 
-How to create a new game from scratch
--------------------------------------
+## How to create a new game from scratch
 
 Derive your own world from bamboo.World
 
