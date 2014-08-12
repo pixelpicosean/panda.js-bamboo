@@ -92,7 +92,7 @@ bamboo.Editor = game.Class.extend({
 
     findNodesInside: function(rect, layer) {
         var nodes = [];
-        for(var i=0; i<this.nodes.length; i++) {
+        for (var i=0; i<this.nodes.length; i++) {
             var n = this.nodes[i];
             if (n.layer !== layer || n.node instanceof bamboo.nodes.Layer)
                 continue;
@@ -186,7 +186,7 @@ bamboo.Editor = game.Class.extend({
         // loop until we find the 'starting' node, and start searching from that
         // TODO: we could probably use indexOf to find the starting index instead of looping
         var farEnough = false;
-        for(var i=this.nodes.length-1; i>=0; i--) {
+        for (var i=this.nodes.length-1; i>=0; i--) {
             if (!farEnough) {
                 if (this.nodes[i] === node)
                     farEnough = true;
@@ -305,14 +305,12 @@ bamboo.Editor = game.Class.extend({
     },
 
     onmousewheel: function(delta) {
-        if (this.mode instanceof bamboo.editor.GameMode)
-            return false;// in game, do nothing
+        if (this.mode instanceof bamboo.editor.GameMode) return false;// in game, do nothing
 
         delta = Math.max(-1, Math.min(1, delta));
 
         var zoom = this.targetZoom * Math.pow(1.5, delta);
-        if (zoom < 0.05 || zoom > 6)
-            return;
+        if (zoom < 0.05 || zoom > 6) return;
 
         var offset = this.prevMousePos.subtractc(this.targetCameraWorldPosition);
         this.targetCameraWorldPosition = this.prevMousePos.subtractc(offset.multiply(Math.pow(1.5, delta)));
@@ -320,8 +318,7 @@ bamboo.Editor = game.Class.extend({
         if (this.zoomTween) this.zoomTween.stop();
         if (this.zoomPosTween) this.zoomPosTween.stop();
 
-        if (this.mode instanceof bamboo.editor.NodeMode)
-            this.mode.zoomChanged(zoom);
+        if (this.mode instanceof bamboo.editor.NodeMode) this.mode.zoomChanged(zoom);
 
         var self = this;
         this.zoomPosTween = new game.Tween(this.cameraWorldPosition).to({x: this.targetCameraWorldPosition.x,y:this.targetCameraWorldPosition.y}, 250).easing(game.Tween.Easing.Quadratic.Out).onUpdate(function() {self.cameraWorldPosition = this;}).onComplete(function() {self.zoomPosTween = null;}).start();
@@ -336,7 +333,6 @@ bamboo.Editor = game.Class.extend({
             return this.mode.onkeydown(keycode, this.prevMousePos.clone());
         }
 
-console.log(keycode);
         // overrides from editor
         switch (keycode) {
             case 187:// +
