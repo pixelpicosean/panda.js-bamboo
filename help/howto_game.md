@@ -1,32 +1,29 @@
 ## Directory structure
 
     src/
+      bamboo/              - source files for this framework
+      engine/              - source files for Panda.js game engine
       game/                - source files containing game logic and game-specific components
-      engine/              - source files for panda.js graphics engine
-      bamboo/              - sources for this framework
-
-    runtime/               - files required to run the game
-
-      core.js              - main module to import in game. This module contains basic Scene-class which can be used for testing.
-      vec2.js              - vector math module. This class is used throughout the library
-      node.js              - base class for all nodes. Contains basic logic: parenting, position, etc.
-      property.js          - property class which contains information of node properties
-      world.js             - world-node aka root-node. Keeps track of all nodes in the game. Also handles inputs and camera.
-      nodes/               - contains some basic nodes like LayerNode and ImageNode
-
-    editor/                - files used by the editor
-
+      
+    bamboo/editor/         - files used by the editor
+      media/               - contains images used in editor ui
+      nodes/               - contains the editor node representations of the basic runtime nodes
       core.js              - main module to import when the editor is used, handles level loading, input handling and other very high-level functions
       editor.js            - contains all base logic for the editor UI. Keeps track of nodes, modes and any permanent data in editor
       editorcontroller.js  - all data kept in editor should be modified through this interface
-      node.js              - base class for any editor side node
       mode.js              - base class for editor modes
+      node.js              - base class for any editor side node
       nodemode.js          - the main mode where user spends the most time in
-      state.js             - base class for states (all states are under nodemode)
       selectionstate.js    - the main state, allows user to select nodes, and forwards other tasks to different states
-
-      media/               - contains images used in editor ui
-      nodes/               - contains the editor node representations of the basic runtime nodes
+      state.js             - base class for states (all states are under nodemode)
+      
+    bamboo/runtime/        - files required to run the game
+      nodes/               - contains some basic nodes like LayerNode and ImageNode
+      core.js              - main module to import in game. This module contains basic Scene-class which can be used for testing.
+      node.js              - base class for all nodes. Contains basic logic: parenting, position, etc.
+      property.js          - property class which contains information of node properties
+      vec2.js              - vector math module. This class is used throughout the library
+      world.js             - world-node aka root-node. Keeps track of all nodes in the game. Also handles inputs and camera.
       
 ## How to create a new node (game component)
 
