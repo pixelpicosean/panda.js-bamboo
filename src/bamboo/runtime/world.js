@@ -14,9 +14,17 @@ bamboo.World = bamboo.Node.extend({
     // contains image names and datas
     images: {},
     // area that contains visible content
-    boundaries: {left:0,top:0,right:2000,bottom:750},
-    screenSize: {width: 1024, height: 672},
-    triggers: {},// should be set in extended classes {'kill': this.killplayer.bind(this), 'openDoor':this.opendoor.bind(this)}
+    boundaries: {
+        left: 0,
+        top: 0,
+        right: 2000,
+        bottom: 750
+    },
+    screenSize: {
+        width: 1024,
+        height: 672
+    },
+    triggers: {},
     triggerNodes: [],
     triggerNodesActivated: [],
     triggerActivators: [],

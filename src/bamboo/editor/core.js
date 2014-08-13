@@ -32,8 +32,7 @@ bamboo.EditorScene = game.Scene.extend({
         script.src = 'src/bamboo/editor/jszip.min.js';
         head.appendChild(script);
 
-        document.body.insertAdjacentHTML('beforeend',
-                                         '<div id="blockUi" style="width:100%;height:100%;background-color:#ffffff;opacity:0.5;position:absolute;z-index:10000;display:block;" onclick=""><img src="src/bamboo/editor/media/spiffygif_38x38.gif" style="left:50%;top:50%;position:absolute;"/></div>');
+        document.body.insertAdjacentHTML('beforeend', '<div id="blockUi" style="width:100%;height:100%;background-color:#ffffff;opacity:0.5;position:absolute;z-index:10000;display:block;" onclick=""><img src="src/bamboo/editor/media/spiffygif_38x38.gif" style="left:50%;top:50%;position:absolute;"/></div>');
 
         // open filesystem and check if we have backup
         this.openFilesystem();
@@ -66,7 +65,7 @@ bamboo.EditorScene = game.Scene.extend({
         var images = [];
         for (var i=0; i<zipImages.length; i++) {
             var imgData = JSZip.base64.encode(zipImages[i].asBinary());
-            var imgName = zipImages[i].name;//.slice(6);// 'level/'
+            var imgName = zipImages[i].name;
             images.push({name:imgName, data:imgData});
         }
 
@@ -78,8 +77,7 @@ bamboo.EditorScene = game.Scene.extend({
 
     openFilesystem: function() {
         window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-        navigator.webkitPersistentStorage.requestQuota(50*1024*1024, this.onFSGotQuota.bind(this),
-                                                       function(e) { alert('Filesystem error: '+e);});
+        navigator.webkitPersistentStorage.requestQuota(50 * 1024 * 1024, this.onFSGotQuota.bind(this), function(e) { alert('Filesystem error: ' + e); });
     },
 
     onFSGotQuota: function(grantedBytes) {
@@ -213,12 +211,10 @@ bamboo.EditorScene = game.Scene.extend({
         var neededImages = {};
         for (var i=0; i<json.nodes.length; i++) {
             var node = json.nodes[i];
-            if (!node.properties.image || node.properties.image === '')
-                continue;
+            if (!node.properties.image || node.properties.image === '') continue;
 
-            var imgName = node.properties.image;//.slice(6);
-            if (neededImages.hasOwnProperty(imgName))
-                continue;
+            var imgName = node.properties.image;
+            if (neededImages.hasOwnProperty(imgName)) continue;
 
             for (var j=0; j<images.length; j++) {
                 if (images[j].name === imgName) {
@@ -236,7 +232,7 @@ bamboo.EditorScene = game.Scene.extend({
 
         for (var name in neededImages) {
             levelFolder.file(name.slice(6), neededImages[name], {base64:true});
-            js += '    game.addAsset(\''+name+'\');\n';
+            js += 'game.addAsset(\''+name+'\');\n';
         }
 
         js += '\n});\n';
@@ -248,15 +244,13 @@ bamboo.EditorScene = game.Scene.extend({
     },
 
     update: function() {
-        if (this.editor)
-            this.editor.update(game.system.delta);
+        if (this.editor) this.editor.update(game.system.delta);
         this._super();
     },
 
     click: function(me) {
         var handled = false;
-        if (this.editor && me.originalEvent.button === 0)
-            handled = this.editor.onclick();
+        if (this.editor && me.originalEvent.button === 0) handled = this.editor.onclick();
         if (handled) {
             e.stopPropagation();
             e.preventDefault();
@@ -367,7 +361,7 @@ bamboo.EditorScene = game.Scene.extend({
 
         var file = e.dataTransfer.files[0];
         var parts = file.name.split('.');
-        var suffix = parts[parts.length-1];
+        var suffix = parts[parts.length - 1];
         if (suffix !== 'zip') {
             alert('Project file must be a zip file!');
             return false;
@@ -375,12 +369,11 @@ bamboo.EditorScene = game.Scene.extend({
 
         document.getElementById('blockUi').style.display = 'block';
 
-
         var reader = new FileReader();
         reader.onload = function(e) {
             var zipData = e.target.result;
             var dataBegin = zipData.indexOf(';base64,');
-            zipData = zipData.slice(dataBegin+8);
+            zipData = zipData.slice(dataBegin + 8);
             self.loadFromZip(zipData);
 
             document.getElementById('blockUi').style.display = 'none';
@@ -393,7 +386,7 @@ bamboo.EditorScene = game.Scene.extend({
 });
 
 bamboo.start = function() {
-    game.System.resize = false;
+    game.System.scale = false;
     game.System.center = false;
     game.System.left = 0;
     game.System.top = 0;
@@ -406,7 +399,6 @@ bamboo.start = function() {
 
     this.ui = new bamboo.Ui();
 
-    // TODO: read from json?
     game.start(bamboo.EditorScene, window.innerWidth, window.innerHeight - 40);
 };
 

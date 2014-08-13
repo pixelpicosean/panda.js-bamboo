@@ -10,9 +10,9 @@ bamboo.nodes.Image = bamboo.Node.extend({
     _image: null,
 
     init: function(world, properties) {
-        this.displayObject = new game.Sprite(new PIXI.Texture(new PIXI.BaseTexture()), 0,0);
+        this.displayObject = new game.Sprite(new game.PIXI.Texture(new game.PIXI.BaseTexture()), 0,0);
         this._super(world, properties);
-    },
+    }
 });
 
 Object.defineProperty(bamboo.nodes.Image.prototype, 'image', {

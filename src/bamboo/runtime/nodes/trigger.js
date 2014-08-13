@@ -8,8 +8,7 @@ game.module(
 
 bamboo.nodes.Trigger = bamboo.Node.extend({
     init: function(world, properties) {
-        if(this.displayObject === null)
-            this.displayObject = new game.Container();
+        if (this.displayObject === null) this.displayObject = new game.Container();
         this._super(world, properties);
     },
 

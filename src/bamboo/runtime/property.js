@@ -38,7 +38,7 @@ bamboo.Property.TYPE = {
 };
 
 bamboo.Property.parse = function(world, obj, name, desc) {
-    switch(desc.type) {
+    switch (desc.type) {
         case bamboo.Property.TYPE.NUMBER:
         case bamboo.Property.TYPE.ANGLE:
         case bamboo.Property.TYPE.STRING:
@@ -50,11 +50,11 @@ bamboo.Property.parse = function(world, obj, name, desc) {
             return obj[name];
 
         case bamboo.Property.TYPE.VECTOR:
-            if(obj[name] instanceof Array) return new Vec2(obj[name][0], obj[name][1]);
+            if (obj[name] instanceof Array) return new Vec2(obj[name][0], obj[name][1]);
             return new Vec2(obj[name].x, obj[name].y);
 
         case bamboo.Property.TYPE.NODE:
-            if(obj[name] === null) return world;
+            if (obj[name] === null) return world;
             return world.findNode(obj[name]);
 
         case bamboo.Property.TYPE.EASING:
@@ -62,15 +62,16 @@ bamboo.Property.parse = function(world, obj, name, desc) {
 
         case bamboo.Property.TYPE.ARRAY:
             var a = [];
-            for(var i=0; i<obj[name].length; i++)
+            for (var i=0; i<obj[name].length; i++) {
                 a.push(bamboo.Property.parse(world, obj[name], i, desc.options));
+            }
             return a;
     }
     return null;
 };
 
 bamboo.Property.toJSON = function(obj, name, desc) {
-    switch(desc.type) {
+    switch (desc.type) {
         case bamboo.Property.TYPE.NUMBER:
         case bamboo.Property.TYPE.ANGLE:
         case bamboo.Property.TYPE.STRING:
@@ -92,7 +93,7 @@ bamboo.Property.toJSON = function(obj, name, desc) {
 
         case bamboo.Property.TYPE.ARRAY:
             var a = [];
-            for(var i=0; i<obj[name].length; i++) {
+            for (var i=0; i<obj[name].length; i++) {
                 a.push(bamboo.Property.toJSON(obj[name], i, desc.options));
             }
             return a;

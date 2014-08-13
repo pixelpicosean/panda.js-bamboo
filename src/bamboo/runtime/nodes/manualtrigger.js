@@ -20,7 +20,7 @@ bamboo.nodes.ManualTrigger = bamboo.nodes.Trigger.extend({
         if(this.target) {
             this.world.triggers[this.target](this, activator);
         }
-    },
+    }
 });
 
 bamboo.nodes.ManualTrigger.desc = {
