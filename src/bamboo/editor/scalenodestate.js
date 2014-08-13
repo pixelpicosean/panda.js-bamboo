@@ -59,7 +59,7 @@ bamboo.editor.ScaleNodeState = bamboo.editor.State.extend({
         if(this.snap)
             factor = Math.round(factor*10)/10;
 
-        var s = new Vec2(factor, factor);
+        var s = new game.Vec2(factor, factor);
         if(this.lockToAxis === 'X')
             s.y = 1;
         else if(this.lockToAxis === 'Y')
@@ -72,7 +72,7 @@ bamboo.editor.ScaleNodeState = bamboo.editor.State.extend({
             p.y *= s.y;
             p.add(this.pivot);
             n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(p));
-            n._editorNode.setProperty('scale', new Vec2(this.startValues[i].s.x*s.x, this.startValues[i].s.y*s.y));
+            n._editorNode.setProperty('scale', new game.Vec2(this.startValues[i].s.x*s.x, this.startValues[i].s.y*s.y));
         }
     },
 

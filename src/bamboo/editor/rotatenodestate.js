@@ -68,7 +68,7 @@ bamboo.editor.RotateNodeState = bamboo.editor.State.extend({
         for(var i=0; i<this.nodes.length; i++) {
             var n = this.nodes[i];
             var p = this.startValues[i].p.subtractc(this.pivot);
-            var np = new Vec2(c*p.x - s*p.y, s*p.x + c*p.y);
+            var np = new game.Vec2(c*p.x - s*p.y, s*p.x + c*p.y);
             np.add(this.pivot);
             var a = angle + this.startValues[i].a;
             a = ((a % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);

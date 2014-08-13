@@ -18,7 +18,7 @@ bamboo.nodes.Path = bamboo.Node.extend({
         this.displayObject = new game.Container();
         this._super(world, properties);
         if (!this.points || this.points.length === 0)
-            this.points = [new Vec2()];
+            this.points = [new game.Vec2()];
         this.calculateLength();
     },
 
@@ -196,7 +196,7 @@ bamboo.nodes.Path = bamboo.Node.extend({
         var c2 = ((-3.0 * t + 4.0) * t + 1.0) * t * 0.5;
         var c3 = ((t - 1.0) * t * t) * 0.5;
 
-        return new Vec2(
+        return new game.Vec2(
             p0.x*c0 + p1.x*c1 + p2.x*c2 + p3.x*c3,
             p0.y*c0 + p1.y*c1 + p2.y*c2 + p3.y*c3);
     }

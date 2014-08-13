@@ -19,6 +19,12 @@ bamboo.Ui = game.Class.extend({
         for (var i = 0; i < this.windows.length; i++) {
             this.windows[i].hide();
         }
+    },
+
+    showAll: function() {
+        for (var i = 0; i < this.windows.length; i++) {
+            this.windows[i].show();
+        }
     }
 });
 

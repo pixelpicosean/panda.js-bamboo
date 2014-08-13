@@ -33,20 +33,21 @@ bamboo.Node = game.Class.extend({
     getPropertyDescriptors: function() {
         var properties = [];
         var proto = Object.getPrototypeOf(this);
-        while(true) {
+        while (true) {
             var p = {};
-            properties.splice(0,0,p);
-            for(var key in proto.constructor.desc) {
+            properties.splice(0, 0, p);
+            for (var key in proto.constructor.desc) {
                p[key] = proto.constructor.desc[key];
             }
             proto = Object.getPrototypeOf(proto);
-            if(proto === game.Class.prototype)
-                break;
+            if (proto === game.Class.prototype) break;
         }
         var props = {};
-        for(var i = 0; i<properties.length; i++)
-            for(var k in properties[i])
+        for( var i = 0; i < properties.length; i++) {
+            for (var k in properties[i]) {
                 props[k] = properties[i][k];
+            }
+        }
         return props;
     },
 
@@ -72,17 +73,17 @@ bamboo.Node = game.Class.extend({
         var wt = this.displayObject.worldTransform;
         var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
 
-        return new Vec2((wt.d * (v.x - wt.tx) - wt.b * (v.y - wt.ty)) * id,
+        return new game.Vec2((wt.d * (v.x - wt.tx) - wt.b * (v.y - wt.ty)) * id,
                                (wt.a * (v.y - wt.ty) - wt.c * (v.x - wt.tx)) * id);
     },
 
     toWorldSpace: function(v) {
         var wt = this.displayObject.worldTransform;
-        return new Vec2(wt.a * v.x + wt.b * v.y + wt.tx, wt.c * v.x + wt.d * v.y + wt.ty);
+        return new game.Vec2(wt.a * v.x + wt.b * v.y + wt.tx, wt.c * v.x + wt.d * v.y + wt.ty);
     },
 
     getWorldPosition: function() {
-        return new Vec2(this.displayObject.worldTransform.tx, this.displayObject.worldTransform.ty);
+        return new game.Vec2(this.displayObject.worldTransform.tx, this.displayObject.worldTransform.ty);
     }
 });
 

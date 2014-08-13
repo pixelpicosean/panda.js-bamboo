@@ -67,7 +67,7 @@ bamboo.editor.NewNodeState = bamboo.editor.State.extend({
     onkeyup: function(keycode,p) {
         switch(keycode) {
             case 67:// C - snap to cursor
-                this.offset = new Vec2();
+                this.offset = new game.Vec2();
                 for(var i=0; i<this.startValues.length; i++) {
                     this.offset.add(this.startValues[i]);
                 }

@@ -3,12 +3,12 @@ game.module(
 )
 .body(function () {
 
-function Vec2(x,y) {
+function Vec2(x, y) {
     this.x = x || 0;
     this.y = y || 0;
 }
 
-window.Vec2 = Vec2;
+game.Vec2 = Vec2;
 
 Vec2.create = function(x, y) {
     return new Vec2(x,y);
@@ -17,6 +17,11 @@ Vec2.create = function(x, y) {
 Vec2.prototype.set = function(x, y) {
     this.x = x;
     this.y = y;
+    return this;
+};
+
+Vec2.prototype.copy = function(v) {
+    this.set(v.x, v.y);
     return this;
 };
 

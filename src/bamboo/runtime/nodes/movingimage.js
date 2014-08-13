@@ -16,7 +16,7 @@ bamboo.nodes.MovingImage = bamboo.nodes.Image.extend({
     easing: game.Tween.Easing.Linear.None,
 
     init: function(world, properties) {
-        this.endPoint = new Vec2(0,0);
+        this.endPoint = new game.Vec2();
         this._super(world, properties);
         this.needUpdates = true;
         this.startPoint = this.position.clone();

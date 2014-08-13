@@ -23,13 +23,12 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
 
         this.mousePos = p;
 
-        if(this.mode.editor.selectedNode)
+        if (this.mode.editor.selectedNode)
             this.mode.editor.statusbar.setStatus('Select node, ESC clear selection, G(rab), R(otate), S(cale), D(uplicate), DEL(ete), A(dd new node), T(toggle properties), Z(toggle boundaries), TAB to edit, ENTER to enter game');
         else
             this.mode.editor.statusbar.setStatus('Select node by clicking, A(add new node), T(toggle properties), Z(toggle boundaries), ENTER to enter game');
 
         this.previousDropHandler = game.system.canvas.ondrop;
-        game.system.canvas.ondrop = this.onFileDrop.bind(this);
     },
 
     cancel: function() {
@@ -40,16 +39,16 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         var node = null;
 
         // if we have selected node, and its under the cursor, try to find next node
-        if(this.mode.editor.activeNode && this.mode.editor.isNodeAt(this.mousePos, this.mode.editor.activeNode._editorNode))
+        if (this.mode.editor.activeNode && this.mode.editor.isNodeAt(this.mousePos, this.mode.editor.activeNode._editorNode))
             node = this.mode.editor.getNextNodeAt(this.mousePos, this.mode.editor.activeLayer, this.mode.editor.activeNode._editorNode);
 
-        if(!node)
+        if (!node)
             node = this.mode.editor.getNodeAt(this.mousePos, this.mode.editor.activeLayer);
 
-        if(!this.mode.shiftDown && !this.mode.altDown)
+        if (!this.mode.shiftDown && !this.mode.altDown)
             this.mode.editor.controller.deselectAllNodes();
 
-        if(this.mode.altDown) {
+        if (this.mode.altDown) {
             this.mode.editor.controller.deselectNode(node);
         } else {
             this.mode.editor.controller.selectNode(node);
@@ -60,7 +59,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     },
 
     assignGroup: function(number) {
-        if(!bamboo.editor.SelectionGroups) {
+        if (!bamboo.editor.SelectionGroups) {
             bamboo.editor.SelectionGroups = [];
             for(var i=0;i<10;i++) bamboo.editor.SelectionGroups.push([]);
         }
@@ -73,13 +72,13 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
     },
 
     selectGroup: function(number) {
-        if(!this.mode.shiftDown && !this.mode.altDown)
+        if (!this.mode.shiftDown && !this.mode.altDown)
             this.mode.editor.controller.deselectAllNodes();
 
-        if(!bamboo.editor.SelectionGroups)
+        if (!bamboo.editor.SelectionGroups)
             return;
 
-        if(this.mode.altDown) {
+        if (this.mode.altDown) {
             for(var i=0; i<bamboo.editor.SelectionGroups[number].length; i++) {
                 this.mode.editor.controller.deselectNode(bamboo.editor.SelectionGroups[number][i]);
             }
@@ -90,7 +89,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         }
     },
 
-    onmousemove: function(p) {
+    mousemove: function(p) {
         this.mousePos = p;
     },
 
@@ -127,10 +126,21 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         return false;
     },
 
+    keydown: function(key) {
+        if (key === 'G') {
+            if (this.mode.editor.selectedNodes.length > 0) {
+                this.mode.changeState(new bamboo.editor.MoveNodeState(this.mode, this.mode.editor.prevMousePos.clone(), this.mode.editor.selectedNodes));
+            }
+        }
+    },
+
+    keyup: function(key) {
+    },
+
     onkeyup: function(keycode, p) {
         switch(keycode) {
             case 9:// TAB - edit mode
-                if(this.mode.editor.activeNode) {
+                if (this.mode.editor.activeNode) {
                     this.mode.editor.controller.changeMode(new bamboo.editor.EditNodeMode(this.mode.editor, this.mode.editor.activeNode));
                 }
                 return true;
@@ -138,28 +148,28 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                 this.mode.editor.controller.changeMode(new bamboo.editor.GameMode(this.mode.editor));
                 return true;
             case 33:// Page Up - sink node
-                if(this.mode.editor.activeNode) {
+                if (this.mode.editor.activeNode) {
                     this.mode.editor.controller.moveNodeUp(this.mode.editor.activeNode);
                 }
                 return true;
             case 34:// Page Down - lift node
-                if(this.mode.editor.activeNode) {
+                if (this.mode.editor.activeNode) {
                     this.mode.editor.controller.moveNodeDown(this.mode.editor.activeNode);
                 }
                 return true;
             case 35:// End - lift to top most
-                if(this.mode.editor.activeNode) {
+                if (this.mode.editor.activeNode) {
                     this.mode.editor.controller.moveNodeTopMost(this.mode.editor.activeNode);
                 }
                 return true;
             case 36:// Home - sink to bottom most
-                if(this.mode.editor.activeNode) {
+                if (this.mode.editor.activeNode) {
                     this.mode.editor.controller.moveNodeBottomMost(this.mode.editor.activeNode);
                 }
                 return true;
             case 46:// DEL - delete
             case 8:
-                if(this.mode.editor.selectedNodes.length !== 0) {
+                if (this.mode.editor.selectedNodes.length !== 0) {
                     for(var i=this.mode.editor.selectedNodes.length-1; i>=0; i--) {
                         this.mode.editor.controller.deleteNode(this.mode.editor.selectedNodes[i]);
                     }
@@ -178,17 +188,17 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             case 56:// 8
             case 57:// 9
                 var number = keycode - 48;
-                if(this.mode.ctrlDown) {
+                if (this.mode.ctrlDown) {
                     this.assignGroup(number);
                 } else {
                     this.selectGroup(number);
                 }
                 return true;
             case 65:// A - select all / add
-                if(this.mode.shiftDown) {
+                if (this.mode.shiftDown) {
                     this.mode.changeState(new bamboo.editor.CreateNodeState(this.mode));
                 } else {
-                    if(this.mode.editor.selectedNodes.length !== 0)
+                    if (this.mode.editor.selectedNodes.length !== 0)
                         this.mode.editor.controller.deselectAllNodes();
                     else
                         this.mode.editor.controller.selectAllNodes();
@@ -198,7 +208,7 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                 this.mode.changeState(new bamboo.editor.BoxSelectState(this.mode, p));
                 return true;
             case 68:// D - duplicate
-                if(this.mode.editor.selectedNodes.length !== 0) {
+                if (this.mode.editor.selectedNodes.length !== 0) {
 
                     // dublicate all selected nodes
                     var nodes = [];
@@ -213,10 +223,10 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                     // fix connections
                     for(var i=0; i<nodes.length; i++) {
                         var idx = this.mode.editor.selectedNodes.indexOf(nodes[i].connectedTo);
-                        if(idx !== -1) {
+                        if (idx !== -1) {
                             nodes[i].connectedTo = nodes[idx];
                         }
-                        if(this.mode.editor.selectedNodes[i] === this.mode.editor.activeNode)
+                        if (this.mode.editor.selectedNodes[i] === this.mode.editor.activeNode)
                             active = nodes[i];
                     }
                     this.mode.editor.controller.deselectAllNodes();
@@ -225,12 +235,12 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                 }
                 return true;
             case 70:// F - find node (move camera there)
-                if(this.mode.editor.selectedNodes.length !== 0) {
+                if (this.mode.editor.selectedNodes.length !== 0) {
                     var pivot;
-                    if(this.mode.editor.activeNode) {
+                    if (this.mode.editor.activeNode) {
                         pivot = this.mode.editor.activeNode._editorNode.layer.toLocalSpace(this.mode.editor.activeNode.getWorldPosition());
                     } else {
-                        pivot = new Vec2();
+                        pivot = new game.Vec2();
                         for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
                             var n = this.mode.editor.selectedNodes[i];
                             pivot.add(n._editorNode.layer.toLocalSpace(n.getWorldPosition()));
@@ -242,22 +252,17 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                     this.mode.editor.controller.moveCameraTo(pivot);
                 }
                 return true;
-            case 71:// G - grab
-                if(this.mode.editor.selectedNodes.length !== 0) {
-                    this.mode.changeState(new bamboo.editor.MoveNodeState(this.mode, p, this.mode.editor.selectedNodes));
-                }
-                return true;
             case 80:// P - parent to / unparent
-                if(this.mode.shiftDown) {
+                if (this.mode.shiftDown) {
                     for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
                         var n = this.mode.editor.selectedNodes[i];
                         n._editorNode.setProperty('connectedTo', n._editorNode.layer);
                     }
                 } else {
-                    if(this.mode.editor.selectedNodes.length > 1 && this.mode.editor.activeNode) {
+                    if (this.mode.editor.selectedNodes.length > 1 && this.mode.editor.activeNode) {
                         for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
                             var n = this.mode.editor.selectedNodes[i];
-                            if(n === this.mode.editor.activeNode)
+                            if (n === this.mode.editor.activeNode)
                                 continue;
                             n._editorNode.setProperty('connectedTo', this.mode.editor.activeNode);
                         }
@@ -265,12 +270,12 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                 }
                 return true;
             case 82:// R - rotate
-                if(this.mode.editor.selectedNodes.length !== 0) {
+                if (this.mode.editor.selectedNodes.length !== 0) {
                     var pivot;
-                    if(this.mode.editor.activeNode) {
+                    if (this.mode.editor.activeNode) {
                         pivot = this.mode.editor.activeNode.getWorldPosition();
                     } else {
-                        pivot = new Vec2();
+                        pivot = new game.Vec2();
                         for(var i=0; i<this.mode.editor.selectedNodes.length; i++)
                             pivot.add(this.mode.editor.selectedNodes[i].getWorldPosition());
                         pivot.x /= this.mode.editor.selectedNodes.length;
@@ -280,12 +285,12 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
                 }
                 return true;
             case 83:// S - scale
-                if(this.mode.editor.selectedNodes.length !== 0) {
+                if (this.mode.editor.selectedNodes.length !== 0) {
                     var pivot;
-                    if(this.mode.editor.activeNode) {
+                    if (this.mode.editor.activeNode) {
                         pivot = this.mode.editor.activeNode.getWorldPosition();
                     } else {
-                        pivot = new Vec2();
+                        pivot = new game.Vec2();
                         for(var i=0; i<this.mode.editor.selectedNodes.length; i++)
                             pivot.add(this.mode.editor.selectedNodes[i].getWorldPosition());
                         pivot.x /= this.mode.editor.selectedNodes.length;
@@ -298,22 +303,14 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         return false;
     },
 
-    onFileDrop: function(e) {
-        e.preventDefault();
+    filedrop: function(event) {
+        event.preventDefault();
 
-        if(e.dataTransfer.files.length === 1) {
-            var parts = e.dataTransfer.files[0].name.split('.');
-            if(parts[parts.length-1] === 'zip') {
-                this.previousDropHandler(e);
-                return false;
-            }
-        }
-
-        for(var i=0; i<e.dataTransfer.files.length; i++) {
-            var file = e.dataTransfer.files[i];
+        for (var i = 0; i < event.dataTransfer.files.length; i++) {
+            var file = event.dataTransfer.files[i];
             var parts = file.name.split('.');
-            var suffix = parts[parts.length-1];
-            if(suffix !== 'png') {
+            var suffix = parts[parts.length - 1];
+            if (suffix !== 'png') {
                 alert('Only png images are supported!');
                 continue;
             }
@@ -322,10 +319,10 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
             var editorController = this.mode.editor.controller;
             reader.onload = function(e) {
                 var imgData = e.target.result;
-                var texture = PIXI.Texture.fromImage(imgData, true);
-                PIXI.TextureCache['level/'+this.filename] = texture;
+                var texture = game.Texture.fromImage(imgData, true);
+                game.TextureCache['level/' + this.filename] = texture;
                 // len('data:image/png;base64,') == 22
-                editorController.addImage('level/'+this.filename, imgData.slice(22));
+                editorController.addImage('level/' + this.filename, imgData.slice(22));
             };
             reader.filename = file.name;
             reader.readAsDataURL(file);

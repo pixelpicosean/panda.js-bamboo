@@ -14,8 +14,7 @@ bamboo.nodes.MovingImage.editor = bamboo.nodes.Image.editor.extend({
     },
 
     propertyChanged: function(key, value, oldValue) {
-        if(key === 'position')
-            this.node.startPoint = value.clone();
+        if (key === 'position') this.node.startPoint = value.clone();
         this.node.update(0);
         this._super(key, value, oldValue);
     }

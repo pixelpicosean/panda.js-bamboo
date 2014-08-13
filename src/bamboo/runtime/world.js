@@ -2,8 +2,7 @@ game.module(
     'bamboo.runtime.world'
 )
 .require(
-    'bamboo.runtime.node',
-    'bamboo.runtime.nodes.trigger'
+    'bamboo.runtime.node'
 )
 .body(function() {
 
@@ -18,11 +17,11 @@ bamboo.World = bamboo.Node.extend({
         left: 0,
         top: 0,
         right: 2000,
-        bottom: 750
+        bottom: 1050
     },
     screenSize: {
         width: 1024,
-        height: 672
+        height: 768
     },
     triggers: {},
     triggerNodes: [],
@@ -30,45 +29,19 @@ bamboo.World = bamboo.Node.extend({
     triggerActivators: [],
 
     init: function() {
+        this.screenSize.width = game.System.width;
+        this.screenSize.height = game.System.height;
+
         this.displayObject = new game.Container();
-        this._super(null,null);
-        this.cameraPosition = new Vec2();
+        this._super();
+        this.cameraPosition = new game.Vec2();
     },
 
     findNode: function(name) {
-        for(var i=0; i<this.nodes.length; i++) {
-            if(this.nodes[i].name === name)
-                return this.nodes[i];
+        for (var i = 0; i < this.nodes.length; i++) {
+            if (this.nodes[i].name === name) return this.nodes[i];
         }
         return null;
-    },
-
-    getConnectedNodes: function(node) {
-        var nodes = [];
-        for (var i=0; i<this.nodes.length; i++) {
-            if(this.nodes[i].connectedTo === node)
-                nodes.push(this.nodes[i]);
-        }
-        nodes.sort(function(a,b) {
-            return a.displayObject.parent.children.indexOf(a.displayObject) - b.displayObject.parent.children.indexOf(b.displayObject);
-        });
-
-        return nodes;
-    },
-
-    addJSONConnections: function(node, list) {
-        // TODO: optimize this, maybe refactor the whole connectedTo thingy
-        var nodes = this.getConnectedNodes(node);
-        for (var i=0; i<nodes.length; i++) {
-            list.push(nodes[i].toJSON());
-            this.addJSONConnections(nodes[i], list);
-        }
-    },
-
-    toJSON: function() {
-        var jsonObj = {world: this.getClassName(), images: this.images, nodes: []};
-        this.addJSONConnections(this, jsonObj.nodes);
-        return jsonObj;
     },
 
     getClassName: function() {
@@ -134,13 +107,13 @@ bamboo.World = bamboo.Node.extend({
             this.cameraPosition.y = pos.y;
     },
 
-    onclick: function() {},
-    onmousedown: function() {},
-    onmouseup: function() {},
-    onmousemove: function() {},
-    onmouseout: function() {},
-    onkeydown: function() {},
-    onkeyup: function() {},
+    click: function() {},
+    mousedown: function() {},
+    mouseup: function() {},
+    mousemove: function() {},
+    mouseout: function() {},
+    keydown: function() {},
+    keyup: function() {},
 
     update: function(worldTime) {
         for (var i=0; i<this.updateableNodes.length; i++) {
@@ -169,7 +142,7 @@ bamboo.World = bamboo.Node.extend({
 });
 
 bamboo.World.createFromJSON = function(levelJSON) {
-    var jsonWorld = JSON.parse(levelJSON);
+    var jsonWorld = levelJSON;
     var world = new bamboo[jsonWorld.world]();
     world.images = jsonWorld.images;
 

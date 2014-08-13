@@ -217,7 +217,7 @@ bamboo.EditorController = game.Class.extend({
 
     moveCameraTo: function(pos) {
         self = this.editor;
-        var nHalfScreen = new Vec2(-this.editor.world.screenSize.width/2, -this.editor.world.screenSize.height/2);
+        var nHalfScreen = new game.Vec2(-this.editor.world.screenSize.width/2, -this.editor.world.screenSize.height/2);
         var tgtCamPos = this.editor.worldTargetPos.subtractc(nHalfScreen.add(pos).multiply(this.editor.zoom));
         this.editor.zoomPosTween = new game.Tween(self.cameraWorldPosition).to({x: tgtCamPos.x, y: tgtCamPos.y}, 250).easing(game.Tween.Easing.Quadratic.Out).onUpdate(function() {self.cameraWorldPosition = this;}).onComplete(function() {self.zoomPosTween = null;}).start();
     },

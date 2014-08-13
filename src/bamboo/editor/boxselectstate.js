@@ -14,7 +14,7 @@ bamboo.editor.BoxSelectState = bamboo.editor.State.extend({
         this._super(mode);
 
         this.box = new game.Graphics();
-        this.size = new Vec2();
+        this.size = new game.Vec2();
         this.box.position = mode.editor.activeLayer.toLocalSpace(p);
         this.mode.editor.activeLayer.displayObject.addChild(this.box);
         this.mode.editor.statusbar.setStatus('');//Position new node, C(snap to cursor), ESC to cancel (removes new node(s))');

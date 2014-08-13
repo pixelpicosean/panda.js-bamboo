@@ -15,7 +15,7 @@ bamboo.nodes.TriggerBox.editor = bamboo.nodes.ManualTrigger.editor.extend({
         this._super(node);
         this.box = new game.Graphics();
         this.box.beginFill(this.color, 0.8);
-        this.box.drawRect(-1,-1,2,2);
+        this.box.drawRect(-1, -1, 2, 2);
         this.box.scale = this.node.scale;
         this.debugDisplayObject.addChild(this.box);
     },

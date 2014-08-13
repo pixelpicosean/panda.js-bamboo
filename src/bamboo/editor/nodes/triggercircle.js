@@ -15,7 +15,7 @@ bamboo.nodes.TriggerCircle.editor = bamboo.nodes.ManualTrigger.editor.extend({
         this._super(node);
         this.circle = new game.Graphics();
         this.circle.beginFill(this.color, 0.8);
-        this.circle.drawCircle(0,0,1);
+        this.circle.drawCircle(0, 0, 1);
         this.circle.scale = this.node.scale;
         this.debugDisplayObject.addChild(this.circle);
     },

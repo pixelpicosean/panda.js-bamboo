@@ -62,12 +62,12 @@ bamboo.editor.CreateNodeState = bamboo.editor.State.extend({
 
             var node = this.mode.editor.controller.createNode(this.window.inputs['type'].value, {
                 name: this.window.inputs['name'].value,
-                position: this.mode.editor.world.findNode(this.window.inputs['connectedTo'].value).toLocalSpace(new Vec2()),
+                position: this.mode.editor.world.findNode(this.window.inputs['connectedTo'].value).toLocalSpace(new game.Vec2()),
                 connectedTo: this.window.inputs['connectedTo'].value});
 
             this.window.hide();
             this.mode.editor.controller.setActiveNode(node);
-            this.mode.changeState(new bamboo.editor.NewNodeState(this.mode, new Vec2(), [node]));
+            this.mode.changeState(new bamboo.editor.NewNodeState(this.mode, new game.Vec2(), [node]));
 
         } catch(err) {
             var node = this.mode.editor.world.findNode(this.window.inputs['name'].value);

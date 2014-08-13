@@ -186,7 +186,7 @@ bamboo.Node.editor = game.Class.extend({
     setOrigin: function() {},
 
     getOrigin: function() {
-        return new Vec2();
+        return new game.Vec2();
     },
 
     onkeydown: function(keycode,p) {
@@ -228,7 +228,7 @@ bamboo.Node.editor = game.Class.extend({
 
             var wt = this.startMatrix;
             var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
-            var d = new Vec2((wt.d * p.x - wt.b * p.y) * id,
+            var d = new game.Vec2((wt.d * p.x - wt.b * p.y) * id,
                                     (wt.a * p.y - wt.c * p.x) * id);
             this.setOrigin(d.add(this.startOrigin));
             this.setProperty('position', this.node.connectedTo.toLocalSpace(p.add(this.startPos)));
@@ -248,7 +248,7 @@ bamboo.Node.editor = game.Class.extend({
 
             var wt = this.startMatrix;
             var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
-            var d = new Vec2((wt.d * p.x - wt.b * p.y) * id,
+            var d = new game.Vec2((wt.d * p.x - wt.b * p.y) * id,
                                     (wt.a * p.y - wt.c * p.x) * id);
             this.setOrigin(d.add(this.startOrigin));
             this.setProperty('position', this.node.connectedTo.toLocalSpace(p.add(this.startPos)));

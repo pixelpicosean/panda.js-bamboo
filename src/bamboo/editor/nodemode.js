@@ -24,12 +24,12 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
         this.state = new bamboo.editor.SelectionState(this, p);
 
         this.timeDisplay = new game.BitmapText('', {font:'28px Buu'});
-        this.timeDisplay.position = new Vec2(20,20);
+        this.timeDisplay.position = new game.Vec2(20, 20);
         this.editor.overlay.addChild(this.timeDisplay);
         this.timeDisplay.visible = false;
 
         this.zoomDisplay = new game.BitmapText('', {font:'28px Buu'});
-        this.zoomDisplay.position = new Vec2(20, 50);
+        this.zoomDisplay.position = new game.Vec2(20, 50);
         this.editor.overlay.addChild(this.zoomDisplay);
         this.zoomDisplay.visible = false;
     },
@@ -79,13 +79,13 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
         this.timeDisplay.setText(this.animationTime.toFixed(1)+'s');
     },
 
-    onclick: function(p) {
+    click: function(p) {
         this.state.apply();
         this.changeState(new bamboo.editor.SelectionState(this, p));
     },
 
-    onmousemove: function(p) {
-        this.state.onmousemove(p);
+    mousemove: function(event) {
+        this.state.mousemove(event);
     },
 
     onkeydown: function(keycode, p) {
@@ -107,6 +107,14 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
                 return true;
         }
         return this.state.onkeydown(keycode, p);
+    },
+
+    keydown: function(key) {
+        this.state.keydown(key);
+    },
+
+    keyup: function(key) {
+        this.state.keyup(key);
     },
 
     onkeyup: function(keycode, p) {
@@ -135,6 +143,10 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
                 return true;
         }
         return this.state.onkeyup(keycode, p);
+    },
+
+    filedrop: function(event) {
+        if (this.state.filedrop) this.state.filedrop(event);
     },
 
     changeState: function(newState) {

@@ -16,18 +16,18 @@ bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
     init: function(mode, p, selectedNodes) {
         this._super(mode);
 
-        for(var i=0; i<selectedNodes.length; i++) {
+        for (var i = 0; i < selectedNodes.length; i++) {
             var n = selectedNodes[i];
             var found = false;
             var parent = n.connectedTo;
-            while(!(parent instanceof bamboo.nodes.Layer)) {
+            while (!(parent instanceof bamboo.nodes.Layer)) {
                 if(selectedNodes.indexOf(parent) !== -1) {
                     found = true;
                     break;
                 }
                 parent = parent.connectedTo;
             }
-            if(!found) {
+            if (!found) {
                 this.nodes.push(n);
                 this.startValues.push(n.getWorldPosition());
             }
@@ -38,7 +38,7 @@ bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
     },
 
     cancel: function() {
-        for(var i=0; i<this.nodes.length; i++) {
+        for (var i = 0; i < this.nodes.length; i++) {
             var n = this.nodes[i];
             n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(this.startValues[i]));
             n.displayObject.updateTransform();
@@ -49,19 +49,20 @@ bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
         // nothing to do, nodes are already at right positions
     },
 
-    onmousemove: function(p) {
+    mousemove: function(event) {
+        var p = new game.Vec2(event.global.x, event.global.y);
+
         p.subtract(this.offset);
-        if(this.snap) {
-            p.x = Math.round(p.x/10)*10;
-            p.y = Math.round(p.y/10)*10;
+
+        if (this.snap) {
+            p.x = Math.round(p.x / 10) * 10;
+            p.y = Math.round(p.y / 10) * 10;
         }
 
-        if(this.lockToAxis === 'X')
-            p.y = 0;
-        else if(this.lockToAxis === 'Y')
-            p.x = 0;
+        if (this.lockToAxis === 'X') p.y = 0;
+        else if (this.lockToAxis === 'Y') p.x = 0;
 
-        for(var i=0; i<this.nodes.length; i++) {
+        for (var i = 0; i < this.nodes.length; i++) {
             var n = this.nodes[i];
             n._editorNode.setProperty('position', n.connectedTo.toLocalSpace(p.addc(this.startValues[i])));
         }
@@ -77,6 +78,12 @@ bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
                 return true;
         }
         return false;
+    },
+
+    keydown: function(key) {
+    },
+
+    keyup: function(key) {
     },
     
     onkeyup: function(keycode) {

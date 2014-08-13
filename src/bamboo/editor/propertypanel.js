@@ -18,10 +18,10 @@ bamboo.PropertyPanel = game.Class.extend({
 
     init: function(editor) {
         this.editor = editor;
-        this.layerWindow = new bamboo.UiWindow(game.system.width-200, 0, 200, 333);//game.system.height);
+        this.layerWindow = bamboo.ui.addWindow(game.system.width-200, 0, 200, 333);//game.system.height);
         this.layerWindow.show();
 
-        this.nodeWindow = new bamboo.UiWindow(game.system.width-200, 333, 200, game.system.height-333);
+        this.nodeWindow = bamboo.ui.addWindow(game.system.width-200, 333, 200, game.system.height-333);
         this.nodeWindow.show();
 
         // create layer list
@@ -271,9 +271,9 @@ bamboo.PropertyPanel = game.Class.extend({
         var i = parts[parts.length-1];
         var keyName = key.slice(0, key.length - 1 - i.length);
         if(i === '0')
-            this.editor.activeNode._editorNode.setProperty(keyName, new Vec2(value, this.editor.activeNode[keyName].y));
+            this.editor.activeNode._editorNode.setProperty(keyName, new game.Vec2(value, this.editor.activeNode[keyName].y));
         else if(i === '1')
-            this.editor.activeNode._editorNode.setProperty(keyName, new Vec2(this.editor.activeNode[keyName].x, value));
+            this.editor.activeNode._editorNode.setProperty(keyName, new game.Vec2(this.editor.activeNode[keyName].x, value));
     },
 
     nodePropertyChanged: function(key) {

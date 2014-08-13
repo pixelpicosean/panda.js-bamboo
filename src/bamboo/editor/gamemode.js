@@ -16,7 +16,7 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
 
     init: function(editor) {
         this._super(editor);
-        this.world = bamboo.World.createFromJSON(JSON.stringify(this.editor.world.toJSON()));
+        this.world = bamboo.World.createFromJSON(this.editor.world.toJSON());
 
         this.wasPropertyPanelOpen = this.editor.propertyPanel.visible;
         this.editor.statusbar.setStatus('ESC - return to editor');
@@ -39,7 +39,7 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
         this.editor.displayObject.removeChild(this.editor.overlay);
         this.editor.displayObject.addChild(this.world.displayObject);
         this.editor.displayObject.addChild(this.mask);
-        this.world.position = new Vec2(x,y);
+        this.world.position = new game.Vec2(x, y);
         this.world.update(0);
 
         /////////
@@ -56,20 +56,20 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
         this.world.update(this.worldTime);
     },
 
-    onclick: function() {
-        this.world.onclick();
+    click: function(event) {
+        this.world.click(event);
     },
 
-    onmousedown: function(p) {
-        this.world.onmousedown();
+    mousedown: function(event) {
+        this.world.mousedown(event);
     },
 
-    onmousemove: function(p) {
-        this.world.onmousemove(p);
+    mousemove: function(event) {
+        this.world.mousemove(event);
     },
 
-    onmouseup: function(p) {
-        this.world.onmouseup();
+    mouseup: function(event) {
+        this.world.mouseup(event);
     },
 
     onmouseout: function() {
@@ -82,6 +82,14 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
         if(keycode === 86)// V
             return true;
         return this.world.onkeydown(keycode);
+    },
+
+    keydown: function(key) {
+        this.world.keydown(key);
+    },
+
+    keyup: function(key) {
+        this.world.keyup(key);
     },
     
     onkeyup: function(keycode, p) {

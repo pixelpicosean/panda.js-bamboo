@@ -9,13 +9,16 @@ game.module(
 bamboo.StatusBar = game.Class.extend({
     window: null,
     saveWindow: null,
+    height: 50,
 
     init: function() {
-        this.window = new bamboo.UiWindow(80, game.system.height, game.system.width-80, 40);
+        this.window = bamboo.ui.addWindow(80, game.system.height - this.height, game.system.width - 80, this.height);
         this.window.show();
 
-        this.saveWindow = new bamboo.UiWindow(0,game.system.height, 80, 40);
-        this.saveWindow.addButton('Save', function() { game.scene.save(); });
+        this.saveWindow = bamboo.ui.addWindow(0, game.system.height - this.height, 80, this.height);
+        this.saveWindow.addButton('Save', function() {
+            game.scene.save();
+        });
         this.saveWindow.show();
     },
 
@@ -23,8 +26,6 @@ bamboo.StatusBar = game.Class.extend({
         this.window.clear();
         this.window.addText(status);
     }
-
 });
-
 
 });
