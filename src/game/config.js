@@ -1,4 +1,4 @@
 pandaConfig = {
-    name: 'MyPandaGame',
-    version: '1.0.0'
+    name: 'MyBambooGame',
+    version: '0.0.0'
 };

@@ -2,10 +2,12 @@ game.module(
     'game.main'
 )
 .require(
-    'bamboo.editor.core'
+    'bamboo.runtime.core'
 )
 .body(function() {
 
-bamboo.start();
+game.createScene('Game');
+
+game.start();
 
 });
