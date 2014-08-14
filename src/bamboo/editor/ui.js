@@ -1,9 +1,6 @@
 game.module(
     'bamboo.editor.ui'
 )
-.require(
-
-)
 .body(function() {
 
 bamboo.Ui = game.Class.extend({
@@ -13,6 +10,15 @@ bamboo.Ui = game.Class.extend({
         var w = new bamboo.UiWindow(x, y, width, height);
         this.windows.push(w);
         return w;
+    },
+
+    removeWindow: function(elem) {
+        for (var i = this.windows.length - 1; i >= 0; i--) {
+            if (this.windows[i] === elem) {
+                elem.hide();
+                this.windows.splice(i, 1);
+            }
+        }
     },
 
     hideAll: function() {
@@ -75,12 +81,14 @@ bamboo.UiWindow = game.Class.extend({
     },
 
     show: function() {
+        if (this.visible) return;
         this.visible = true;
         document.body.appendChild(this.windowDiv);
         return this;
     },
 
     hide: function() {
+        if (!this.visible) return;
         this.visible = false;
         document.body.removeChild(this.windowDiv);
     },

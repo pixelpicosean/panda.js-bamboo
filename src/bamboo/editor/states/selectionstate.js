@@ -1,49 +1,37 @@
 game.module(
-    'bamboo.editor.selectionstate'
+    'bamboo.editor.states.selectionstate'
 )
 .require(
-    'bamboo.editor.state',
-    'bamboo.editor.movenodestate',
-    'bamboo.editor.rotatenodestate',
-    'bamboo.editor.scalenodestate',
-    'bamboo.editor.boxselectstate',
-    'bamboo.editor.newnodestate',
-    'bamboo.editor.createnodestate',
-    'bamboo.editor.editnodemode',
-    'bamboo.editor.gamemode'
+    'bamboo.editor.state'
 )
 .body(function() {
 
 bamboo.editor.SelectionState = bamboo.editor.State.extend({
-    mousePos: null,
-    previousDropHandler: null,
-
-    init: function(mode, p) {
+    init: function(mode) {
         this._super(mode);
+        
+        var text = this.mode.editor.activeNode ?
+            'Select state: (G)rab, (R)otate, (S)cale, (D)uplicate, R(emove), (E)dit'
+            :
+            'Select state: (A)dd node, MOUSE select node, ENTER enter game';
 
-        this.mousePos = p;
-
-        if (this.mode.editor.selectedNode)
-            this.mode.editor.statusbar.setStatus('Select node, ESC clear selection, G(rab), R(otate), S(cale), D(uplicate), DEL(ete), A(dd new node), T(toggle properties), Z(toggle boundaries), TAB to edit, ENTER to enter game');
-        else
-            this.mode.editor.statusbar.setStatus('Select node by clicking, A(add new node), T(toggle properties), Z(toggle boundaries), ENTER to enter game');
-
-        this.previousDropHandler = game.system.canvas.ondrop;
+        this.mode.editor.statusbar.setStatus(this.mode.helpText + '<br>' + text);
     },
 
     cancel: function() {
-        game.system.canvas.ondrop = this.previousDropHandler;
+        this.mode.editor.controller.deselectAllNodes();
     },
 
-    apply: function() {
+    apply: function(event) {
+        var mousePos = new game.Vec2(event.global.x, event.global.y);
         var node = null;
 
         // if we have selected node, and its under the cursor, try to find next node
-        if (this.mode.editor.activeNode && this.mode.editor.isNodeAt(this.mousePos, this.mode.editor.activeNode._editorNode))
-            node = this.mode.editor.getNextNodeAt(this.mousePos, this.mode.editor.activeLayer, this.mode.editor.activeNode._editorNode);
+        if (this.mode.editor.activeNode && this.mode.editor.isNodeAt(mousePos, this.mode.editor.activeNode._editorNode))
+            node = this.mode.editor.getNextNodeAt(mousePos, this.mode.editor.activeLayer, this.mode.editor.activeNode._editorNode);
 
         if (!node)
-            node = this.mode.editor.getNodeAt(this.mousePos, this.mode.editor.activeLayer);
+            node = this.mode.editor.getNodeAt(mousePos, this.mode.editor.activeLayer);
 
         if (!this.mode.shiftDown && !this.mode.altDown)
             this.mode.editor.controller.deselectAllNodes();
@@ -89,47 +77,22 @@ bamboo.editor.SelectionState = bamboo.editor.State.extend({
         }
     },
 
-    mousemove: function(p) {
-        this.mousePos = p;
-    },
-
-    onkeydown: function(keycode, p) {
-        switch(keycode) {
-            case 8:// Backspace
-            case 9:// TAB
-            case 13:// ENTER
-            case 33:// Page Up
-            case 34:// Page Down
-            case 35:// End
-            case 36:// Home
-            case 46:// DEL
-            case 48:// 0
-            case 49:// 1
-            case 50:// 2
-            case 51:// 3
-            case 52:// 4
-            case 53:// 5
-            case 54:// 6
-            case 55:// 7
-            case 56:// 8
-            case 57:// 9
-            case 65:// A
-            case 66:// B
-            case 68:// D
-            case 70:// F
-            case 71:// G
-            case 80:// P
-            case 82:// R
-            case 83:// S
-                return true;
-        }
-        return false;
-    },
-
     keydown: function(key) {
         if (key === 'G') {
             if (this.mode.editor.selectedNodes.length > 0) {
                 this.mode.changeState(new bamboo.editor.MoveNodeState(this.mode, this.mode.editor.prevMousePos.clone(), this.mode.editor.selectedNodes));
+            }
+            return;
+        }
+        if (key === 'ENTER') {
+            if (!this.mode.editor.activeNode) return this.mode.editor.controller.changeMode(new bamboo.editor.GameMode(this.mode.editor));
+        }
+        if (key === 'A') {
+            if (!this.mode.editor.activeNode) return this.mode.changeState(new bamboo.editor.CreateNodeState(this.mode));
+        }
+        if (key === 'E') {
+            if (this.mode.editor.activeNode) {
+                return this.mode.editor.controller.changeMode(new bamboo.editor.EditNodeMode(this.mode.editor, this.mode.editor.activeNode));
             }
         }
     },

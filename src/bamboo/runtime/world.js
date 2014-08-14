@@ -27,6 +27,7 @@ bamboo.World = bamboo.Node.extend({
     triggerNodes: [],
     triggerNodesActivated: [],
     triggerActivators: [],
+    time: 0,
 
     init: function() {
         this.screenSize.width = game.System.width;
@@ -42,10 +43,6 @@ bamboo.World = bamboo.Node.extend({
             if (this.nodes[i].name === name) return this.nodes[i];
         }
         return null;
-    },
-
-    getClassName: function() {
-        return 'World';
     },
 
     _addNode: function(node) {
@@ -92,19 +89,21 @@ bamboo.World = bamboo.Node.extend({
     },
 
     setCameraPos: function(pos) {
-        if(pos.x < this.boundaries.left)
-            this.cameraPosition.x = this.boundaries.left;
-        else if(pos.x > this.boundaries.right - this.screenSize.width)
-            this.cameraPosition.x = this.boundaries.right - this.screenSize.width;
-        else
-            this.cameraPosition.x = pos.x;
+        if (pos.x < this.boundaries.left) this.cameraPosition.x = this.boundaries.left;
+        else if (pos.x > this.boundaries.right - this.screenSize.width) this.cameraPosition.x = this.boundaries.right - this.screenSize.width;
+        else this.cameraPosition.x = pos.x;
 
-        if(pos.y < this.boundaries.top)
-            this.cameraPosition.y = this.boundaries.top;
-        else if(pos.y > this.boundaries.bottom - this.screenSize.height)
-            this.cameraPosition.y = this.boundaries.bottom - this.screenSize.height;
-        else
-            this.cameraPosition.y = pos.y;
+        if (pos.y < this.boundaries.top) this.cameraPosition.y = this.boundaries.top;
+        else if (pos.y > this.boundaries.bottom - this.screenSize.height) this.cameraPosition.y = this.boundaries.bottom - this.screenSize.height;
+        else this.cameraPosition.y = pos.y;
+    },
+
+    addTo: function(container) {
+        container.addChild(this.displayObject);
+    },
+
+    getClassName: function() {
+        return 'World';
     },
 
     click: function() {},
@@ -115,24 +114,27 @@ bamboo.World = bamboo.Node.extend({
     keydown: function() {},
     keyup: function() {},
 
-    update: function(worldTime) {
-        for (var i=0; i<this.updateableNodes.length; i++) {
-            this.updateableNodes[i].update(worldTime);
+    update: function() {
+        this.time += game.system.delta;
+
+        for (var i = 0; i < this.updateableNodes.length; i++) {
+            this.updateableNodes[i].update(this.time);
         }
 
-        for (var i=0; i<this.triggerActivators.length; i++) {
+        for (var i = 0; i < this.triggerActivators.length; i++) {
             var wp = this.triggerActivators[i].getWorldPosition();
 
-            for(var j=0; j<this.triggerNodes.length; j++) {
+            for (var j = 0; j < this.triggerNodes.length; j++) {
                 var lp = this.triggerNodes[j].toLocalSpace(wp);
                 var aid = this.triggerNodesActivated.indexOf(this.triggerNodes[j]);
-                if(aid === -1) {
+                if (aid === -1) {
                     if(this.triggerNodes[j].hitTest(lp)) {
                         // first touch (entry)
                         this.triggerNodesActivated.push(this.triggerNodes[j]);
                         this.triggerNodes[j].trigger(this.triggerActivators[i]);
                     }
-                } else if(!this.triggerNodes[j].hitTest(lp)) {
+                }
+                else if (!this.triggerNodes[j].hitTest(lp)) {
                     // after last touch (exit)
                     this.triggerNodesActivated.splice(aid, 1);
                 }

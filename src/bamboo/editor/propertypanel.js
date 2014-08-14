@@ -1,9 +1,6 @@
 game.module(
     'bamboo.editor.propertypanel'
 )
-.require(
-    'bamboo.editor.ui'
-)
 .body(function() {
 
 bamboo.PropertyPanel = game.Class.extend({
@@ -12,16 +9,18 @@ bamboo.PropertyPanel = game.Class.extend({
     nodeWindow: null,
     node: null,
     props: null,
-
     layerList: null,
     layerProperties: null,
+    width: 200,
+    nodeWindowHeight: 333,
 
     init: function(editor) {
         this.editor = editor;
-        this.layerWindow = bamboo.ui.addWindow(game.system.width-200, 0, 200, 333);//game.system.height);
+        
+        this.layerWindow = bamboo.ui.addWindow(game.system.width - this.width, 0, this.width, this.nodeWindowHeight);
         this.layerWindow.show();
 
-        this.nodeWindow = bamboo.ui.addWindow(game.system.width-200, 333, 200, game.system.height-333);
+        this.nodeWindow = bamboo.ui.addWindow(game.system.width - this.width, this.nodeWindowHeight, this.width, game.system.height - this.nodeWindowHeight);
         this.nodeWindow.show();
 
         // create layer list
@@ -64,7 +63,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
     updateLayerList: function() {
         this.layerList.innerHTML = '';
-        for(var i=0; i<this.editor.layers.length; i++) {
+        for (var i = 0; i < this.editor.layers.length; i++) {
             var opt = document.createElement('option');
             opt.value = this.editor.layers[i].name;
             opt.innerHTML = this.editor.layers[i].name;
@@ -91,22 +90,25 @@ bamboo.PropertyPanel = game.Class.extend({
         this.layerWindow.addInputCheckbox('visible', layer._editorNode.visible, 'Visible', 'Is layer visible in editor', function() {layer._editorNode.visible=this.inputs['visible'].checked;});
         this.layerWindow.addInputText('name', layer.name, 'Name', 'Name of the layer', function() {layer._editorNode.setProperty('name', this.inputs['name'].value); self.updateLayerList();});
         this.layerWindow.addInputText('speedFactor', layer.speedFactor.toFixed(2), 'Parallax multiplier', 'Speed relative to camera', function() {layer._editorNode.setProperty('speedFactor', parseFloat(this.inputs['speedFactor'].value));});
-
     },
 
     layerSelectionChanged: function() {
         this.editor.controller.setActiveLayer(this.editor.world.findNode(this.layerList.value));
         // clear selection!
     },
+
     newLayerClicked: function() {
         this.editor.controller.createNode('Layer', {name:'Layer', connectedTo:null});
     },
+
     moveLayerUpClicked: function() {
         this.editor.controller.moveLayerUp(this.editor.activeLayer);
     },
+
     moveLayerDownClicked: function() {
         this.editor.controller.moveLayerDown(this.editor.activeLayer);
     },
+
     deleteLayerClicked: function() {
         if(this.editor.layers.length === 1) {
             alert('Cannot delete last layer!');
@@ -121,14 +123,15 @@ bamboo.PropertyPanel = game.Class.extend({
 
     activeNodeChanged: function(node) {
         this.activeElement = null;
-        if(this.node) {
+        if (this.node) {
             this.node._editorNode.removePropertyChangeListener(this.propertyChanged.bind(this));
             this.props = null;
         }
 
         this.node = node;
         this.nodeWindow.clear();
-        if(!node) {
+
+        if (!node) {
             this.layerWindow.setInputSelectValue('activeNode', '');
             return;
         }
@@ -138,7 +141,7 @@ bamboo.PropertyPanel = game.Class.extend({
         
         var props = node.getPropertyDescriptors();
         this.props = props;
-        for(var key in props) {
+        for (var key in props) {
             if(!props[key].editable)
                 continue;
 
@@ -181,8 +184,8 @@ bamboo.PropertyPanel = game.Class.extend({
                 case bamboo.Property.TYPE.IMAGE:
                     this.nodeWindow.addInputSelect(key, props[key].name, props[key].description, this.imagePropertyChanged.bind(this));
                     var images = this.editor.images;
-                    for(var i=0; i<images.length; i++) {
-                        var name = images[i].name.slice(6);// 'level/'
+                    for (var i = 0; i < images.length; i++) {
+                        var name = images[i];
                         this.nodeWindow.addInputSelectOption(key, name, name);
                     }
                     this.nodeWindow.setInputSelectValue(key, node[key].slice(6));
@@ -289,7 +292,7 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     imagePropertyChanged: function(key) {
-        this.editor.activeNode._editorNode.setProperty(key, 'level/'+this.nodeWindow.inputs[key].value);
+        this.editor.activeNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
     },
 
     triggerPropertyChanged: function(key) {
@@ -306,23 +309,16 @@ bamboo.PropertyPanel = game.Class.extend({
                 value = 0xffffff;
         }
         this.editor.activeNode._editorNode.setProperty(key, value);
-    }
-});
-
-Object.defineProperty(bamboo.PropertyPanel.prototype, 'visible', {
-    get: function() {
-        return this.layerWindow.visible;
     },
-    set: function(value) {
-        if(value === this.layerWindow.visible)
-            return;
-        if(value) {
-            this.layerWindow.show();
-            this.nodeWindow.show();
-        } else {
-            this.layerWindow.hide();
-            this.nodeWindow.hide();
-        }
+
+    show: function() {
+        this.layerWindow.show();
+        this.nodeWindow.show();
+    },
+
+    hide: function() {
+        this.layerWindow.hide();
+        this.nodeWindow.hide();
     }
 });
 

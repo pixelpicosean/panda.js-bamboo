@@ -1,5 +1,5 @@
 game.module(
-    'bamboo.editor.movenodestate'
+    'bamboo.editor.states.movenodestate'
 )
 .require(
     'bamboo.editor.state'
@@ -7,6 +7,7 @@ game.module(
 .body(function() {
 
 bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
+    helpText: 'Move state: MOUSE confirm',
     nodes: [],
     startValues: [],
     offset: null,
@@ -34,7 +35,7 @@ bamboo.editor.MoveNodeState = bamboo.editor.State.extend({
         }
         this.offset = p;
 
-        this.mode.editor.statusbar.setStatus('Move node, ESC cancel, X,Y lock to axis, CTRL to snap 10px grid');
+        this.mode.editor.statusbar.setStatus(this.mode.helpText + '<br>' + this.helpText);
     },
 
     cancel: function() {

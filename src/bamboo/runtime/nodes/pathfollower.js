@@ -51,7 +51,7 @@ bamboo.nodes.PathFollower = bamboo.Node.extend({
     }
 });
 
-bamboo.nodes.PathFollower.desc = {
+bamboo.nodes.PathFollower.props = {
     duration: new bamboo.Property(true, 'Duration', 'Duration for one round', bamboo.Property.TYPE.NUMBER),
     timeOffset: new bamboo.Property(true, 'Offset (s)', 'Time offset from the start', bamboo.Property.TYPE.NUMBER),
     mode: new bamboo.Property(true, 'Loop mode', 'Loop mode', bamboo.Property.TYPE.ENUM, ['loop','backAndForth']),

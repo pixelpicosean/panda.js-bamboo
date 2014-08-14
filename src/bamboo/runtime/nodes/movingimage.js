@@ -45,7 +45,7 @@ bamboo.nodes.MovingImage = bamboo.nodes.Image.extend({
     }
 });
 
-bamboo.nodes.MovingImage.desc = {
+bamboo.nodes.MovingImage.props = {
     endPoint: new bamboo.Property(true, 'End Point', 'Relative to position', bamboo.Property.TYPE.VECTOR),
     duration: new bamboo.Property(true, 'Duration', 'Duration for one round', bamboo.Property.TYPE.NUMBER),
     timeOffset: new bamboo.Property(true, 'Offset (s)', 'Time offset from the start', bamboo.Property.TYPE.NUMBER),

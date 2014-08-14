@@ -1,5 +1,5 @@
 game.module(
-    'bamboo.editor.rotatenodestate'
+    'bamboo.editor.states.rotatenodestate'
 )
 .require(
     'bamboo.editor.state'

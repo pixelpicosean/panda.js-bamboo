@@ -12,8 +12,8 @@ game.addAsset('../src/bamboo/editor/media/image_placeholder.png');
 bamboo.nodes.Image.editor = bamboo.Node.editor.extend({
     init: function(node) {
         this._super(node);
-        if(!node.image)
-            this.setProperty('image', '../src/bamboo/editor/media/image_placeholder.png');
+        
+        if (!node.image) this.setProperty('image', '../src/bamboo/editor/media/image_placeholder.png');
     },
 
     getBounds: function() {
@@ -32,10 +32,9 @@ bamboo.nodes.Image.editor = bamboo.Node.editor.extend({
     },
 
     propertyChanged: function(key, value, oldValue) {
-        if(key === 'image')
-            this.sizeChanged();
-        if(key === 'anchor')
-            this.updateRect();
+        if (key === 'image') this.sizeChanged();
+        if (key === 'anchor') this.updateRect();
+        
         this._super(key, value, oldValue);
     }
 });

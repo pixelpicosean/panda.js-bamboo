@@ -1,5 +1,5 @@
 game.module(
-    'bamboo.editor.boxselectstate'
+    'bamboo.editor.states.boxselectstate'
 )
 .require(
     'bamboo.editor.state'

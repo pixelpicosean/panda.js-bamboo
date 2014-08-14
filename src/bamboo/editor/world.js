@@ -44,8 +44,6 @@ bamboo.World.inject({
 bamboo.World.defaultJSON = {
     world: 'World',
     images: [],
-    width: 3000,
-    height: 1000,
     nodes: [
         {
             class: 'Layer',

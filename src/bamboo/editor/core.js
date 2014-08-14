@@ -1,141 +1,137 @@
-var bamboo = bamboo || {};
-bamboo.editor = bamboo.editor || {};
+bamboo.editor = {};
 
 game.module(
     'bamboo.editor.core'
 )
 .require(
-    'bamboo.runtime.core',
+    'bamboo.editor.boundarylayer',
     'bamboo.editor.editor',
-    'bamboo.editor.ui',
-    'bamboo.editor.nodes.layer',
-    'bamboo.editor.node',
+    'bamboo.editor.editorcontroller',
     'bamboo.editor.filesaver',
     'bamboo.editor.jszip',
-    'bamboo.editor.world'
+    'bamboo.editor.mode',
+    'bamboo.editor.node',
+    'bamboo.editor.propertypanel',
+    'bamboo.editor.state',
+    'bamboo.editor.statusbar',
+    'bamboo.editor.ui',
+    'bamboo.editor.world',
+    
+    'bamboo.editor.modes.editnodemode',
+    'bamboo.editor.modes.gamemode',
+    'bamboo.editor.modes.nodemode',
+
+    'bamboo.editor.nodes.image',
+    'bamboo.editor.nodes.layer',
+    'bamboo.editor.nodes.manualtrigger',
+    'bamboo.editor.nodes.movingimage',
+    'bamboo.editor.nodes.path',
+    'bamboo.editor.nodes.pathfollower',
+    'bamboo.editor.nodes.rotator',
+    'bamboo.editor.nodes.trigger',
+    'bamboo.editor.nodes.triggerbox',
+    'bamboo.editor.nodes.triggercircle',
+    
+    'bamboo.editor.states.boxselectstate',
+    'bamboo.editor.states.createnodestate',
+    'bamboo.editor.states.movenodestate',
+    'bamboo.editor.states.newnodestate',
+    'bamboo.editor.states.rotatenodestate',
+    'bamboo.editor.states.scalenodestate',
+    'bamboo.editor.states.selectionstate'
 )
 .body(function() {
 
 bamboo.EditorScene = game.Scene.extend({
-    editor: null,
-
     init: function() {
-        this.installEventListeners();
-        this.loadEditor(game.level);
-    },
-
-    installEventListeners: function() {
         var canvas = game.system.canvas;
-        window.addEventListener('keydown', this.onkeydown.bind(this), false);
-        window.addEventListener('keyup', this.onkeyup.bind(this), false);
-
         canvas.ondragover = function() { return false; };
         canvas.ondragend = function() { return false; };
         canvas.ondrop = this.filedrop.bind(this);
+
+        this.levelsWindow = bamboo.ui.addWindow('center', 'center', 500, 200);
+        this.levelsWindow.addTitle('Bamboo editor ' + bamboo.version);
+        this.levelsWindow.addButton('New level', this.loadEditor.bind(this));
+        
+        bamboo.levels = game.ksort(bamboo.levels);
+        for (var name in bamboo.levels) {
+            this.levelsWindow.addButton(name, this.loadEditor.bind(this, name));
+        }
+        this.levelsWindow.show();
     },
 
-    loadEditor: function(json) {
+    loadEditor: function(name) {
+        bamboo.ui.removeWindow(this.levelsWindow);
+
         if (this.editor) {
             this.editor.exit();
             this.stage.removeChild(this.editor.displayObject);
             this.removeObject(this.editor);
         }
 
-        this.editor = bamboo.Editor.createFromJSON(json);
+        this.editor = bamboo.Editor.createFromJSON(bamboo.levels[name]);
         this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
-        this.stage.addChild(this.editor.displayObject);
+        this.editor.addTo(this.stage);
 
         this.addObject(this.editor);
     },
 
     save: function() {
+        if (!this.editor) return;
+
+        var name = this.editor.name.toLowerCase();
+
         var json = this.editor.world.toJSON();
         var zip = new JSZip();
         var jsonText = JSON.stringify(json, null, '    ');
-        var js = 'game.module(\n    \'level\'\n)\n.require(\n    \'bamboo.runtime.core\'\n)\n.body(function() {\n\n';
+        var js = 'game.module(\n    \'game.levels.' + name + '\'\n)\n.require(\n    \'bamboo.runtime.core\'\n)\n.body(function() {\n\n';
         js += 'bamboo.loadLevel('+jsonText+');\n';
         js += '\n});\n';
 
-        zip.file('level.js', js);
+        zip.file(this.editor.name.toLowerCase() + '.js', js);
 
         var blob = zip.generate({type: 'blob'});
 
-        var filename = 'level.zip';
+        var filename = name + '.zip';
         if (game.config.name) filename = game.config.name + '_' + filename;
         game.saveAs(blob, filename);
     },
 
     click: function(event) {
-        this.editor.click(event);
+        if (this.editor) this.editor.click(event);
     },
 
     mousedown: function(event) {
-        this.editor.mousedown(event);
+        if (this.editor) this.editor.mousedown(event);
     },
 
     mousemove: function(event) {
-        this.editor.mousemove(event);
+        if (this.editor) this.editor.mousemove(event);
     },
 
     mouseup: function(event) {
-        this.editor.mouseup(event);
+        if (this.editor) this.editor.mouseup(event);
     },
 
     mouseout: function(event) {
-        this.editor.mouseout(event);
-    },
-
-    onkeydown: function(e) {
-        if (!this.editor) return;
-
-        var tag = e.target.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-        if (e.type !== 'keydown') return;
-
-        var code = e.keyCode;
-        if (code === 82) return;
-        var handled = this.editor.onkeydown(code);
-        if (handled) {
-            e.stopPropagation();
-            e.preventDefault();
-        }
-    },
-
-    onkeyup: function(e) {
-        if (!this.editor) return;
-
-        var tag = e.target.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-        if (e.type !== 'keyup') return;
-
-        var code = e.keyCode;
-        var handled = this.editor.onkeyup(code);
-        if (handled) {
-            e.stopPropagation();
-            e.preventDefault();
-        }
+        if (this.editor) this.editor.mouseout(event);
     },
 
     keydown: function(key) {
-        if (key === 'W') {
-            this.windowsHidden = !this.windowsHidden;
-            if (this.windowsHidden) bamboo.ui.hideAll();
-            else bamboo.ui.showAll();
-        }
-
-        this.editor.keydown(key);
+        if (this.editor) this.editor.keydown(key);
     },
 
     keyup: function(key) {
-        this.editor.keyup(key);
+        if (this.editor) this.editor.keyup(key);
     },
 
     filedrop: function(event) {
-        this.editor.filedrop(event);
+        if (this.editor) this.editor.filedrop(event);
     }
 });
 
-bamboo.start = function() {
+game._start = game.start;
+game.start = function() {
     game.System.scale = false;
     game.System.center = false;
     game.System.left = 0;
@@ -147,9 +143,9 @@ bamboo.start = function() {
     style.href = 'src/bamboo/editor/style.css';
     document.getElementsByTagName('head')[0].appendChild(style);
 
-    this.ui = new bamboo.Ui();
+    bamboo.ui = new bamboo.Ui();
 
-    game.start(bamboo.EditorScene, window.innerWidth, window.innerHeight);
+    game._start(bamboo.EditorScene, window.innerWidth, window.innerHeight);
 };
 
 });

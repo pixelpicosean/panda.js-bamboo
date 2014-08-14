@@ -32,7 +32,7 @@ bamboo.nodes.Rotator = bamboo.Node.extend({
     }
 });
 
-bamboo.nodes.Rotator.desc = {
+bamboo.nodes.Rotator.props = {
     duration: new bamboo.Property(true, 'Duration', 'Duration.', bamboo.Property.TYPE.NUMBER),
     timeOffset: new bamboo.Property(true, 'Offset (s)', 'Time offset.', bamboo.Property.TYPE.NUMBER),
     startAngle: new bamboo.Property(false, '', '', bamboo.Property.TYPE.NUMBER),

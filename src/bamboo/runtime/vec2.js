@@ -110,6 +110,6 @@ Vec2.prototype.angle = function(v) {
     return Math.atan2(v.y, v.x) - Math.atan2(this.y, this.x);
 };
 
-game.PIXI.Point = Vec2;
+game.Point = Vec2;
 
 });

@@ -1,13 +1,9 @@
 game.module(
     'bamboo.editor.editorcontroller'
 )
-.require(
-)
 .body(function() {
 
 bamboo.EditorController = game.Class.extend({
-    editor: null,
-
     init: function(editor) {
         this.editor = editor;
     },
@@ -75,11 +71,10 @@ bamboo.EditorController = game.Class.extend({
     },
 
     selectNode: function(node) {
-        if(!node)
-            return;
-
-        if(this.editor.selectedNodes.indexOf(node) !== -1)
-            return;// node is already selected
+        if (!node) return;
+        
+        // node is already selected
+        if(this.editor.selectedNodes.indexOf(node) !== -1) return;
 
         this.editor.selectedNodes.push(node);
         node._editorNode.selectionRect.visible = true;
@@ -132,19 +127,21 @@ bamboo.EditorController = game.Class.extend({
     },
 
     setActiveNode: function(node) {
-        if(this.editor.activeNode === node)
-            return;
+        if (this.editor.activeNode === node) return;
 
-        if(this.editor.activeNode) {
+        if (this.editor.activeNode) {
             this.editor.activeNode._editorNode.activeRect.visible = false;
             this.editor.activeNode._editorNode.activeAxis.visible = false;
         }
+
         this.editor.activeNode = node;
-        if(this.editor.activeNode) {
+
+        if (this.editor.activeNode) {
             this.selectNode(this.editor.activeNode);
             this.editor.activeNode._editorNode.activeAxis.visible = true;
             this.editor.activeNode._editorNode.activeRect.visible = true;
         }
+        
         this.editor.activeNodeChanged(node);
     },
 

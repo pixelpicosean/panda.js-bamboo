@@ -2,7 +2,8 @@ game.module(
     'bamboo.runtime.property'
 )
 .require(
-    'bamboo.runtime.vec2'
+    'bamboo.runtime.vec2',
+    'engine.tween'
 )
 .body(function() {
     
@@ -97,6 +98,29 @@ bamboo.Property.toJSON = function(obj, name, desc) {
                 a.push(bamboo.Property.toJSON(obj[name], i, desc.options));
             }
             return a;
+    }
+};
+
+game.Tween.Easing.getNamesList = function() {
+    var names = [];
+    for (var i in game.Tween.Easing) {
+        for (var o in game.Tween.Easing[i]) {
+            names.push(i + '.' + o);
+        }
+    }
+    return names;
+};
+
+game.Tween.Easing.getByName = function(name) {
+    name = name.split('.');
+    return game.Tween.Easing[name[0]][name[1]];
+};
+
+game.Tween.Easing.getName = function(easing) {
+    for (var i in game.Tween.Easing) {
+        for (var o in game.Tween.Easing[i]) {
+            if (easing === game.Tween.Easing[i][o]) return i + '.' + o;
+        }
     }
 };
 

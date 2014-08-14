@@ -12,6 +12,6 @@ bamboo.nodes.TriggerCircle = bamboo.nodes.ManualTrigger.extend({
     }
 });
 
-bamboo.nodes.TriggerCircle.desc = {};
+bamboo.nodes.TriggerCircle.props = {};
 
 });

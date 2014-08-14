@@ -1,15 +1,15 @@
 game.module(
-    'bamboo.editor.nodemode'
+    'bamboo.editor.modes.nodemode'
 )
 .require(
-    'bamboo.editor.mode',
-    'bamboo.editor.selectionstate'
+    'bamboo.editor.mode'
 )
 .body(function() {
 
 game.addAsset('../src/bamboo/editor/media/font.fnt');
 
 bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
+    helpText: 'Node mode: (P)lay animation, ESC cancel',
     state: null,
     timeDisplay: null,
     zoomDisplay: null,
@@ -19,19 +19,20 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     altDown: false,
     ctrlDown: false,
 
-    init: function(editor, p) {
+    init: function(editor) {
         this._super(editor);
-        this.state = new bamboo.editor.SelectionState(this, p);
 
-        this.timeDisplay = new game.BitmapText('', {font:'28px Buu'});
-        this.timeDisplay.position = new game.Vec2(20, 20);
-        this.editor.overlay.addChild(this.timeDisplay);
+        this.state = new bamboo.editor.SelectionState(this);
+
+        this.timeDisplay = new game.BitmapText('', { font: 'Buu' });
+        this.timeDisplay.position.set(20, 20);
         this.timeDisplay.visible = false;
+        this.editor.overlay.addChild(this.timeDisplay);
 
-        this.zoomDisplay = new game.BitmapText('', {font:'28px Buu'});
-        this.zoomDisplay.position = new game.Vec2(20, 50);
-        this.editor.overlay.addChild(this.zoomDisplay);
+        this.zoomDisplay = new game.BitmapText('', { font: 'Buu' });
+        this.zoomDisplay.position.set(20, 50);
         this.zoomDisplay.visible = false;
+        this.editor.overlay.addChild(this.zoomDisplay);
     },
 
     exit: function() {
@@ -55,12 +56,6 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
         this.zoomTween.start();
     },
 
-    update: function(dt) {
-        if (this.animationRunning) {
-            this.setAnimationTime(this.animationTime + dt);
-        }
-    },
-
     startAnimation: function() {
         this.animationRunning = true;
         this.setAnimationTime(0);
@@ -79,13 +74,32 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
         this.timeDisplay.setText(this.animationTime.toFixed(1)+'s');
     },
 
-    click: function(p) {
-        this.state.apply();
-        this.changeState(new bamboo.editor.SelectionState(this, p));
+    click: function(event) {
+        this.state.apply(event);
+        this.changeState(new bamboo.editor.SelectionState(this));
     },
 
     mousemove: function(event) {
         this.state.mousemove(event);
+    },
+
+    keydown: function(key) {
+        if (key === 'ESC') {
+            this.state.cancel();
+            this.changeState(new bamboo.editor.SelectionState(this));
+            return;
+        }
+        if (key === 'P') {
+            if (this.animationRunning) this.stopAnimation();
+            else this.startAnimation();
+            return;
+        }
+
+        this.state.keydown(key);
+    },
+
+    keyup: function(key) {
+        this.state.keyup(key);
     },
 
     onkeydown: function(keycode, p) {
@@ -109,14 +123,6 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
         return this.state.onkeydown(keycode, p);
     },
 
-    keydown: function(key) {
-        this.state.keydown(key);
-    },
-
-    keyup: function(key) {
-        this.state.keyup(key);
-    },
-
     onkeyup: function(keycode, p) {
         // overrides from editor
         switch(keycode) {
@@ -131,10 +137,6 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
             case 18:// ALT
                  this.altDown = false;
                  return true;
-            case 27:// ESC - cancel
-                this.state.cancel();
-                this.changeState(new bamboo.editor.SelectionState(this, p));
-                return true;
             case 32:// SPACE - start/stop animation
                 if (this.animationRunning)
                     this.stopAnimation();
@@ -151,6 +153,12 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
 
     changeState: function(newState) {
         this.state = newState;
+    },
+
+    update: function() {
+        if (this.animationRunning) {
+            this.setAnimationTime(this.animationTime + game.system.delta);
+        }
     }
 });
 

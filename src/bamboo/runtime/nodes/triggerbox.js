@@ -12,6 +12,6 @@ bamboo.nodes.TriggerBox = bamboo.nodes.ManualTrigger.extend({
     }
 });
 
-bamboo.nodes.TriggerBox.desc = {};
+bamboo.nodes.TriggerBox.props = {};
 
 });

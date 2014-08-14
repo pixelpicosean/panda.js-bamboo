@@ -23,7 +23,7 @@ bamboo.nodes.ManualTrigger = bamboo.nodes.Trigger.extend({
     }
 });
 
-bamboo.nodes.ManualTrigger.desc = {
+bamboo.nodes.ManualTrigger.props = {
     target: new bamboo.Property(true, 'Target', 'Target', bamboo.Property.TYPE.TRIGGER)
 };
 

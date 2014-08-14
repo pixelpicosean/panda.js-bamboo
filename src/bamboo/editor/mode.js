@@ -4,8 +4,6 @@ game.module(
 .body(function() {
 
 bamboo.editor.Mode = game.Class.extend({
-    editor: null,
-
     init: function(editor) {
         this.editor = editor;
     },
@@ -16,19 +14,19 @@ bamboo.editor.Mode = game.Class.extend({
     exit: function() {
     },
 
-    update: function(dt) {
+    update: function() {
     },
 
-    onclick: function() {
+    click: function() {
     },
 
-    onmousemove: function(p) {
+    mousemove: function() {
     },
 
-    onkeydown: function(keycode, p) {
+    keydown: function() {
     },
     
-    onkeyup: function(keycode, p) {
+    keyup: function() {
     }
 });
 

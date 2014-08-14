@@ -21,6 +21,6 @@ bamboo.nodes.Trigger = bamboo.Node.extend({
     }
 });
 
-bamboo.nodes.Trigger.desc = {};
+bamboo.nodes.Trigger.props = {};
 
 });

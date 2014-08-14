@@ -12,10 +12,11 @@ bamboo.StatusBar = game.Class.extend({
     height: 50,
 
     init: function() {
-        this.window = bamboo.ui.addWindow(80, game.system.height - this.height, game.system.width - 80, this.height);
+        var saveWindowWidth = 75;
+        this.window = bamboo.ui.addWindow(saveWindowWidth, game.system.height - this.height, game.system.width - saveWindowWidth, this.height);
         this.window.show();
 
-        this.saveWindow = bamboo.ui.addWindow(0, game.system.height - this.height, 80, this.height);
+        this.saveWindow = bamboo.ui.addWindow(0, game.system.height - this.height, saveWindowWidth, this.height);
         this.saveWindow.addButton('Save', function() {
             game.scene.save();
         });

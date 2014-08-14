@@ -1,5 +1,5 @@
 game.module(
-    'bamboo.editor.scalenodestate'
+    'bamboo.editor.states.scalenodestate'
 )
 .require(
     'bamboo.editor.state'

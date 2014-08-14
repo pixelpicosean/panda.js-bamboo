@@ -8,6 +8,7 @@ game.module(
 .body(function() {
 
 bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
+    helpText: 'Path: (A)dd point, (D)elete point',
     color: 0x000000,
     lineNode: null,
     selectionCircle: null,
@@ -42,33 +43,33 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         var maxx = minx;
         var maxy = miny;
         for(var i=0; i<ps.length; i++) {
-            if(minx > ps[i].x)
+            if (minx > ps[i].x)
                 minx = ps[i].x;
-            else if(maxx < ps[i].x)
+            else if (maxx < ps[i].x)
                 maxx = ps[i].x;
 
-            if(miny > ps[i].y)
+            if (miny > ps[i].y)
                 miny = ps[i].y;
-            else if(maxy < ps[i].y)
+            else if (maxy < ps[i].y)
                 maxy = ps[i].y;
         }
         return {x:minx, y:miny, width:maxx-minx, height:maxy-miny};
     },
 
     enableEditMode: function(enabled) {
-        if(enabled === this.editEnabled)
+        if (enabled === this.editEnabled)
             return;
         this._super(enabled);
         this.editEnabled = enabled;
-        if(enabled) {
+        if (enabled) {
             this.redrawPath();
-            if(this.selectedPointIndex !== -1) {
+            if (this.selectedPointIndex !== -1) {
                 this.selectionCircle.visible = true;
                 this.selectionCircle.position = this.node.points[this.selectedPointIndex];
             }
         } else {
-            if(this.moving !== -1) {
-                if(this.startedFrom) {
+            if (this.moving !== -1) {
+                if (this.startedFrom) {
                     this.node.points[this.moving] = this.startedFrom;
                     this.selectionCircle.position = this.startedFrom;
                     this.startedFrom = null;
@@ -93,33 +94,33 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
 
     redrawPath: function() {
         this.lineNode.clear();
-        if(this.node.points.length === 0)
+        if (this.node.points.length === 0)
             return;
 
         var sx = this.node.scale.x;
         var sy = this.node.scale.y;
         this.lineNode.lineStyle(3, this.color);
         var ps = this.node.points;
-        if(!this.node.spline) {
+        if (!this.node.spline) {
             this.lineNode.moveTo(ps[0].x*sx, ps[0].y*sy);
             for (var i = 1; i < ps.length; i++) {
                 this.lineNode.lineTo(ps[i].x*sx, ps[i].y*sy);
             }
-            if(this.node.loop)
+            if (this.node.loop)
                 this.lineNode.lineTo(ps[0].x*sx, ps[0].y*sy);
         } else {
             var p1 = ps[0];
             var p0 = p1;
-            if(this.node.loop)
+            if (this.node.loop)
                 p0 = ps[this.node.points.length-1];
             var p2,p3;
             this.lineNode.moveTo(p1.x*sx, p1.y*sy);
-            for(var i = 1; i < ps.length; i++) {
+            for (var i = 1; i < ps.length; i++) {
                 p2 = ps[i];
                 p3 = p2;
-                if(i < ps.length - 1)
+                if (i < ps.length - 1)
                     p3 = ps[i+1];
-                else if(this.node.loop)
+                else if (this.node.loop)
                     p3 = ps[0];
                 for(var t = 1; t<21; t++) {
                     var f = t * 1.0/20.0;
@@ -129,10 +130,10 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
                 p0 = p1;
                 p1 = p2;
             }
-            if(this.node.loop) {
+            if (this.node.loop) {
                 p2 = ps[0];
                 p3 = p2;
-                if(ps.length > 1)
+                if (ps.length > 1)
                     p3 = ps[1];
                 for(var t = 1; t<21; t++) {
                     var f = t * 1.0/20.0;
@@ -142,7 +143,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
             }
         }
 
-        if(this.editEnabled) {
+        if (this.editEnabled) {
             this.lineNode.lineStyle(1, 0x000000);
             this.lineNode.beginFill(0x0000ff);
             for (var i = 0; i < ps.length; i++) {
@@ -152,7 +153,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
     },
 
     propertyChanged: function(property, value, oldValue) {
-        if(property === 'loop' || property === 'spline') {
+        if (property === 'loop' || property === 'spline') {
             this.updateRect();
             this.redrawPath();
             this.node.calculateLength();
@@ -165,7 +166,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         var closestDistance = null;
         for (var i = 0; i < this.node.points.length; i++) {
             var dist = v.distance(this.node.points[i]);
-            if(!closestDistance || dist < closestDistance) {
+            if (!closestDistance || dist < closestDistance) {
                 closestPointIndex = i;
                 closestDistance = dist;
             }
@@ -173,22 +174,10 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         return closestPointIndex;
     },
 
-    onkeydown: function(keycode) {
-        switch(keycode) {
-        case 27:// ESC
-        case 46:// DEL
-        case 65:// A
-        case 71:// G
-            return true;
-        default:
-            return false;
-        }
-    },
-    onkeyup: function(keycode) {
-        switch(keycode) {
-        case 27:// ESC - Cancel
-            if(this.moving !== -1) {
-                if(this.startedFrom) {
+    keydown: function(key) {
+        if (key === 'ESC') {
+            if (this.moving !== -1) {
+                if (this.startedFrom) {
                     this.node.points[this.moving] = this.startedFrom;
                     this.selectionCircle.position = this.startedFrom;
                     this.startedFrom = null;
@@ -200,23 +189,25 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
                 this.redrawPath();
                 this.node.calculateLength();
             }
-            return true;
-        case 65:// A - Add
-            if(this.startedFrom)
-                return true; // were moving existing point, don't allow addition
+            return;
+        }
+        if (key === 'A') {
+            // were moving existing point, don't allow addition
+            if (this.startedFrom) return true;
 
-            if(this.moving !== -1) {
-                // we were still moving last added point, commit the latest position and add another
+            // we were still moving last added point, commit the latest position and add another
+            if (this.moving !== -1) {
                 this.node.points[this.moving] = this.lastMousePos.clone();
                 this.selectedPointIndex = this.moving;
                 this.selectionCircle.position = this.node.points[this.moving];
                 this.selectionCircle.visible = true;
             }
 
-            if(this.selectedPointIndex === -1) {
+            if (this.selectedPointIndex === -1) {
                 this.moving = this.node.points.length;
                 this.node.addPoint(this.lastMousePos.clone());
-            } else {
+            }
+            else {
                 this.moving = this.selectedPointIndex+1;
                 this.node.insertPoint(this.moving, this.lastMousePos.clone());
             }
@@ -225,16 +216,15 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
             this.updateRect();
             this.redrawPath();
             this.node.calculateLength();
-            return true;
-        case 46:// DEL - Delete
-            if(this.moving !== -1)
-                return true;
-            if(this.node.points.length === 1)
-                return true;
-            if(this.selectedPointIndex !== -1) {
+            return;
+        }
+        if (key === 'D') {
+            if (this.moving !== -1) return;
+            if (this.node.points.length === 1) return;
+            if (this.selectedPointIndex !== -1) {
                 this.node.removePoint(this.selectedPointIndex);
                 this.selectedPointIndex = this.selectedPointIndex - 1;
-                if(this.selectedPointIndex !== -1)
+                if (this.selectedPointIndex !== -1)
                     this.selectionCircle.position = this.node.points[this.selectedPointIndex];
                 else
                     this.selectionCircle.visible = false;
@@ -243,28 +233,28 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
                 this.redrawPath();
                 this.node.calculateLength();
             }
-            return true;
-        case 71:// G - Grab
-            if(this.selectedPointIndex !== -1 && this.moving === -1) {
+            return;
+        }
+        if (key === 'G') {
+            if (this.selectedPointIndex !== -1 && this.moving === -1) {
                 this.startedFrom = this.node.points[this.selectedPointIndex];
                 this.hoverCircle.visible = false;
                 this.moving = this.selectedPointIndex;
             }
-            return true;
-        default:
-            return false;
+            return;
         }
     },
 
-    onmousemove: function(pos) {
+    mousemove: function(pos) {
         pos = this.node.toLocalSpace(pos);
         this.lastMousePos = pos;
-        if(this.moving === -1) {
+        if (this.moving === -1) {
             var idx = this.getClosestPointIndex(pos);
-            if(pos.distance(this.node.points[idx]) < 20) {
+            if (pos.distance(this.node.points[idx]) < 20) {
                 this.hoverCircle.position = this.node.points[idx];
                 this.hoverCircle.visible = true;
-            } else {
+            }
+            else {
                 this.hoverCircle.visible = false;
             }
             return;
@@ -272,18 +262,18 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
 
         // were moving
         this.node.points[this.moving] = pos;
-        if(this.selectedPointIndex === this.moving)
-            this.selectionCircle.position = pos;
+        if (this.selectedPointIndex === this.moving) this.selectionCircle.position = pos;
         this.updateRect();
         this.redrawPath();
         this.node.calculateLength();
     },
-    onclick: function(pos) {
+
+    click: function(pos) {
         pos = this.node.toLocalSpace(pos);
         this.lastMousePos = pos;
-        if(this.moving === -1) {
+        if (this.moving === -1) {
             var idx = this.getClosestPointIndex(pos);
-            if(pos.distance(this.node.points[idx]) < 20) {
+            if (pos.distance(this.node.points[idx]) < 20) {
                 this.selectedPointIndex = idx;
                 this.selectionCircle.position = this.node.points[idx];
                 this.selectionCircle.visible = true;

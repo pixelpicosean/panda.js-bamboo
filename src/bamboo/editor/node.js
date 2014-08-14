@@ -10,6 +10,7 @@ game.addAsset('../src/bamboo/editor/media/axis.png');
 game.addAsset('../src/bamboo/editor/media/axis_hover.png');
 
 bamboo.Node.editor = game.Class.extend({
+    helpText: '',
     node: null,
     displayObject: null,
     debugDisplayObject: null,
@@ -189,15 +190,6 @@ bamboo.Node.editor = game.Class.extend({
         return new game.Vec2();
     },
 
-    onkeydown: function(keycode,p) {
-        switch(keycode) {
-            case 27:// ESC
-            case 79:// O
-                return true;
-        }
-        return false;
-    },
-
     onkeyup: function(keycode,p) {
         switch(keycode) {
             case 27:// ESC - exit origin set
@@ -222,6 +214,10 @@ bamboo.Node.editor = game.Class.extend({
         return false;
     },
 
+    keydown: function(key) {
+        
+    },
+
     onclick: function(p) {
         if (this.movingOriginOffset) {
             p.subtract(this.movingOriginOffset);// <- origin total delta
@@ -242,7 +238,7 @@ bamboo.Node.editor = game.Class.extend({
         return false;
     },
     
-    onmousemove: function(p) {
+    mousemove: function(p) {
         if (this.movingOriginOffset) {
             p.subtract(this.movingOriginOffset);// <- origin total delta in world space
 
