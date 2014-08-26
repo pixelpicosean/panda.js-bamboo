@@ -44,10 +44,10 @@ bamboo.UiWindow = game.Class.extend({
     visible: false,
 
     init: function(x, y, width, height) {
-        if(typeof(x) !== 'undefined') this.x = x;
-        if(typeof(y) !== 'undefined') this.y = y;
-        if(typeof(width) !== 'undefined') this.width = width;
-        if(typeof(height) !== 'undefined') this.height = height;
+        if (typeof(x) !== 'undefined') this.x = x;
+        if (typeof(y) !== 'undefined') this.y = y;
+        if (typeof(width) !== 'undefined') this.width = width;
+        if (typeof(height) !== 'undefined') this.height = height;
 
         this.windowDiv = document.createElement('div');
         this.windowDiv.className = 'window';
@@ -66,17 +66,17 @@ bamboo.UiWindow = game.Class.extend({
     },
 
     update: function() {
-        if(this.width === 'window') this.windowDiv.style.width = window.innerWidth - this.borderSize * 2 + 'px';
+        if (this.width === 'window') this.windowDiv.style.width = window.innerWidth - this.borderSize * 2 + 'px';
         else this.windowDiv.style.width = (this.width - this.borderSize * 2) + 'px';
 
-        if(this.height === 'window') this.windowDiv.style.height = window.innerHeight - this.borderSize * 2 + 'px';
+        if (this.height === 'window') this.windowDiv.style.height = window.innerHeight - this.borderSize * 2 + 'px';
         else this.windowDiv.style.height = (this.height - this.borderSize * 2) + 'px';
 
-        if(this.x === 'center') this.windowDiv.style.left = window.innerWidth / 2 - this.width / 2 + 'px';
+        if (this.x === 'center') this.windowDiv.style.left = window.innerWidth / 2 - this.width / 2 + 'px';
         else this.windowDiv.style.left = this.x + 'px';
 
-        if(this.y === 'center') this.windowDiv.style.top = window.innerHeight / 2 - this.height / 2 + 'px';
-        // if(this.y === 'bottom') this.windowDiv.style.top = window.innerHeight - this.height - this.borderSize * 2 + 'px';
+        if (this.y === 'center') this.windowDiv.style.top = window.innerHeight / 2 - this.height / 2 + 'px';
+        // if (this.y === 'bottom') this.windowDiv.style.top = window.innerHeight - this.height - this.borderSize * 2 + 'px';
         else this.windowDiv.style.top = this.y + 'px';
     },
 
@@ -97,7 +97,7 @@ bamboo.UiWindow = game.Class.extend({
         this.contentDiv.innerHTML = '';
     },
 
-    addTitle: function(title) {
+    setTitle: function(title) {
         this.titleDiv.innerHTML = title;
         this.titleDiv.style.display = 'block';
         return this;
@@ -115,7 +115,7 @@ bamboo.UiWindow = game.Class.extend({
         var buttonDiv = document.createElement('div');
         buttonDiv.className = 'button';
         buttonDiv.innerHTML = title;
-        if(callback) buttonDiv.addEventListener('click', callback.bind(this), false);
+        if (callback) buttonDiv.addEventListener('click', callback.bind(this), false);
         this.contentDiv.appendChild(buttonDiv);
         return this;
     },
@@ -126,7 +126,7 @@ bamboo.UiWindow = game.Class.extend({
         var buttonDiv = document.createElement('div');
         buttonDiv.appendChild(img);
         buttonDiv.className = 'imageButton';
-        if(callback) buttonDiv.addEventListener('click', callback.bind(this), false);
+        if (callback) buttonDiv.addEventListener('click', callback.bind(this), false);
         this.contentDiv.appendChild(buttonDiv);
         return this;
     },
@@ -140,15 +140,16 @@ bamboo.UiWindow = game.Class.extend({
         labelElem.innerHTML = label || name + ':';
         type = type || 'text';
 
-        if(type === 'text' || type === 'checkbox' || type === 'color') {
+        if (type === 'text' || type === 'checkbox' || type === 'color') {
             inputElem = document.createElement('input');
             inputElem.type = type;
             inputElem.name = name;
             inputElem.title = tooltip;
-            if(typeof(value) === 'number' || typeof(value) === 'string') inputElem.value = value;
-            if(type === 'checkbox') inputElem.checked = !!value;
+            inputElem.placeholder = tooltip;
+            if (typeof(value) === 'number' || typeof(value) === 'string') inputElem.value = value;
+            if (type === 'checkbox') inputElem.checked = !!value;
         }
-        else if(type === 'select') {
+        else if (type === 'select') {
             inputElem = document.createElement('select');
             inputElem.name = name;
             inputElem.title = tooltip;
@@ -160,7 +161,7 @@ bamboo.UiWindow = game.Class.extend({
         inputDiv.appendChild(labelElem);
         inputDiv.appendChild(inputElem);
 
-        if(typeof(callback) === 'function') inputElem.addEventListener('change', callback.bind(this, name), false);
+        if (typeof(callback) === 'function') inputElem.addEventListener('change', callback.bind(this, name), false);
 
         this.contentDiv.appendChild(inputDiv);
         return this;
@@ -192,7 +193,7 @@ bamboo.UiWindow = game.Class.extend({
 
             multiDiv.appendChild(inputElem);
 
-            if(typeof(callback) === 'function') inputElem.addEventListener('change', callback.bind(this, inputName), false);
+            if (typeof(callback) === 'function') inputElem.addEventListener('change', callback.bind(this, inputName), false);
         }
 
         inputDiv.appendChild(multiDiv);

@@ -1,5 +1,5 @@
 body {
-    background: #282828;
+    background: red;
     font-family: Arial;
     font-size: 12px;
     color: #eee;
@@ -11,9 +11,11 @@ body {
     user-select: none;
     overflow: hidden;
 }
+
 body.notready div {
     display: none;
 }
+
 .window {
     /*pointer-events: auto;*/
     background: #393939;

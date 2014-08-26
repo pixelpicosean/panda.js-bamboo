@@ -4,6 +4,8 @@ game.module(
 .body(function() {
 
 bamboo.editor.State = game.Class.extend({
+    helpText: '',
+    
     init: function(mode) {
         this.mode = mode;
     },

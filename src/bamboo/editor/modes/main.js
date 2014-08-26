@@ -1,5 +1,5 @@
 game.module(
-    'bamboo.editor.modes.nodemode'
+    'bamboo.editor.modes.main'
 )
 .require(
     'bamboo.editor.mode'
@@ -8,8 +8,8 @@ game.module(
 
 game.addAsset('../src/bamboo/editor/media/font.fnt');
 
-bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
-    helpText: 'Node mode: (P)lay animation, ESC cancel',
+bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
+    helpText: 'Main mode: (W)indows, (B)oundaries, (L)ights, (P)lay, (R)eset view, SPACE pan view, PLUS zoom in, MINUS zoom out, ESC cancel',
     state: null,
     timeDisplay: null,
     zoomDisplay: null,
@@ -22,7 +22,7 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     init: function(editor) {
         this._super(editor);
 
-        this.state = new bamboo.editor.SelectionState(this);
+        this.state = new bamboo.editor.StateSelect(this);
 
         this.timeDisplay = new game.BitmapText('', { font: 'Buu' });
         this.timeDisplay.position.set(20, 20);
@@ -76,7 +76,6 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
 
     click: function(event) {
         this.state.apply(event);
-        this.changeState(new bamboo.editor.SelectionState(this));
     },
 
     mousemove: function(event) {
@@ -84,9 +83,41 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     },
 
     keydown: function(key) {
+        if (key === 'SHIFT') this.shiftDown = true;
+        if (key === 'ALT') this.altDown = true;
+        if (key === 'CTRL') this.ctrlDown = true;
+
+        if (key === 'R') {
+            this.editor.cameraWorldPosition = new game.Point(this.editor.worldTargetPos.x, this.editor.worldTargetPos.y);
+            return;
+        }
+        if (key === 'S') {
+            game.scene.save();
+            return;
+        }
+        if (key === 'NUM_PLUS') return this.editor.onmousewheel(0.5);
+        if (key === 'NUM_MINUS') return this.editor.onmousewheel(-0.5);
+        if (key === 'W') {
+            this.editor.windowsHidden = !this.editor.windowsHidden;
+            if (this.editor.windowsHidden) bamboo.ui.hideAll();
+            else bamboo.ui.showAll();
+            return;
+        }
+        if (key === 'SPACE') {
+            document.body.style.cursor = 'move';
+            this.editor.cameraOffset = this.editor.prevMousePos.subtractc(this.editor.cameraWorldPosition);
+            return;
+        }
+        if (key === 'L') {
+            return this.editor.boundaryLayer.screenDim.visible = !this.editor.boundaryLayer.screenDim.visible;
+        }
+        if (key === 'B') {
+            return this.editor.boundaryLayer.boundaries.visible = !this.editor.boundaryLayer.boundaries.visible;
+        }
         if (key === 'ESC') {
+            if (this.animationRunning) this.stopAnimation();
             this.state.cancel();
-            this.changeState(new bamboo.editor.SelectionState(this));
+            this.editor.changeState('Select');
             return;
         }
         if (key === 'P') {
@@ -99,6 +130,16 @@ bamboo.editor.NodeMode = bamboo.editor.Mode.extend({
     },
 
     keyup: function(key) {
+        if (key === 'SHIFT') this.shiftDown = false;
+        if (key === 'ALT') this.altDown = false;
+        if (key === 'CTRL') this.ctrlDown = false;
+        
+        if (key === 'SPACE') {
+            document.body.style.cursor = 'default';
+            this.editor.cameraOffset = null;
+            return;
+        }
+
         this.state.keyup(key);
     },
 

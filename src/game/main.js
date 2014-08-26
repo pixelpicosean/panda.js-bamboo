@@ -2,7 +2,7 @@ game.module(
     'game.main'
 )
 .require(
-    'bamboo.runtime.core'
+    'bamboo.core'
 )
 .body(function() {
 

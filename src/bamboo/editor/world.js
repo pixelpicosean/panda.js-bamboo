@@ -9,30 +9,30 @@ game.module(
 bamboo.World.inject({
     getConnectedNodes: function(node) {
         var nodes = [];
-        for (var i=0; i<this.nodes.length; i++) {
-            if(this.nodes[i].connectedTo === node) nodes.push(this.nodes[i]);
+        for (var i = 0; i < this.nodes.length; i++) {
+            if (this.nodes[i].parent === node) nodes.push(this.nodes[i]);
         }
-        nodes.sort(function(a,b) {
-            return a.displayObject.parent.children.indexOf(a.displayObject) - b.displayObject.parent.children.indexOf(b.displayObject);
-        });
+        // nodes.sort(function(a, b) {
+        //     return a.displayObject.parent.children.indexOf(a.displayObject) - b.displayObject.parent.children.indexOf(b.displayObject);
+        // });
 
         return nodes;
     },
 
     addJSONConnections: function(node, list) {
-        // TODO: optimize this, maybe refactor the whole connectedTo thingy
         var nodes = this.getConnectedNodes(node);
-        for (var i=0; i<nodes.length; i++) {
-            list.push(nodes[i].toJSON());
+        for (var i = 0; i < nodes.length; i++) {
+            list.push(nodes[i]._editorNode.toJSON());
             this.addJSONConnections(nodes[i], list);
         }
     },
 
     toJSON: function() {
         var jsonObj = {
+            name: game.scene.editor.name,
             world: this.getClassName(),
-            width: this.boundaries.right,
-            height: this.boundaries.bottom,
+            width: this.width,
+            height: this.height,
             images: this.images,
             nodes: []
         };
@@ -48,18 +48,7 @@ bamboo.World.defaultJSON = {
         {
             class: 'Layer',
             properties: {
-                name: 'main',
-                position: {
-                    x: 0,
-                    y: 0
-                },
-                rotation: 0,
-                scale: {
-                    x: 1,
-                    y: 1
-                },
-                connectedTo: null,
-                speedFactor: 1
+                name: 'main'
             }
         }
     ]

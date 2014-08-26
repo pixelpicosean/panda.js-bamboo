@@ -1,12 +1,12 @@
 game.module(
-    'bamboo.editor.states.boxselectstate'
+    'bamboo.editor.states.boxselect'
 )
 .require(
     'bamboo.editor.state'
 )
 .body(function() {
 
-bamboo.editor.BoxSelectState = bamboo.editor.State.extend({
+bamboo.editor.StateBoxSelect = bamboo.editor.State.extend({
     box: null,
     size: null,
 

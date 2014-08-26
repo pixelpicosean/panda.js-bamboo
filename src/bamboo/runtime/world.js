@@ -7,35 +7,24 @@ game.module(
 .body(function() {
 
 bamboo.World = bamboo.Node.extend({
+    width: 0,
+    height: 0,
     nodes: [],
     updateableNodes: [],
-    cameraPosition: null,
-    // contains image names and datas
     images: {},
-    // area that contains visible content
-    boundaries: {
-        left: 0,
-        top: 0,
-        right: 2000,
-        bottom: 1050
-    },
-    screenSize: {
-        width: 1024,
-        height: 768
-    },
     triggers: {},
     triggerNodes: [],
     triggerNodesActivated: [],
     triggerActivators: [],
     time: 0,
 
-    init: function() {
-        this.screenSize.width = game.System.width;
-        this.screenSize.height = game.System.height;
-
+    init: function(width, height, images) {
+        this.position = new game.Point();
+        this.width = width || this.width;
+        this.height = height || this.height;
+        this.images = images || this.images;
         this.displayObject = new game.Container();
-        this._super();
-        this.cameraPosition = new game.Vec2();
+        this.cameraPosition = new game.Point();
     },
 
     findNode: function(name) {
@@ -45,7 +34,8 @@ bamboo.World = bamboo.Node.extend({
         return null;
     },
 
-    _addNode: function(node) {
+    addNode: function(node) {
+        if (node.needUpdates) this._addToUpdateables(node);
         this.nodes.push(node);
         this.nodeAdded(node);
     },
@@ -65,8 +55,7 @@ bamboo.World = bamboo.Node.extend({
             var idx = this.triggerNodes.indexOf(node);
             this.triggerNodes.splice(idx,1);
             idx = this.triggerNodesActivated.indexOf(node);
-            if(idx !== -1)
-                this.triggerNodesActivated.splice(idx, 1);
+            if (idx !== -1) this.triggerNodesActivated.splice(idx, 1);
         }
     },
 
@@ -89,13 +78,15 @@ bamboo.World = bamboo.Node.extend({
     },
 
     setCameraPos: function(pos) {
-        if (pos.x < this.boundaries.left) this.cameraPosition.x = this.boundaries.left;
-        else if (pos.x > this.boundaries.right - this.screenSize.width) this.cameraPosition.x = this.boundaries.right - this.screenSize.width;
-        else this.cameraPosition.x = pos.x;
+        // if (pos.x < 0) this.cameraPosition.x = 0;
+        // else if (pos.x > this.width - game.System.width) this.cameraPosition.x = this.width - game.System.width;
+        // else this.cameraPosition.x = pos.x;
 
-        if (pos.y < this.boundaries.top) this.cameraPosition.y = this.boundaries.top;
-        else if (pos.y > this.boundaries.bottom - this.screenSize.height) this.cameraPosition.y = this.boundaries.bottom - this.screenSize.height;
-        else this.cameraPosition.y = pos.y;
+        // if (pos.y < 0) this.cameraPosition.y = 0;
+        // else if (pos.y > this.height - game.System.height) this.cameraPosition.y = this.height - game.System.height;
+        // else this.cameraPosition.y = pos.y;
+
+        this.cameraPosition.set(pos.x, pos.y);
     },
 
     addTo: function(container) {
@@ -117,7 +108,7 @@ bamboo.World = bamboo.Node.extend({
     update: function() {
         this.time += game.system.delta;
 
-        for (var i = 0; i < this.updateableNodes.length; i++) {
+        for (var i = this.updateableNodes.length - 1; i >= 0; i--) {
             this.updateableNodes[i].update(this.time);
         }
 
@@ -142,22 +133,5 @@ bamboo.World = bamboo.Node.extend({
         }
     }
 });
-
-bamboo.World.createFromJSON = function(levelJSON) {
-    var jsonWorld = levelJSON;
-    var world = new bamboo[jsonWorld.world]();
-    world.images = jsonWorld.images;
-
-    var jsonWorldNodes = jsonWorld.nodes;
-    for(var i=0; i<jsonWorldNodes.length; i++) {
-        var jsonNode = jsonWorldNodes[i];
-        if(!bamboo.nodes.hasOwnProperty(jsonNode.class))
-            throw 'Cannot find class \''+jsonNode.class+'\' from collection!';
-
-        new bamboo.nodes[jsonNode.class](world, jsonNode.properties);
-    }
-
-    return world;
-};
 
 });

@@ -1,20 +1,22 @@
 game.module(
-    'bamboo.editor.editorcontroller'
+    'bamboo.editor.controller'
 )
 .body(function() {
 
-bamboo.EditorController = game.Class.extend({
+bamboo.Controller = game.Class.extend({
     init: function(editor) {
         this.editor = editor;
     },
 
     createNode: function(className, properties, editorNodeProperties) {
-        // make sure name is unique
+        console.log('Create: ' + className);
         properties.name = this.editor.getUniqueName(properties.name);
 
         var node = new bamboo.nodes[className](this.editor.world, properties);
+
+        if (!bamboo.nodes[className].editor) bamboo.nodes[className].editor = bamboo.Node.editor;
         var editorNode = new bamboo.nodes[className].editor(node, editorNodeProperties);
-        switch(this.editor.editorNodeVisibility) {
+        switch (this.editor.editorNodeVisibility) {
             case 0:
                 editorNode.debugDisplayObject.visible = false;
                 break;
@@ -27,7 +29,7 @@ bamboo.EditorController = game.Class.extend({
                 editorNode.debugDisplayObject.alpha = 1.0;
                 break;
         }
-        node.displayObject.updateTransform();
+        // node.displayObject.updateTransform();
         this.editor.nodes.push(editorNode);
         this.editor.nodeAdded(node);
         return node;
@@ -41,12 +43,6 @@ bamboo.EditorController = game.Class.extend({
         this.editor.nodeRemoved(node);
     },
 
-    addImage: function(name, imgData) {
-        this.editor.images.push({name: name, data: imgData});
-        this.editor.images = this.editor.images.sort(function(a,b) {return a.name > b.name ? 1 : -1;});
-        this.editor.imageAdded(name, imgData);
-    },
-
     changeMode: function(newMode) {
         this.editor.mode.exit();
         this.editor.mode = newMode;
@@ -54,18 +50,17 @@ bamboo.EditorController = game.Class.extend({
     },
 
     selectAllNodes: function() {
-        for(var i=0; i<this.editor.nodes.length; i++) {
+        for (var i=0; i<this.editor.nodes.length; i++) {
             var n = this.editor.nodes[i];
-            if(n instanceof bamboo.nodes.Layer.editor)
-                continue;
-            if(n.layer === this.editor.activeLayer) {
+            if (n instanceof bamboo.nodes.Layer.editor) continue;
+            if (n.layer === this.editor.activeLayer) {
                 this.selectNode(n.node);
             }
         }
     },
 
     deselectAllNodes: function() {
-        for(var i=this.editor.selectedNodes.length-1; i>=0; i--) {
+        for (var i = this.editor.selectedNodes.length-1; i >= 0; i--) {
             this.deselectNode(this.editor.selectedNodes[i]);
         }
     },
@@ -74,7 +69,7 @@ bamboo.EditorController = game.Class.extend({
         if (!node) return;
         
         // node is already selected
-        if(this.editor.selectedNodes.indexOf(node) !== -1) return;
+        if (this.editor.selectedNodes.indexOf(node) !== -1) return;
 
         this.editor.selectedNodes.push(node);
         node._editorNode.selectionRect.visible = true;
@@ -83,11 +78,11 @@ bamboo.EditorController = game.Class.extend({
         this.editor.nodeSelected(node);
 
         var markChildren = function(c) {
-            for(var i=0; i<c.length; i++) {
+            for (var i=0; i<c.length; i++) {
                 var n = c[i];
                 n._editorNode.parentSelectionRect.visible = true;
                 n._editorNode.connectedToLine.visible = true;
-                // TODO: if(selectedNodes.indexOf(n) !== -1) continue
+                // TODO: if (selectedNodes.indexOf(n) !== -1) continue
                 markChildren(n.world.getConnectedNodes(n));
             }
         };
@@ -98,8 +93,7 @@ bamboo.EditorController = game.Class.extend({
 
     deselectNode: function(node) {
         var idx = this.editor.selectedNodes.indexOf(node);
-        if(idx === -1)
-            return;// node not selected
+        if (idx === -1) return;
 
         this.editor.selectedNodes.splice(idx, 1);
         node._editorNode.selectionAxis.visible = false;
@@ -107,16 +101,15 @@ bamboo.EditorController = game.Class.extend({
         node._editorNode.connectedToLine.visible = false;
         this.editor.nodeDeselected(node);
 
-        if(this.editor.activeNode === node)
-            this.setActiveNode(null);
+        if (this.editor.activeNode === node) this.setActiveNode(null);
 
         var unmarkChildren = function(c, selectedNodes) {
-            for(var i=0; i<c.length; i++) {
+            for (var i=0; i<c.length; i++) {
                 var n = c[i];
                 n._editorNode.parentSelectionRect.visible = false;
                 n._editorNode.connectedToLine.visible = false;
 
-                if(selectedNodes.indexOf(n) !== -1)
+                if (selectedNodes.indexOf(n) !== -1)
                     continue;
 
                 unmarkChildren(n.world.getConnectedNodes(n), selectedNodes);
@@ -142,7 +135,7 @@ bamboo.EditorController = game.Class.extend({
             this.editor.activeNode._editorNode.activeRect.visible = true;
         }
         
-        this.editor.activeNodeChanged(node);
+        if (node) this.editor.activeNodeChanged(node);
     },
 
     setActiveLayer: function(layer) {
@@ -152,7 +145,7 @@ bamboo.EditorController = game.Class.extend({
 
     moveNodeUp: function(node) {
         var idx = node.displayObject.parent.children.indexOf(node.displayObject);
-        if(idx === 0)
+        if (idx === 0)
             return;// already behind everything
 
         node.displayObject.parent.addChildAt(node.displayObject, idx-1);
@@ -162,7 +155,7 @@ bamboo.EditorController = game.Class.extend({
 
     moveNodeDown: function(node) {
         var idx = node.displayObject.parent.children.indexOf(node.displayObject);
-        if(idx === node.displayObject.parent.children.length-1)
+        if (idx === node.displayObject.parent.children.length-1)
             return;// already in front of everything
 
         node.displayObject.parent.addChildAt(node.displayObject, idx+1);
@@ -172,7 +165,7 @@ bamboo.EditorController = game.Class.extend({
 
     moveNodeTopMost: function(node) {
         var idx = node.displayObject.parent.children.indexOf(node.displayObject);
-        if(idx === node.displayObject.parent.children.length-1)
+        if (idx === node.displayObject.parent.children.length-1)
             return;// already in front of everything
 
         node.displayObject.parent.addChildAt(node.displayObject, node.displayObject.parent.children.length-1);
@@ -182,7 +175,7 @@ bamboo.EditorController = game.Class.extend({
 
     moveNodeBottomMost: function(node) {
         var idx = node.displayObject.parent.children.indexOf(node.displayObject);
-        if(idx === 0)
+        if (idx === 0)
             return;// already behind everything
 
         node.displayObject.parent.addChildAt(node.displayObject, 0);
@@ -192,7 +185,7 @@ bamboo.EditorController = game.Class.extend({
 
     moveLayerUp: function(layer) {
         var idx = layer.displayObject.parent.children.indexOf(layer.displayObject);
-        if(idx === 0)
+        if (idx === 0)
             return;// already behind everything
         layer.displayObject.parent.addChildAt(layer.displayObject, idx-1);
         idx = this.editor.layers.indexOf(layer);
@@ -203,7 +196,7 @@ bamboo.EditorController = game.Class.extend({
     
     moveLayerDown: function(layer) {
         var idx = layer.displayObject.parent.children.indexOf(layer.displayObject);
-        if(idx === layer.displayObject.parent.children.length-1)
+        if (idx === layer.displayObject.parent.children.length-1)
             return;// already on front of everything
         layer.displayObject.parent.addChildAt(layer.displayObject, idx+1);
         idx = this.editor.layers.indexOf(layer);
@@ -220,7 +213,7 @@ bamboo.EditorController = game.Class.extend({
     },
 
     enableEditMode: function(node, enabled) {
-        if(enabled) {
+        if (enabled) {
             node._editorNode.selectionRect.visible = false;
             node._editorNode.editableRect.visible = true;
             node._editorNode.selectionAxis.visible = true;

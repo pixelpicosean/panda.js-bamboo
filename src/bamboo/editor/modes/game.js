@@ -1,22 +1,23 @@
 game.module(
-    'bamboo.editor.modes.gamemode'
+    'bamboo.editor.modes.game'
 )
 .require(
     'bamboo.editor.mode'
 )
 .body(function() {
 
-bamboo.editor.GameMode = bamboo.editor.Mode.extend({
+bamboo.editor.ModeGame = bamboo.editor.Mode.extend({
+    helpText: 'Game mode: (V)iew nodes, ESC return to editor',
     editorNodes: [],
     editorNodesVisible: false,
 
     init: function(editor) {
         this._super(editor);
-        this.world = bamboo.World.createFromJSON(this.editor.world.toJSON());
+        var json = this.editor.world.toJSON();
+        this.world = bamboo.World.createFromJSON(json);
 
-        this.wasPropertyPanelOpen = this.editor.propertyPanel.layerWindow.visible;
-        this.editor.statusbar.setStatus('Game mode: (V)iew nodes, ESC return to editor');
         this.editor.propertyPanel.hide();
+        this.editor.toolBar.hide();
 
         var x = game.system.width * 0.5 - this.world.screenSize.width * 0.5;
         var y = game.system.height * 0.5 - this.world.screenSize.height * 0.5;
@@ -41,7 +42,7 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
         // adds editor graphics to the world
         for (var i = 0; i < this.world.nodes.length; i++) {
             var node = this.world.nodes[i];
-            this.editorNodes.push(new bamboo.nodes[node.getClassName()].editor(node, null));
+            this.editorNodes.push(new bamboo.nodes[node.getClassName()].editor(node));
             this.editorNodes[i].displayObject.visible = false;
         }
     },
@@ -73,8 +74,11 @@ bamboo.editor.GameMode = bamboo.editor.Mode.extend({
             this.editor.displayObject.removeChild(this.world.displayObject);
             this.editor.displayObject.removeChild(this.mask);
 
-            if (this.wasPropertyPanelOpen) this.editor.propertyPanel.show();
-            this.editor.controller.changeMode(new bamboo.editor.NodeMode(this.editor));
+            if (!this.editor.windowsHidden) {
+                this.editor.propertyPanel.show();
+                this.editor.toolBar.show();
+            }
+            this.editor.changeMode('Main');
             return;
         }
         if (key === 'V') {

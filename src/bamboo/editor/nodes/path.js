@@ -9,7 +9,7 @@ game.module(
 
 bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
     helpText: 'Path: (A)dd point, (D)elete point',
-    color: 0x000000,
+    color: 0x0000ee,
     lineNode: null,
     selectionCircle: null,
     hoverCircle: null,

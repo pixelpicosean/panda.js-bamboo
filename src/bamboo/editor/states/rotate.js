@@ -1,12 +1,12 @@
 game.module(
-    'bamboo.editor.states.rotatenodestate'
+    'bamboo.editor.states.rotate'
 )
 .require(
     'bamboo.editor.state'
 )
 .body(function() {
 
-bamboo.editor.RotateNodeState = bamboo.editor.State.extend({
+bamboo.editor.StateRotate = bamboo.editor.State.extend({
     pivot: null,
     nodes: [],
     startValues: [],

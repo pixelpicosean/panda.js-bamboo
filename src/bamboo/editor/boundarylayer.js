@@ -12,33 +12,36 @@ bamboo.BoundaryLayer = game.Class.extend({
     },
 
     updateBoundary: function() {
-        var w = this.editor.world;
-        this.leftLine.position.x = w.position.x + w.displayObject.scale.x * (w.boundaries.left - w.cameraPosition.x);
-        this.topLine.position.y = w.position.y + w.displayObject.scale.y * (w.boundaries.top - w.cameraPosition.y);
-        this.rightLine.position.x = w.position.x + w.displayObject.scale.x * (w.boundaries.right - w.cameraPosition.x);
-        this.bottomLine.position.y = w.position.y + w.displayObject.scale.y * (w.boundaries.bottom - w.cameraPosition.y);
+        var world = this.editor.world;
+        this.leftLine.position.x = this.editor.worldTargetPos.x + world.displayObject.scale.x * (0 - world.cameraPosition.x);
+        this.topLine.position.y = this.editor.worldTargetPos.y + world.displayObject.scale.y * (0 - world.cameraPosition.y);
+        this.rightLine.position.x = this.editor.worldTargetPos.x + world.displayObject.scale.x * (world.width - world.cameraPosition.x);
+        this.bottomLine.position.y = this.editor.worldTargetPos.y + world.displayObject.scale.y * (world.height - world.cameraPosition.y);
 
         this.screenRect.clear();
         this.screenRect.lineStyle(2, 0xffffff);
-        this.screenRect.drawRect(-1, -1, 2 + w.displayObject.scale.x*w.screenSize.width, 2 + w.displayObject.scale.y * w.screenSize.height);
-        this.screenRect.position.x = w.position.x;
-        this.screenRect.position.y = w.position.y;
+        this.screenRect.drawRect(-1, -1, 2 + world.displayObject.scale.x * game.System.width, 2 + world.displayObject.scale.y * game.System.height);
+        this.screenRect.position.x = this.editor.worldTargetPos.x;
+        this.screenRect.position.y = this.editor.worldTargetPos.y;
+        
         this.screenDim.clear();
-        this.screenDim.beginFill(0x000000, 0.6);
+        this.screenDim.beginFill(0x000000, 0.7);
 
         var miny = 0;
         var maxy = game.system.height;
-        if (w.position.y > 0) {
-            miny = w.position.y;
+        
+        if (this.editor.worldTargetPos.y > 0) {
+            miny = this.editor.worldTargetPos.y;
             this.screenDim.drawRect(0, 0, game.system.width, miny);
         }
-        if (w.position.y + w.displayObject.scale.y * w.screenSize.height < game.system.height) {
-            maxy = w.position.y + w.displayObject.scale.y * w.screenSize.height;
+
+        if (this.editor.worldTargetPos.y + world.displayObject.scale.y * game.System.height < game.system.height) {
+            maxy = this.editor.worldTargetPos.y + world.displayObject.scale.y * game.System.height;
             this.screenDim.drawRect(0, maxy, game.system.width, game.system.height - maxy);
         }
 
-        if(w.position.x > 0) this.screenDim.drawRect(0, miny, w.position.x, maxy - miny);
-        if(w.position.x + w.displayObject.scale.x * w.screenSize.width < game.system.width) this.screenDim.drawRect(w.position.x + w.displayObject.scale.x * w.screenSize.width, miny, game.system.width - (w.position.x + w.displayObject.scale.x * w.screenSize.width), maxy - miny);
+        if(this.editor.worldTargetPos.x > 0) this.screenDim.drawRect(0, miny, this.editor.worldTargetPos.x, maxy - miny);
+        if(this.editor.worldTargetPos.x + world.displayObject.scale.x * game.System.width < game.system.width) this.screenDim.drawRect(this.editor.worldTargetPos.x + world.displayObject.scale.x * game.System.width, miny, game.system.width - (this.editor.worldTargetPos.x + world.displayObject.scale.x * game.System.width), maxy - miny);
     },
 
     createGraphics: function() {
@@ -64,23 +67,14 @@ bamboo.BoundaryLayer = game.Class.extend({
         this.bottomLine.moveTo(0, 1);
         this.bottomLine.lineTo(game.system.width, 1);
 
-        this.displayObject.addChild(this.screenDim);
         this.displayObject.addChild(this.boundaries);
+        this.displayObject.addChild(this.screenDim);
 
         this.boundaries.addChild(this.leftLine);
         this.boundaries.addChild(this.topLine);
         this.boundaries.addChild(this.rightLine);
         this.boundaries.addChild(this.bottomLine);
         this.boundaries.addChild(this.screenRect);
-    }
-});
-
-Object.defineProperty(bamboo.BoundaryLayer.prototype, 'boundariesVisible', {
-    get: function() {
-        return this.boundaries.visible;
-    },
-    set: function(value) {
-        this.boundaries.visible = value;
     }
 });
 

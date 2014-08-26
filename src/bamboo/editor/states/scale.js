@@ -1,12 +1,12 @@
 game.module(
-    'bamboo.editor.states.scalenodestate'
+    'bamboo.editor.states.scale'
 )
 .require(
     'bamboo.editor.state'
 )
 .body(function() {
 
-bamboo.editor.ScaleNodeState = bamboo.editor.State.extend({
+bamboo.editor.StateScale = bamboo.editor.State.extend({
     pivot: null,
     nodes: [],
     startValues: [],

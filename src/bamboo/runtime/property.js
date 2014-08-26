@@ -2,7 +2,7 @@ game.module(
     'bamboo.runtime.property'
 )
 .require(
-    'bamboo.runtime.vec2',
+    'bamboo.runtime.point',
     'engine.tween'
 )
 .body(function() {
@@ -14,11 +14,12 @@ bamboo.Property = game.Class.extend({
     type: null,
     options: null,
 
-    init: function(editable, name, desc, type, options) {
+    init: function(editable, name, desc, type, defaultValue, options) {
         this.editable = editable;
         this.name = name;
         this.description = desc;
         this.type = type;
+        this.defaultValue = defaultValue;
         this.options = options;
     }
 });
@@ -48,14 +49,14 @@ bamboo.Property.parse = function(world, obj, name, desc) {
         case bamboo.Property.TYPE.ENUM:
         case bamboo.Property.TYPE.TRIGGER:
         case bamboo.Property.TYPE.COLOR:
-            return obj[name];
+            return typeof obj[name] !== 'undefined' ? obj[name] : desc.defaultValue;
 
         case bamboo.Property.TYPE.VECTOR:
-            if (obj[name] instanceof Array) return new game.Vec2(obj[name][0], obj[name][1]);
-            return new game.Vec2(obj[name].x, obj[name].y);
+            if (obj[name] instanceof Array) return new game.Point(obj[name][0], obj[name][1]);
+            return typeof obj[name] !== 'undefined' ? new game.Point(obj[name].x, obj[name].y) : desc.defaultValue ? new game.Point(desc.defaultValue[0], desc.defaultValue[1]) : new game.Point();
 
         case bamboo.Property.TYPE.NODE:
-            if (obj[name] === null) return world;
+            if (!obj[name]) return world;
             return world.findNode(obj[name]);
 
         case bamboo.Property.TYPE.EASING:
@@ -63,7 +64,7 @@ bamboo.Property.parse = function(world, obj, name, desc) {
 
         case bamboo.Property.TYPE.ARRAY:
             var a = [];
-            for (var i=0; i<obj[name].length; i++) {
+            for (var i = 0; i < obj[name].length; i++) {
                 a.push(bamboo.Property.parse(world, obj[name], i, desc.options));
             }
             return a;

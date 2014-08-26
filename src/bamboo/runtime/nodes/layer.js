@@ -7,28 +7,21 @@ game.module(
 .body(function() {
 
 bamboo.nodes.Layer = bamboo.Node.extend({
-    speedFactor: 1,
+    displayObject: true,
+    needUpdates: true,
 
     init: function(world, properties) {
-        this.displayObject = new game.Container();
         this._super(world, properties);
-        this.needUpdates = true;
     },
 
     update: function() {
-         this.position = this.world.cameraPosition.multiplyc(-this.speedFactor);
-    },
-
-    toJSON: function() {
-        var o = this._super();
-        o.properties.position.x = 0;
-        o.properties.position.y = 0;
-        return o;
+        this.displayObject.position.x = this.position.x + this.world.cameraPosition.x * -this.speedFactor;
+        this.displayObject.position.y = this.position.y + this.world.cameraPosition.y * -this.speedFactor;
     }
 });
 
 bamboo.nodes.Layer.props = {
-    speedFactor: new bamboo.Property(true, 'Parallax multipliel', 'Speed relative to camera', bamboo.Property.TYPE.NUMBER)
+    speedFactor: new bamboo.Property(true, 'Parallax multiplier', 'Speed relative to camera', bamboo.Property.TYPE.NUMBER, 1)
 };
 
 });

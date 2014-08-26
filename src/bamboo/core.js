@@ -1,6 +1,8 @@
 var bamboo = {
     version: '1.0.0',
-    editorMode: false
+    editorMode: false,
+    scenes: {},
+    nodes: {}
 };
 
 if (typeof document !== 'undefined' && document.location.href.match(/\?editor/)) {
@@ -10,7 +12,7 @@ if (typeof document !== 'undefined' && document.location.href.match(/\?editor/))
 }
 
 game.module(
-    'bamboo.runtime.core'
+    'bamboo.core'
 )
 .require(
     bamboo.editorMode ? 'bamboo.editor.core' : 'bamboo.runtime.world',
@@ -54,22 +56,23 @@ game.Scene.inject({
     }
 });
 
-game.createBambooScene = function(name, content) {
-    return game['Scene' + name] = bamboo.Scene.extend(content);
-};
-
-bamboo.levels = {};
-bamboo.loadLevel = function(level) {
-    bamboo.levels[level.name] = level;
-
-    for (var i = 0; i < level.images.length; i++) {
-        game.addAsset(level.images[i]);
+bamboo.createWorld = function(sceneName) {
+    var data = bamboo.scenes[sceneName];
+    
+    var world = new bamboo[data.world](data.width, data.height, data.images);
+    
+    var nodes = data.nodes;
+    for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+        new bamboo.nodes[node.class](world, node.properties);
     }
+
+    return world;
 };
 
-bamboo.loadScene = function(scene) {
-    game.scene.world = bamboo.World.createFromJSON(bamboo.levels[scene]);
-    game.scene.world.addTo(game.scene.stage);
+bamboo.load = function(scene, container) {
+    game.scene.world = bamboo.createWorld(scene);
+    game.scene.world.addTo(container || game.scene.stage);
 };
 
 });

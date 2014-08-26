@@ -6,28 +6,40 @@ game.module(
 )
 .body(function() {
 
-bamboo.nodes = bamboo.nodes || {};
-
-bamboo.getNodeClasses = function() {
-    var nodes = [];
-    for (var i in bamboo.nodes) nodes.push(i);
-    return nodes;
-};
-
 bamboo.Node = game.Class.extend({
-    _world: null,
-    _needUpdates: false,
-    _connectedTo: null,
-    name: null,
-    displayObject: null, // must be defined in extended classes
-
     init: function(world, properties) {
+        if (this.displayObject === true) this.displayObject = new game.Container();
+
         var propDescs = this.getPropertyDescriptors();
-        for (var key in properties) {
-            if (!propDescs.hasOwnProperty(key)) throw 'Node doesn\'t have property \''+key+'\'';
-            this[key] = bamboo.Property.parse(world, properties, key, propDescs[key]);
+
+        for (var key in propDescs) {
+            this.setProperty(key, bamboo.Property.parse(world, properties, key, propDescs[key]));
         }
+        
         this.world = world;
+        this.world.addNode(this);
+    },
+
+    setProperty: function(name, value) {
+        this[name] = value;
+        if (name === 'rotation') {
+            if (this.displayObject) this.displayObject.rotation = value;
+        }
+        if (name === 'position') {
+            if (this.displayObject) this.displayObject.position.set(value.x, value.y);
+        }
+        if (name === 'scale') {
+            if (this.displayObject) this.displayObject.scale.set(value.x, value.y);
+        }
+        if (name === 'parent') {
+            if (this.displayObject && this.parent && this.displayObject.parent) {
+                this.parent.displayObject.removeChild(this.displayObject);
+            }
+
+            if (this.displayObject && this.parent) {
+                this.parent.displayObject.addChild(this.displayObject);
+            }
+        }
     },
 
     getPropertyDescriptors: function() {
@@ -43,7 +55,7 @@ bamboo.Node = game.Class.extend({
             if (proto === game.Class.prototype) break;
         }
         var props = {};
-        for ( var i = 0; i < properties.length; i++) {
+        for (var i = 0; i < properties.length; i++) {
             for (var k in properties[i]) {
                 props[k] = properties[i][k];
             }
@@ -51,127 +63,52 @@ bamboo.Node = game.Class.extend({
         return props;
     },
 
-    toJSON: function() {
-        var propDescs = this.getPropertyDescriptors();
-        var jsonProperties = {};
-        for (var key in propDescs) {
-            jsonProperties[key] = bamboo.Property.toJSON(this, key, propDescs[key]);
-        }
-        return {class: this.getClassName(), properties: jsonProperties};
-    },
-
     getClassName: function() {
-        var nodes = bamboo.getNodeClasses();
-        for (var i=nodes.length-1; i >= 0; i--) {
-            if (this instanceof bamboo.nodes[nodes[i]])
-                return nodes[i];
+        for (var name in bamboo.nodes) {
+            if (this instanceof bamboo.nodes[name]) return name;
         }
-        return 'Node';
     },
 
-    toLocalSpace: function(v) {
-        var wt = this.displayObject.worldTransform;
-        var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
+    toLocalSpace: function(point) {
+        var pos = this.getWorldPosition();
 
-        return new game.Vec2((wt.d * (v.x - wt.tx) - wt.b * (v.y - wt.ty)) * id, (wt.a * (v.y - wt.ty) - wt.c * (v.x - wt.tx)) * id);
+        var x = point.x - pos.x - this.world.position.x;
+        var y = point.y - pos.y - this.world.position.y;
+        
+        return new game.Point(x, y);
     },
 
-    toWorldSpace: function(v) {
-        var wt = this.displayObject.worldTransform;
-        return new game.Vec2(wt.a * v.x + wt.b * v.y + wt.tx, wt.c * v.x + wt.d * v.y + wt.ty);
+    toWorldSpace: function(point) {
+        var x = point.x - this.world.position.x + this.world.cameraPosition.x;
+        var y = point.y - this.world.position.y + this.world.cameraPosition.y;
+
+        return new game.Point(x, y);
     },
 
     getWorldPosition: function() {
-        return new game.Vec2(this.displayObject.worldTransform.tx, this.displayObject.worldTransform.ty);
-    }
-});
+        var x = this.position.x;
+        var y = this.position.y;
 
-Object.defineProperty(bamboo.Node.prototype, 'world', {
-    get: function() {
-        return this._world;
-    },
-    set: function(value) {
-        if (this._world) {
-            if (this._needUpdates)
-                this._world._removeFromUpdateables(this);
-            this._world._removeNode(this);
+        var parent = this.parent;
+        while (parent) {
+            x += parent.position.x;
+            y += parent.position.y;
+            parent = parent.parent;
         }
-        this._world = value;
-        if (this._world) {
-            this._world._addNode(this);
-            if (this._needUpdates)
-                this._world._addToUpdateables(this);
-        }
-    }
-});
 
-Object.defineProperty(bamboo.Node.prototype, 'needUpdates', {
-    get: function() {
-        return this._needUpdates;
-    },
-    set: function(value) {
-        if (value !== this._needUpdates) {
-            this._needUpdates = value;
-            if (this._world) {
-                if (this._needUpdates)
-                    this._world._addToUpdateables(this);
-                else
-                    this._world._removeFromUpdateables(this);
-            }
-        }
-    }
-});
-
-Object.defineProperty(bamboo.Node.prototype, 'position', {
-    get: function() {
-        return this.displayObject.position;
-    },
-    set: function(value) {
-        this.displayObject.position = value;
-    }
-});
-
-Object.defineProperty(bamboo.Node.prototype, 'rotation', {
-    get: function() {
-        return this.displayObject.rotation;
-    },
-    set: function(value) {
-        this.displayObject.rotation = value;
-    }
-});
-
-Object.defineProperty(bamboo.Node.prototype, 'scale', {
-    get: function() {
-        return this.displayObject.scale;
-    },
-    set: function(value) {
-        this.displayObject.scale = value;
-    }
-});
-
-Object.defineProperty(bamboo.Node.prototype, 'connectedTo', {
-    get: function() {
-        return this._connectedTo;
-    },
-    set: function(value) {
-        if (value === this)
-            throw 'Cannot connect to itself!';
-        if (this._connectedTo) {
-            this._connectedTo.displayObject.removeChild(this.displayObject);
-        }
-        this._connectedTo = value;
-        if (this._connectedTo) {
-            this._connectedTo.displayObject.addChild(this.displayObject);
-        }
+        return new game.Point(x, y);
     }
 });
 
 bamboo.Node.props = {
+    parent: new bamboo.Property(true, 'Parent', 'Parent that this node will follow', bamboo.Property.TYPE.NODE),
     name: new bamboo.Property(true, 'Name', 'Name of the node', bamboo.Property.TYPE.STRING),
     position: new bamboo.Property(true, 'Position', 'Position of the node', bamboo.Property.TYPE.VECTOR),
-    rotation: new bamboo.Property(true, 'Rotation', 'Rotation of the node in degrees', bamboo.Property.TYPE.ANGLE, { loop360: true }),
-    scale: new bamboo.Property(true, 'Scale', 'Scale of the node', bamboo.Property.TYPE.VECTOR),
-    connectedTo: new bamboo.Property(true, 'Follow', 'Node that this node will follow', bamboo.Property.TYPE.NODE)
+    size: new bamboo.Property(true, 'Size', 'Size of the node', bamboo.Property.TYPE.VECTOR, [100, 100]),
+    rotation: new bamboo.Property(true, 'Rotation', 'Rotation of the node in degrees', bamboo.Property.TYPE.ANGLE, 0, { loop360: true }),
+    scale: new bamboo.Property(true, 'Scale', 'Scale of the node', bamboo.Property.TYPE.VECTOR, [1, 1])
 };
+
+bamboo.nodes.Null = bamboo.Node.extend();
 
 });

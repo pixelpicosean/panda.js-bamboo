@@ -4,24 +4,18 @@ game.module(
 .body(function() {
 
 bamboo.PropertyPanel = game.Class.extend({
-    editor: null,
-    layerWindow: null,
-    nodeWindow: null,
-    node: null,
-    props: null,
-    layerList: null,
-    layerProperties: null,
     width: 200,
-    nodeWindowHeight: 333,
+    layerWindowHeight: 330,
 
     init: function(editor) {
         this.editor = editor;
         
-        this.layerWindow = bamboo.ui.addWindow(game.system.width - this.width, 0, this.width, this.nodeWindowHeight);
+        this.layerWindow = bamboo.ui.addWindow(game.system.width - this.width, game.system.height - this.layerWindowHeight - this.editor.statusBar.height, this.width, this.layerWindowHeight);
+        this.layerWindow.setTitle('Layers');
         this.layerWindow.show();
 
-        this.nodeWindow = bamboo.ui.addWindow(game.system.width - this.width, this.nodeWindowHeight, this.width, game.system.height - this.nodeWindowHeight);
-        this.nodeWindow.show();
+        this.settingsWindow = bamboo.ui.addWindow(game.system.width - this.width, this.editor.toolBar.height, this.width, game.system.height - this.layerWindowHeight - this.editor.toolBar.height - this.editor.statusBar.height);
+        this.settingsWindow.show();
 
         // create layer list
         this.layerList = document.createElement('select');
@@ -41,13 +35,13 @@ bamboo.PropertyPanel = game.Class.extend({
 
         layerButton = document.createElement('div');
         layerButton.className = 'button';
-        layerButton.innerHTML = '⬆';
+        layerButton.innerHTML = '<';
         layerButton.addEventListener('click', this.moveLayerUpClicked.bind(this), false);
         buttonsDiv.appendChild(layerButton);
 
         layerButton = document.createElement('div');
         layerButton.className = 'button';
-        layerButton.innerHTML = '⬇';
+        layerButton.innerHTML = '>';
         layerButton.addEventListener('click', this.moveLayerDownClicked.bind(this), false);
         buttonsDiv.appendChild(layerButton);
 
@@ -73,6 +67,41 @@ bamboo.PropertyPanel = game.Class.extend({
         this.activeLayerChanged(this.editor.activeLayer);
     },
 
+    showSettings: function() {
+        this.settingsWindow.clear();
+
+        this.settingsWindow.setTitle('Scene settings');
+
+        this.settingsWindow.addInputText('name', this.editor.name, 'Name', '', this.settingsChanged.bind(this, 'name'));
+        this.settingsWindow.addInputText('width', this.editor.world.width, 'Width', '', this.settingsChanged.bind(this, 'width'));
+        this.settingsWindow.addInputText('height', this.editor.world.height, 'Height', '', this.settingsChanged.bind(this, 'height'));
+        this.settingsWindow.addInputColor('bgcolor', '#' + this.editor.backgroundColor.toString(16), 'Backgroundc color', '', this.settingsChanged.bind(this, 'bgcolor'));
+    },
+
+    settingsChanged: function(key) {
+        var value = this.settingsWindow.inputs[key].value;
+
+        if (key === 'name') {
+            this.editor.name = value;
+            this.editor.toolBar.update();
+        }
+        if (key === 'width') {
+            this.editor.world.width = parseInt(value) || this.editor.world.width;
+            this.settingsWindow.inputs[key].value = this.editor.world.width;
+            this.editor.boundaryLayer.updateBoundary();
+        }
+        if (key === 'height') {
+            this.editor.world.height = parseInt(value) || this.editor.world.height;
+            this.settingsWindow.inputs[key].value = this.editor.world.height;
+            this.editor.boundaryLayer.updateBoundary();
+        }
+        if (key === 'bgcolor') {
+            var color = parseInt('0x' + value.slice(1));
+            game.system.stage.setBackgroundColor(color);
+            this.editor.backgroundColor = color;
+        }
+    },
+
     activeLayerChanged: function(layer) {
         var self = this;
         this.layerList.value = layer.name;
@@ -87,7 +116,9 @@ bamboo.PropertyPanel = game.Class.extend({
             this.layerWindow.setInputSelectValue('activeNode', this.editor.activeNode.name);
 
         
-        this.layerWindow.addInputCheckbox('visible', layer._editorNode.visible, 'Visible', 'Is layer visible in editor', function() {layer._editorNode.visible=this.inputs['visible'].checked;});
+        this.layerWindow.addInputCheckbox('visible', layer._editorNode.visible, 'Visible', 'Is layer visible in editor', function() {
+            layer._editorNode.setVisibility(this.inputs['visible'].checked);
+        });
         this.layerWindow.addInputText('name', layer.name, 'Name', 'Name of the layer', function() {layer._editorNode.setProperty('name', this.inputs['name'].value); self.updateLayerList();});
         this.layerWindow.addInputText('speedFactor', layer.speedFactor.toFixed(2), 'Parallax multiplier', 'Speed relative to camera', function() {layer._editorNode.setProperty('speedFactor', parseFloat(this.inputs['speedFactor'].value));});
     },
@@ -98,7 +129,7 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     newLayerClicked: function() {
-        this.editor.controller.createNode('Layer', {name:'Layer', connectedTo:null});
+        this.editor.controller.createNode('Layer', { name: 'Layer' });
     },
 
     moveLayerUpClicked: function() {
@@ -110,11 +141,11 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     deleteLayerClicked: function() {
-        if(this.editor.layers.length === 1) {
-            alert('Cannot delete last layer!');
+        if (this.editor.layers.length === 1) {
+            this.editor.showError('Cannot delete last layer!');
             return;
         }
-        if(confirm('Delete layer \''+this.editor.activeLayer.name+'\'?')) {
+        if (confirm('Delete layer \''+this.editor.activeLayer.name+'\'?')) {
             var l = this.editor.activeLayer;
             this.editor.controller.setActiveLayer(l === this.editor.layers[0] ? this.editor.layers[1] : this.editor.layers[0]);
             this.editor.controller.deleteNode(l);
@@ -129,7 +160,8 @@ bamboo.PropertyPanel = game.Class.extend({
         }
 
         this.node = node;
-        this.nodeWindow.clear();
+        this.settingsWindow.clear();
+        this.settingsWindow.setTitle('Node settings');
 
         if (!node) {
             this.layerWindow.setInputSelectValue('activeNode', '');
@@ -142,108 +174,107 @@ bamboo.PropertyPanel = game.Class.extend({
         var props = node.getPropertyDescriptors();
         this.props = props;
         for (var key in props) {
-            if(!props[key].editable)
-                continue;
+            if (!props[key].editable) continue;
 
             switch(props[key].type) {
                 case bamboo.Property.TYPE.NUMBER:
-                     this.nodeWindow.addInputText(key, parseFloat(node[key]).toFixed(2), props[key].name, props[key].description, this.numberPropertyChanged.bind(this));
+                     this.settingsWindow.addInputText(key, parseFloat(node[key]).toFixed(2), props[key].name, props[key].description, this.numberPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.STRING:
-                    this.nodeWindow.addInputText(key, node[key], props[key].name, props[key].description, this.textPropertyChanged.bind(this));
+                    this.settingsWindow.addInputText(key, node[key], props[key].name, props[key].description, this.textPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.ANGLE:
-                    this.nodeWindow.addInputText(key, ((180.0*node[key])/Math.PI).toFixed(2), props[key].name, props[key].description, this.anglePropertyChanged.bind(this));
+                    this.settingsWindow.addInputText(key, ((180.0*node[key])/Math.PI).toFixed(2), props[key].name, props[key].description, this.anglePropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.BOOLEAN:
-                    this.nodeWindow.addInputCheckbox(key, node[key], props[key].name, props[key].description, this.booleanPropertyChanged.bind(this));
+                    this.settingsWindow.addInputCheckbox(key, node[key], props[key].name, props[key].description, this.booleanPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.VECTOR:
-                    this.nodeWindow.addMultiInput(key, [node[key].x.toFixed(2), node[key].y.toFixed(2)], 2, props[key].name, props[key].description, this.vectorPropertyChanged.bind(this));
+                    this.settingsWindow.addMultiInput(key, [node[key].x.toFixed(2), node[key].y.toFixed(2)], 2, props[key].name, props[key].description, this.vectorPropertyChanged.bind(this));
                     break;
                 case bamboo.Property.TYPE.NODE:
-                    this.nodeWindow.addInputSelect(key, props[key].name, props[key].description, this.nodePropertyChanged.bind(this));
-                    this.editor.buildNodeDropdown(this.nodeWindow, key, this.editor.world);
-                    this.nodeWindow.setInputSelectValue(key, node[key].name);
+                    this.settingsWindow.addInputSelect(key, props[key].name, props[key].description, this.nodePropertyChanged.bind(this));
+                    this.editor.buildNodeDropdown(this.settingsWindow, key, this.editor.world);
+                    this.settingsWindow.setInputSelectValue(key, node[key].name);
                     break;
                 case bamboo.Property.TYPE.ARRAY:
                     throw 'Cannot edit array type properties!';
                 case bamboo.Property.TYPE.EASING:
-                    this.nodeWindow.addInputSelect(key, props[key].name, props[key].description, this.easingPropertyChanged.bind(this));
+                    this.settingsWindow.addInputSelect(key, props[key].name, props[key].description, this.easingPropertyChanged.bind(this));
                     var easings = game.Tween.Easing.getNamesList();
                     for(var i=0; i<easings.length; i++)
-                        this.nodeWindow.addInputSelectOption(key, easings[i], easings[i]);
-                    this.nodeWindow.setInputSelectValue(key, game.Tween.Easing.getName(node[key]));
+                        this.settingsWindow.addInputSelectOption(key, easings[i], easings[i]);
+                    this.settingsWindow.setInputSelectValue(key, game.Tween.Easing.getName(node[key]));
                     break;
                 case bamboo.Property.TYPE.ENUM:
-                    this.nodeWindow.addInputSelect(key, props[key].name, props[key].description, this.enumPropertyChanged.bind(this));
+                    this.settingsWindow.addInputSelect(key, props[key].name, props[key].description, this.enumPropertyChanged.bind(this));
                     for(var i=0; i<props[key].options.length; i++)
-                        this.nodeWindow.addInputSelectOption(key, props[key].options[i], props[key].options[i]);
-                    this.nodeWindow.setInputSelectValue(key, node[key]);
+                        this.settingsWindow.addInputSelectOption(key, props[key].options[i], props[key].options[i]);
+                    this.settingsWindow.setInputSelectValue(key, node[key]);
                     break;
                 case bamboo.Property.TYPE.IMAGE:
-                    this.nodeWindow.addInputSelect(key, props[key].name, props[key].description, this.imagePropertyChanged.bind(this));
+                    this.settingsWindow.addInputSelect(key, props[key].name, props[key].description, this.imagePropertyChanged.bind(this));
                     var images = this.editor.images;
                     for (var i = 0; i < images.length; i++) {
                         var name = images[i];
-                        this.nodeWindow.addInputSelectOption(key, name, name);
+                        this.settingsWindow.addInputSelectOption(key, name, name);
                     }
-                    this.nodeWindow.setInputSelectValue(key, node[key].slice(6));
+                    this.settingsWindow.setInputSelectValue(key, node[key]);
                     break;
                 case bamboo.Property.TYPE.TRIGGER:
-                    this.nodeWindow.addInputSelect(key, props[key].name, props[key].description, this.triggerPropertyChanged.bind(this));
+                    this.settingsWindow.addInputSelect(key, props[key].name, props[key].description, this.triggerPropertyChanged.bind(this));
                     for(var n in this.editor.world.triggers)
-                        this.nodeWindow.addInputSelectOption(key, n, n);
-                    this.nodeWindow.setInputSelectValue(key, node[key]);
+                        this.settingsWindow.addInputSelectOption(key, n, n);
+                    this.settingsWindow.setInputSelectValue(key, node[key]);
                     break;
                 case bamboo.Property.TYPE.COLOR:
-                    this.nodeWindow.addInputColor(key, '#'+node[key].toString(16), props[key].name, props[key].description, this.colorPropertyChanged.bind(this));
+                    this.settingsWindow.addInputColor(key, '#'+node[key].toString(16), props[key].name, props[key].description, this.colorPropertyChanged.bind(this));
                     break;
             }
         }
     },
 
     propertyChanged: function(property, value) {
-        switch(this.props[property].type) {
+        switch (this.props[property].type) {
             case bamboo.Property.TYPE.NUMBER:
-                this.nodeWindow.inputs[property].value = parseFloat(value).toFixed(2);
+                this.settingsWindow.inputs[property].value = parseFloat(value).toFixed(2);
                 break;
             case bamboo.Property.TYPE.STRING:
             case bamboo.Property.TYPE.ENUM:
             case bamboo.Property.TYPE.TRIGGER:
-                this.nodeWindow.inputs[property].value = value;
+                this.settingsWindow.inputs[property].value = value;
                 break;
             case bamboo.Property.TYPE.IMAGE:
-                this.nodeWindow.inputs[property].value = value.slice(6);// 'level/'
+                this.settingsWindow.inputs[property].value = value;
                 break;
             case bamboo.Property.TYPE.ANGLE:
-                this.nodeWindow.inputs[property].value = ((180.0*parseFloat(value))/Math.PI).toFixed(2);
+                this.settingsWindow.inputs[property].value = ((180.0*parseFloat(value))/Math.PI).toFixed(2);
                 break;
             case bamboo.Property.TYPE.BOOLEAN:
-                this.nodeWindow.inputs[property].checked = value;
+                this.settingsWindow.inputs[property].checked = value;
                 break;
             case bamboo.Property.TYPE.VECTOR:
-                this.nodeWindow.inputs[property+'.0'].value = value.x.toFixed(2);
-                this.nodeWindow.inputs[property+'.1'].value = value.y.toFixed(2);
+                this.settingsWindow.inputs[property+'.0'].value = value.x.toFixed(2);
+                this.settingsWindow.inputs[property+'.1'].value = value.y.toFixed(2);
                 break;
             case bamboo.Property.TYPE.NODE:
-                this.nodeWindow.inputs[property].value = value.name;
+                this.settingsWindow.inputs[property].value = value.name;
                 break;
             case bamboo.Property.TYPE.ARRAY:
                 // do nothing
                 break;
             case bamboo.Property.TYPE.EASING:
-                this.nodeWindow.inputs[property].value = game.Tween.Easing.getName(value);
+                this.settingsWindow.inputs[property].value = game.Tween.Easing.getName(value);
                 break;
             case bamboo.Property.TYPE.COLOR:
-                this.nodeWindow.inputs[property].value = '#'+value.toString(16);
+                this.settingsWindow.inputs[property].value = '#'+value.toString(16);
                 break;
         }
     },
 
 
     numberPropertyChanged: function(key) {
-        var value = parseFloat(this.nodeWindow.inputs[key].value);
+        var value = parseFloat(this.settingsWindow.inputs[key].value);
         if(this.props[key].options) {
             var min = this.props[key].options.min;
             var max = this.props[key].options.max;
@@ -254,71 +285,71 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     textPropertyChanged: function(key) {
-        this.editor.activeNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
+        this.editor.activeNode._editorNode.setProperty(key, this.settingsWindow.inputs[key].value);
     },
 
     anglePropertyChanged: function(key) {
-        var value = parseFloat(this.nodeWindow.inputs[key].value);
+        var value = parseFloat(this.settingsWindow.inputs[key].value);
         if(this.props[key].options && this.props[key].options.loop360)
             value = ((value % 360) + 360) % 360;
         this.editor.activeNode._editorNode.setProperty(key, value*Math.PI / 180);
     },
 
     booleanPropertyChanged: function(key) {
-        this.editor.activeNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].checked);
+        this.editor.activeNode._editorNode.setProperty(key, this.settingsWindow.inputs[key].checked);
     },
 
     vectorPropertyChanged: function(key) {
-        var value = parseFloat(this.nodeWindow.inputs[key].value);
+        var value = parseFloat(this.settingsWindow.inputs[key].value);
         var parts = key.split('.');
-        var i = parts[parts.length-1];
+        var i = parts[parts.length - 1];
         var keyName = key.slice(0, key.length - 1 - i.length);
-        if(i === '0')
-            this.editor.activeNode._editorNode.setProperty(keyName, new game.Vec2(value, this.editor.activeNode[keyName].y));
-        else if(i === '1')
-            this.editor.activeNode._editorNode.setProperty(keyName, new game.Vec2(this.editor.activeNode[keyName].x, value));
+        if (i === '0')
+            this.editor.activeNode._editorNode.setProperty(keyName, new game.Point(value, this.editor.activeNode[keyName].y));
+        else if (i === '1')
+            this.editor.activeNode._editorNode.setProperty(keyName, new game.Point(this.editor.activeNode[keyName].x, value));
     },
 
     nodePropertyChanged: function(key) {
-        this.editor.activeNode._editorNode.setProperty(key, this.editor.world.findNode(this.nodeWindow.inputs[key].value));
+        this.editor.activeNode._editorNode.setProperty(key, this.editor.world.findNode(this.settingsWindow.inputs[key].value));
     },
 
     easingPropertyChanged: function(key) {
-        this.editor.activeNode._editorNode.setProperty(key, game.Tween.Easing.getByName(this.nodeWindow.inputs[key].value));
+        this.editor.activeNode._editorNode.setProperty(key, game.Tween.Easing.getByName(this.settingsWindow.inputs[key].value));
     },
 
     enumPropertyChanged: function(key) {
-        this.editor.activeNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
+        this.editor.activeNode._editorNode.setProperty(key, this.settingsWindow.inputs[key].value);
     },
 
     imagePropertyChanged: function(key) {
-        this.editor.activeNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
+        this.editor.activeNode._editorNode.setProperty(key, this.settingsWindow.inputs[key].value);
     },
 
     triggerPropertyChanged: function(key) {
-        this.editor.activeNode._editorNode.setProperty(key, this.nodeWindow.inputs[key].value);
+        this.editor.activeNode._editorNode.setProperty(key, this.settingsWindow.inputs[key].value);
     },
 
     colorPropertyChanged: function(key) {
-        var value = this.nodeWindow.inputs[key].value;
-        if(value.length <= 0) {
+        var value = this.settingsWindow.inputs[key].value;
+        if (value.length <= 0) {
             value = 0xffffff;
-        } else {
+        }
+        else {
             value = parseInt('0x'+value.substr(1));
-            if(isNaN(value))
-                value = 0xffffff;
+            if (isNaN(value)) value = 0xffffff;
         }
         this.editor.activeNode._editorNode.setProperty(key, value);
     },
 
     show: function() {
         this.layerWindow.show();
-        this.nodeWindow.show();
+        this.settingsWindow.show();
     },
 
     hide: function() {
         this.layerWindow.hide();
-        this.nodeWindow.hide();
+        this.settingsWindow.hide();
     }
 });
 

@@ -1,19 +1,18 @@
 game.module(
-    'bamboo.editor.modes.editnodemode'
+    'bamboo.editor.modes.edit'
 )
 .require(
     'bamboo.editor.mode'
 )
 .body(function() {
 
-bamboo.editor.EditNodeMode = bamboo.editor.Mode.extend({
-    node: null,
+bamboo.editor.ModeEdit = bamboo.editor.Mode.extend({
+    helpText: 'Edit mode: MOUSE confirm, ESC cancel',
 
-    init: function(editor, node) {
+    init: function(editor) {
         this._super(editor);
-        this.node = node;
-
-        this.editor.statusbar.setStatus('Edit mode: ESC exit / cancel<br>' + this.node._editorNode.helpText);
+        this.node = this.editor.activeNode;
+        this.state = this.node._editorNode;
     },
 
     enter: function() {
@@ -39,11 +38,12 @@ bamboo.editor.EditNodeMode = bamboo.editor.Mode.extend({
 
     keydown: function(key) {
         if (key === 'ESC') {
-            this.editor.controller.changeMode(new bamboo.editor.NodeMode(this.editor));
+            this.editor.changeMode('NodeMode');
 
             this.editor.controller.selectNode(this.node);
             this.editor.controller.setActiveNode(this.node);
         }
+        
         this.node._editorNode.keydown(key);
     }
 });
