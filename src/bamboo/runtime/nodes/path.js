@@ -13,12 +13,10 @@ bamboo.nodes.Path = bamboo.Node.extend({
     length: 0,
     segmentDistances: [],
     splineSegmentDistances: null,
+    displayObject: true,
 
     init: function(world, properties) {
-        this.displayObject = new game.Container();
         this._super(world, properties);
-        if (!this.points || this.points.length === 0)
-            this.points = [new game.Vec2()];
         this.calculateLength();
     },
 
@@ -56,7 +54,7 @@ bamboo.nodes.Path = bamboo.Node.extend({
         this.length = 0.0;
         if (!this.spline) {
             var lastp = ps[0];
-            for(var i=1; i<ps.length; i++) {
+            for (var i = 1; i < ps.length; i++) {
                 var p = ps[i];
                 this.length += p.distance(lastp);
                 this.segmentDistances.push(this.length);
@@ -190,22 +188,22 @@ bamboo.nodes.Path = bamboo.Node.extend({
         return delta.multiply(t).add(a);
     },
 
-    catmullRomEvaluate: function(p0,p1,p2,p3,t) {
+    catmullRomEvaluate: function(p0, p1, p2, p3, t) {
         var c0 = ((-t + 2.0) * t - 1.0) * t * 0.5;
         var c1 = (((3.0 * t - 5.0) * t) * t + 2.0) * 0.5;
         var c2 = ((-3.0 * t + 4.0) * t + 1.0) * t * 0.5;
         var c3 = ((t - 1.0) * t * t) * 0.5;
 
-        return new game.Vec2(
-            p0.x*c0 + p1.x*c1 + p2.x*c2 + p3.x*c3,
-            p0.y*c0 + p1.y*c1 + p2.y*c2 + p3.y*c3);
+        return new game.Point(
+            p0.x * c0 + p1.x * c1 + p2.x * c2 + p3.x * c3,
+            p0.y * c0 + p1.y * c1 + p2.y * c2 + p3.y * c3);
     }
 });
 
 bamboo.nodes.Path.props = {
-    loop: new bamboo.Property(true, 'Loop', 'Connect endpoints', bamboo.Property.TYPE.BOOLEAN),
-    spline: new bamboo.Property(true, 'Spline', 'Use spline-smoothing', bamboo.Property.TYPE.BOOLEAN),
-    points: new bamboo.Property(false, '', '', bamboo.Property.TYPE.ARRAY, new bamboo.Property(false, '','',bamboo.Property.TYPE.VECTOR))
+    loop: new bamboo.Property(true, 'Loop', 'Connect endpoints', bamboo.Property.TYPE.BOOLEAN, false),
+    spline: new bamboo.Property(true, 'Spline', 'Use spline-smoothing', bamboo.Property.TYPE.BOOLEAN, false),
+    points: new bamboo.Property(false, '', '', bamboo.Property.TYPE.ARRAY, [], new bamboo.Property(false, '','', bamboo.Property.TYPE.VECTOR))
 };
 
 });

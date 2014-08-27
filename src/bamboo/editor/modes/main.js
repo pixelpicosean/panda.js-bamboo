@@ -9,7 +9,7 @@ game.module(
 game.addAsset('../src/bamboo/editor/media/font.fnt');
 
 bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
-    helpText: 'Main mode: (W)indows, (B)oundaries, (L)ights, (P)lay, (R)eset view, SPACE pan view, PLUS zoom in, MINUS zoom out, ESC cancel',
+    helpText: 'Main mode: (W)indows, (B)oundaries, (L)ights, (P)lay, (R)eset view, SPACE pan view, ESC cancel',
     state: null,
     timeDisplay: null,
     zoomDisplay: null,
@@ -95,8 +95,8 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             game.scene.save();
             return;
         }
-        if (key === 'NUM_PLUS') return this.editor.onmousewheel(0.5);
-        if (key === 'NUM_MINUS') return this.editor.onmousewheel(-0.5);
+        // if (key === 'NUM_PLUS') return this.editor.onmousewheel(0.5);
+        // if (key === 'NUM_MINUS') return this.editor.onmousewheel(-0.5);
         if (key === 'W') {
             this.editor.windowsHidden = !this.editor.windowsHidden;
             if (this.editor.windowsHidden) bamboo.ui.hideAll();

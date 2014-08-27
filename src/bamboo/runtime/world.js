@@ -11,42 +11,43 @@ bamboo.World = bamboo.Node.extend({
     height: 0,
     nodes: [],
     updateableNodes: [],
-    images: {},
+    layers: [],
     triggers: {},
     triggerNodes: [],
     triggerNodesActivated: [],
     triggerActivators: [],
     time: 0,
 
-    init: function(width, height, images) {
+    init: function(data) {
+        this.width = data.width || this.width;
+        this.height = data.height || this.height;
         this.position = new game.Point();
-        this.width = width || this.width;
-        this.height = height || this.height;
-        this.images = images || this.images;
         this.displayObject = new game.Container();
         this.cameraPosition = new game.Point();
+
+        if (data.camera && data.camera.position) this.setCameraPos(data.camera.position.x, data.camera.position.y);
     },
 
     findNode: function(name) {
         for (var i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i].name === name) return this.nodes[i];
         }
-        return null;
     },
 
     addNode: function(node) {
-        if (node.needUpdates) this._addToUpdateables(node);
         this.nodes.push(node);
         this.nodeAdded(node);
     },
 
-    _removeNode: function(node) {
+    removeNode: function(node) {
         var idx = this.nodes.indexOf(node);
         this.nodes.splice(idx, 1);
         this.nodeRemoved(node);
     },
 
     nodeAdded: function(node) {
+        if (node.needUpdates) this.updateableNodes.push(node);
+        if (node instanceof bamboo.nodes.Layer) this.layers.push(node);
         if (node instanceof bamboo.nodes.Trigger) this.triggerNodes.push(node);
     },
 
@@ -59,11 +60,7 @@ bamboo.World = bamboo.Node.extend({
         }
     },
 
-    _addToUpdateables: function(node) {
-        this.updateableNodes.push(node);
-    },
-
-    _removeFromUpdateables: function(node) {
+    removeFromUpdateables: function(node) {
         var idx = this.updateableNodes.indexOf(node);
         this.updateableNodes.splice(idx, 1);
     },
@@ -77,20 +74,19 @@ bamboo.World = bamboo.Node.extend({
         this.triggerActivators.splice(idx, 1);
     },
 
-    setCameraPos: function(pos) {
-        // if (pos.x < 0) this.cameraPosition.x = 0;
-        // else if (pos.x > this.width - game.System.width) this.cameraPosition.x = this.width - game.System.width;
-        // else this.cameraPosition.x = pos.x;
+    setCameraPos: function(x, y) {
+        if (x < 0) x = 0;
+        else if (x > this.width - game.System.width) x = this.width - game.System.width;
+        if (y < 0) y = 0;
+        else if (y > this.height - game.System.height) y = this.height - game.System.height;
 
-        // if (pos.y < 0) this.cameraPosition.y = 0;
-        // else if (pos.y > this.height - game.System.height) this.cameraPosition.y = this.height - game.System.height;
-        // else this.cameraPosition.y = pos.y;
-
-        this.cameraPosition.set(pos.x, pos.y);
+        this.cameraPosition.set(x, y || this.cameraPosition.y);
     },
 
-    addTo: function(container) {
-        container.addChild(this.displayObject);
+    updateLayers: function() {
+        for (var i = 0; i < this.layers.length; i++) {
+            this.layers[i].update();
+        }
     },
 
     getClassName: function() {

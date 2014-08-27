@@ -137,7 +137,7 @@ bamboo.EditorScene = game.Scene.extend({
         }
         if (document.activeElement !== document.body) return;
         if (this.editor) this.editor.keydown(key);
-        if (key === 'BACKSPACE') return true;
+        if (key === 'BACKSPACE' || key === 'SPACE') return true;
     },
 
     keyup: function(key) {
@@ -174,5 +174,13 @@ game.start = function() {
 
     game._start(bamboo.EditorScene, window.innerWidth, window.innerHeight);
 };
+
+window.addEventListener('resize', function() {
+    if (game.system) game.system.resize(window.innerWidth, window.innerHeight);
+    if (bamboo.ui) bamboo.ui.update();
+    if (game.scene) {
+        game.scene.editor.boundaryLayer.resetGraphics();
+    }
+});
 
 });

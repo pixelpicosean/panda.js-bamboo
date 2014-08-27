@@ -13,35 +13,52 @@ bamboo.BoundaryLayer = game.Class.extend({
 
     updateBoundary: function() {
         var world = this.editor.world;
-        this.leftLine.position.x = this.editor.worldTargetPos.x + world.displayObject.scale.x * (0 - world.cameraPosition.x);
-        this.topLine.position.y = this.editor.worldTargetPos.y + world.displayObject.scale.y * (0 - world.cameraPosition.y);
-        this.rightLine.position.x = this.editor.worldTargetPos.x + world.displayObject.scale.x * (world.width - world.cameraPosition.x);
-        this.bottomLine.position.y = this.editor.worldTargetPos.y + world.displayObject.scale.y * (world.height - world.cameraPosition.y);
+        var left = game.system.width / 2 - game.System.width / 2;
+        var top = game.system.height / 2 - game.System.height / 2;
+
+        this.leftLine.position.x = left + world.displayObject.scale.x * (0 - world.cameraPosition.x);
+        this.topLine.position.y = top + world.displayObject.scale.y * (0 - world.cameraPosition.y);
+        this.rightLine.position.x = left + world.displayObject.scale.x * (world.width - world.cameraPosition.x);
+        this.bottomLine.position.y = top + world.displayObject.scale.y * (world.height - world.cameraPosition.y);
 
         this.screenRect.clear();
         this.screenRect.lineStyle(2, 0xffffff);
         this.screenRect.drawRect(-1, -1, 2 + world.displayObject.scale.x * game.System.width, 2 + world.displayObject.scale.y * game.System.height);
-        this.screenRect.position.x = this.editor.worldTargetPos.x;
-        this.screenRect.position.y = this.editor.worldTargetPos.y;
+        this.screenRect.position.x = left;
+        this.screenRect.position.y = top;
         
         this.screenDim.clear();
-        this.screenDim.beginFill(0x000000, 0.7);
+        this.screenDim.beginFill(0, 0.5);
 
         var miny = 0;
         var maxy = game.system.height;
         
-        if (this.editor.worldTargetPos.y > 0) {
-            miny = this.editor.worldTargetPos.y;
+        if (top > 0) {
+            miny = top;
             this.screenDim.drawRect(0, 0, game.system.width, miny);
         }
 
-        if (this.editor.worldTargetPos.y + world.displayObject.scale.y * game.System.height < game.system.height) {
-            maxy = this.editor.worldTargetPos.y + world.displayObject.scale.y * game.System.height;
+        if (top + world.displayObject.scale.y * game.System.height < game.system.height) {
+            maxy = top + world.displayObject.scale.y * game.System.height;
             this.screenDim.drawRect(0, maxy, game.system.width, game.system.height - maxy);
         }
 
-        if(this.editor.worldTargetPos.x > 0) this.screenDim.drawRect(0, miny, this.editor.worldTargetPos.x, maxy - miny);
-        if(this.editor.worldTargetPos.x + world.displayObject.scale.x * game.System.width < game.system.width) this.screenDim.drawRect(this.editor.worldTargetPos.x + world.displayObject.scale.x * game.System.width, miny, game.system.width - (this.editor.worldTargetPos.x + world.displayObject.scale.x * game.System.width), maxy - miny);
+        if(left > 0) this.screenDim.drawRect(0, miny, left, maxy - miny);
+        if(left + world.displayObject.scale.x * game.System.width < game.system.width) this.screenDim.drawRect(left + world.displayObject.scale.x * game.System.width, miny, game.system.width - (left + world.displayObject.scale.x * game.System.width), maxy - miny);
+    },
+
+    resetGraphics: function() {
+        this.displayObject.removeChild(this.boundaries);
+        this.displayObject.removeChild(this.screenDim);
+
+        this.boundaries.removeChild(this.leftLine);
+        this.boundaries.removeChild(this.topLine);
+        this.boundaries.removeChild(this.rightLine);
+        this.boundaries.removeChild(this.bottomLine);
+        this.boundaries.removeChild(this.screenRect);
+
+        this.createGraphics();
+        this.updateBoundary();
     },
 
     createGraphics: function() {

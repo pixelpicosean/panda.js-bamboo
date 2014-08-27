@@ -32,13 +32,7 @@ bamboo.Node = game.Class.extend({
             if (this.displayObject) this.displayObject.scale.set(value.x, value.y);
         }
         if (name === 'parent') {
-            if (this.displayObject && this.parent && this.displayObject.parent) {
-                this.parent.displayObject.removeChild(this.displayObject);
-            }
-
-            if (this.displayObject && this.parent) {
-                this.parent.displayObject.addChild(this.displayObject);
-            }
+            if (this.displayObject) this.parent.displayObject.addChild(this.displayObject);
         }
     },
 

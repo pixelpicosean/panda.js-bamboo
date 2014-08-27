@@ -59,7 +59,7 @@ game.Scene.inject({
 bamboo.createWorld = function(sceneName) {
     var data = bamboo.scenes[sceneName];
     
-    var world = new bamboo[data.world](data.width, data.height, data.images);
+    var world = new bamboo[data.world](data);
     
     var nodes = data.nodes;
     for (var i = 0; i < nodes.length; i++) {
@@ -71,8 +71,11 @@ bamboo.createWorld = function(sceneName) {
 };
 
 bamboo.load = function(scene, container) {
-    game.scene.world = bamboo.createWorld(scene);
-    game.scene.world.addTo(container || game.scene.stage);
+    var world = bamboo.createWorld(scene);
+    var container = container || game.scene.stage;
+    container.addChild(world.displayObject);
+
+    game.scene.world = world;
 };
 
 });

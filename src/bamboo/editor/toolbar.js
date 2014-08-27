@@ -9,7 +9,7 @@ bamboo.ToolBar = game.Class.extend({
     init: function(editor) {
         this.editor = editor;
 
-        this.windowElem = bamboo.ui.addWindow(0, 0, game.system.width, this.height);
+        this.windowElem = bamboo.ui.addWindow(0, 0, 'window', this.height);
         this.update();
         this.windowElem.show();
     },

@@ -89,32 +89,21 @@ bamboo.Node.editor = game.Class.extend({
         this.connectedToLine.clear();
 
         if (this.node.parent) {
-            this.connectedToLine.lineStyle(1, 0xffffff);
+            this.connectedToLine.lineStyle(1, 0xffffff, 0.5);
             this.connectedToLine.moveTo(0,0);
-            var p = this.node.toLocalSpace(this.node.parent.getWorldPosition());
-            // var p = this.node.toLocalSpace(this.node.parent.position);
-            // p.x -= this.node.parent.position.x;
-            // p.y -= this.node.parent.position.y;
-            this.connectedToLine.lineTo(p.x * this.node.scale.x, p.y * this.node.scale.y);
+            var point = this.node.toLocalSpace(this.node.parent.getWorldPosition());
+            this.connectedToLine.lineTo(point.x * this.node.scale.x, point.y * this.node.scale.y);
         }
     },
 
-    getBounds: function() {
-        return {
-            x: 0,
-            y: 0,
-            width: this.node.displayObject.width || 100,
-            height: this.node.displayObject.height || 100
-        };
-    },
-
     updateRect: function() {
-        // var r = this.getBounds();
+        if (this._cachedScale === this.node.scale && this._cachedSize === this.node.size) {
+            console.log('no need to updater');
+            return;
+        }
         
-        // if (this._cachedRect === r && this._cachedScale === this.node.scale) return;
-
         var size = this.node.size.clone();
-        // this._cachedRect = r;
+
         this._cachedScale = this.node.scale.clone();
         this._cachedSize = this.node.size.clone();
         
@@ -125,21 +114,20 @@ bamboo.Node.editor = game.Class.extend({
         size.y *= this.node.scale.y;
 
         this.selectionRect.clear();
-        this.selectionRect.lineStyle(1, 0xff0000);
-        this.selectionRect.beginFill(0xff0000, 0.2);
-        this.selectionRect.drawRect(-6, -6, size.x + 12, size.y + 12);
+        // this.selectionRect.lineStyle(1, 0xff0000);
+        // this.selectionRect.beginFill(0xff0000, 0.2);
+        // this.selectionRect.drawRect(-6, -6, size.x + 12, size.y + 12);
 
         this.parentSelectionRect.clear();
-        this.parentSelectionRect.lineStyle(2, 0xff00aa, 0.5);
-        this.parentSelectionRect.drawRect(-3, -3, size.x + 6, size.y + 6);
+        this.parentSelectionRect.lineStyle(1, 0xff00aa, 0.5);
+        this.parentSelectionRect.drawRect(0, 0, size.x, size.y);
 
         this.activeRect.clear();
         this.activeRect.beginFill(0xffaa00, 0.2);
         this.activeRect.drawRect(0, 0, size.x, size.y);
         this.activeRect.endFill();
-
-        this.activeRect.lineStyle(2, 0xffaa00, 1);
-        this.activeRect.drawRect(-1, -1, size.x + 2, size.y + 2);
+        this.activeRect.lineStyle(1, 0xffaa00, 0.5);
+        this.activeRect.drawRect(0, 0, size.x, size.y);
 
         this.editableRect.clear();
         this.editableRect.lineStyle(1, 0x0066ff);
@@ -167,15 +155,11 @@ bamboo.Node.editor = game.Class.extend({
         }
         else if (property === 'position') {
             if (this.node.displayObject) this.node.displayObject.position.set(value.x, value.y);
-            // this.displayObject.position.set(value.x, value.y);
             this.redrawConnectedToLine();
         }
         else if (property === 'rotation') {
             if (this.node.displayObject) this.node.displayObject.updateTransform();
             this.redrawConnectedToLine();
-        }
-        else if (property === 'scale') {
-            if (this.node.displayObject) this.node.displayObject.updateTransform();
         }
 
         for (var i = 0; i < this.propertyChangeListeners.length; i++) {

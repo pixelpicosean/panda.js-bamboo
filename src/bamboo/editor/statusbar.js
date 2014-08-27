@@ -7,7 +7,7 @@ bamboo.StatusBar = game.Class.extend({
     height: 50,
 
     init: function() {
-        this.windowElem = bamboo.ui.addWindow(0, game.system.height - this.height, game.system.width, this.height);
+        this.windowElem = bamboo.ui.addWindow(0, this.height, 'window', this.height, 'bottom');
         this.windowElem.show();
     },
 

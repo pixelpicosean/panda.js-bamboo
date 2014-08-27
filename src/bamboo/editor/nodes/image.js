@@ -7,20 +7,7 @@ game.module(
 )
 .body(function() {
 
-game.addAsset('../src/bamboo/editor/media/image_placeholder.png');
-
 bamboo.nodes.Image.editor = bamboo.Node.editor.extend({
-    init: function(node) {
-        this._super(node);
-        
-        if (!node.image) this.setProperty('image', '../src/bamboo/editor/media/image_placeholder.png');
-    },
-
-    getBounds: function() {
-        var o = this.getOrigin();
-        return {x: -o.x, y: -o.y, width: this.node.displayObject.texture.width, height: this.node.displayObject.texture.height };
-    },
-
     getOrigin: function() {
         var a = this.node.anchor;
         return new game.Point(a.x * this.node.displayObject.texture.width, a.y * this.node.displayObject.texture.height);
@@ -32,7 +19,11 @@ bamboo.nodes.Image.editor = bamboo.Node.editor.extend({
     },
 
     propertyChanged: function(key, value, oldValue) {
-        if (key === 'image') this.sizeChanged();
+        if (key === 'image') {
+            this.node.displayObject.setTexture(value);
+            this.setProperty('size', new game.Point(this.node.displayObject.width, this.node.displayObject.height));
+            // this.sizeChanged();
+        }
         if (key === 'anchor') this.updateRect();
         
         this._super(key, value, oldValue);

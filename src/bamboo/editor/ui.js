@@ -6,8 +6,8 @@ game.module(
 bamboo.Ui = game.Class.extend({
     windows: [],
     
-    addWindow: function(x, y, width, height) {
-        var w = new bamboo.UiWindow(x, y, width, height);
+    addWindow: function(x, y, width, height, align) {
+        var w = new bamboo.UiWindow(x, y, width, height, align);
         this.windows.push(w);
         return w;
     },
@@ -31,6 +31,12 @@ bamboo.Ui = game.Class.extend({
         for (var i = 0; i < this.windows.length; i++) {
             this.windows[i].show();
         }
+    },
+
+    update: function() {
+        for (var i = 0; i < this.windows.length; i++) {
+            this.windows[i].update();
+        }
     }
 });
 
@@ -42,8 +48,10 @@ bamboo.UiWindow = game.Class.extend({
     borderSize: 1,
     inputs: {},
     visible: false,
+    align: 'left',
 
-    init: function(x, y, width, height) {
+    init: function(x, y, width, height, align) {
+        this.align = align || this.align;
         if (typeof(x) !== 'undefined') this.x = x;
         if (typeof(y) !== 'undefined') this.y = y;
         if (typeof(width) !== 'undefined') this.width = width;
@@ -73,11 +81,16 @@ bamboo.UiWindow = game.Class.extend({
         else this.windowDiv.style.height = (this.height - this.borderSize * 2) + 'px';
 
         if (this.x === 'center') this.windowDiv.style.left = window.innerWidth / 2 - this.width / 2 + 'px';
-        else this.windowDiv.style.left = this.x + 'px';
+        else {
+            if (this.align === 'right') this.windowDiv.style.left = window.innerWidth - this.x + 'px';
+            else this.windowDiv.style.left = this.x + 'px';
+        }
 
         if (this.y === 'center') this.windowDiv.style.top = window.innerHeight / 2 - this.height / 2 + 'px';
-        // if (this.y === 'bottom') this.windowDiv.style.top = window.innerHeight - this.height - this.borderSize * 2 + 'px';
-        else this.windowDiv.style.top = this.y + 'px';
+        else {
+            if (this.align === 'bottom') this.windowDiv.style.top = window.innerHeight - this.y + 'px';
+            else this.windowDiv.style.top = this.y + 'px';
+        }
     },
 
     show: function() {

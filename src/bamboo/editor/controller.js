@@ -9,13 +9,14 @@ bamboo.Controller = game.Class.extend({
     },
 
     createNode: function(className, properties, editorNodeProperties) {
-        console.log('Create: ' + className);
         properties.name = this.editor.getUniqueName(properties.name);
 
         var node = new bamboo.nodes[className](this.editor.world, properties);
 
         if (!bamboo.nodes[className].editor) bamboo.nodes[className].editor = bamboo.Node.editor;
+
         var editorNode = new bamboo.nodes[className].editor(node, editorNodeProperties);
+        
         switch (this.editor.editorNodeVisibility) {
             case 0:
                 editorNode.debugDisplayObject.visible = false;
@@ -29,7 +30,7 @@ bamboo.Controller = game.Class.extend({
                 editorNode.debugDisplayObject.alpha = 1.0;
                 break;
         }
-        // node.displayObject.updateTransform();
+        
         this.editor.nodes.push(editorNode);
         this.editor.nodeAdded(node);
         return node;
@@ -141,6 +142,8 @@ bamboo.Controller = game.Class.extend({
     setActiveLayer: function(layer) {
         this.editor.activeLayer = layer;
         this.editor.propertyPanel.activeLayerChanged(layer);
+        this.deselectAllNodes();
+        this.setActiveNode(layer);
     },
 
     moveNodeUp: function(node) {

@@ -12,7 +12,7 @@ bamboo.Property = game.Class.extend({
     name: null,
     description: null,
     type: null,
-    options: null,
+    options: {},
 
     init: function(editable, name, desc, type, defaultValue, options) {
         this.editable = editable;
@@ -20,7 +20,7 @@ bamboo.Property = game.Class.extend({
         this.description = desc;
         this.type = type;
         this.defaultValue = defaultValue;
-        this.options = options;
+        this.options = options || this.options;
     }
 });
 
@@ -39,8 +39,8 @@ bamboo.Property.TYPE = {
     COLOR: 11
 };
 
-bamboo.Property.parse = function(world, obj, name, desc) {
-    switch (desc.type) {
+bamboo.Property.parse = function(world, obj, name, prop) {
+    switch (prop.type) {
         case bamboo.Property.TYPE.NUMBER:
         case bamboo.Property.TYPE.ANGLE:
         case bamboo.Property.TYPE.STRING:
@@ -49,11 +49,11 @@ bamboo.Property.parse = function(world, obj, name, desc) {
         case bamboo.Property.TYPE.ENUM:
         case bamboo.Property.TYPE.TRIGGER:
         case bamboo.Property.TYPE.COLOR:
-            return typeof obj[name] !== 'undefined' ? obj[name] : desc.defaultValue;
+            return typeof obj[name] !== 'undefined' ? bamboo.Property.parseOptions(obj[name], prop.options) : prop.defaultValue;
 
         case bamboo.Property.TYPE.VECTOR:
             if (obj[name] instanceof Array) return new game.Point(obj[name][0], obj[name][1]);
-            return typeof obj[name] !== 'undefined' ? new game.Point(obj[name].x, obj[name].y) : desc.defaultValue ? new game.Point(desc.defaultValue[0], desc.defaultValue[1]) : new game.Point();
+            return typeof obj[name] !== 'undefined' ? new game.Point(obj[name].x, obj[name].y) : prop.defaultValue ? new game.Point(prop.defaultValue[0], prop.defaultValue[1]) : new game.Point();
 
         case bamboo.Property.TYPE.NODE:
             if (!obj[name]) return world;
@@ -64,12 +64,20 @@ bamboo.Property.parse = function(world, obj, name, desc) {
 
         case bamboo.Property.TYPE.ARRAY:
             var a = [];
+            if (!obj[name]) return a;
             for (var i = 0; i < obj[name].length; i++) {
-                a.push(bamboo.Property.parse(world, obj[name], i, desc.options));
+                var value = bamboo.Property.parse(world, obj[name], i, prop.options);
+                a.push(value);
             }
             return a;
     }
     return null;
+};
+
+bamboo.Property.parseOptions = function(value, options) {
+    if (typeof options.min === 'number' && value < options.min) value = options.min;
+    if (typeof options.max === 'number' && value > options.max) value = options.max;
+    return value;
 };
 
 bamboo.Property.toJSON = function(obj, name, desc) {

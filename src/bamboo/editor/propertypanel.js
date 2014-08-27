@@ -10,17 +10,17 @@ bamboo.PropertyPanel = game.Class.extend({
     init: function(editor) {
         this.editor = editor;
         
-        this.layerWindow = bamboo.ui.addWindow(game.system.width - this.width, game.system.height - this.layerWindowHeight - this.editor.statusBar.height, this.width, this.layerWindowHeight);
+        this.layerWindow = bamboo.ui.addWindow(this.width, game.system.height - this.layerWindowHeight - this.editor.statusBar.height, this.width, this.layerWindowHeight, 'right');
         this.layerWindow.setTitle('Layers');
         this.layerWindow.show();
 
-        this.settingsWindow = bamboo.ui.addWindow(game.system.width - this.width, this.editor.toolBar.height, this.width, game.system.height - this.layerWindowHeight - this.editor.toolBar.height - this.editor.statusBar.height);
+        this.settingsWindow = bamboo.ui.addWindow(this.width, this.editor.toolBar.height, this.width, game.system.height - this.layerWindowHeight - this.editor.toolBar.height - this.editor.statusBar.height, 'right');
         this.settingsWindow.show();
 
         // create layer list
         this.layerList = document.createElement('select');
         this.layerList.size = 6;
-        this.layerList.addEventListener('change', this.layerSelectionChanged.bind(this), false);
+        this.layerList.addEventListener('click', this.layerSelectionChanged.bind(this), false);
         this.layerWindow.titleDiv.appendChild(this.layerList);
 
         var buttonsDiv = document.createElement('div');
@@ -124,12 +124,17 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     layerSelectionChanged: function() {
+        this.focusOnCanvas();
         this.editor.controller.setActiveLayer(this.editor.world.findNode(this.layerList.value));
-        // clear selection!
+    },
+
+    focusOnCanvas: function() {
+        if (document.activeElement !== document.body) document.activeElement.blur();
     },
 
     newLayerClicked: function() {
         this.editor.controller.createNode('Layer', { name: 'Layer' });
+        this.layerSelectionChanged();
     },
 
     moveLayerUpClicked: function() {
@@ -171,6 +176,7 @@ bamboo.PropertyPanel = game.Class.extend({
         this.layerWindow.setInputSelectValue('activeNode', node.name);
         this.node._editorNode.addPropertyChangeListener(this.propertyChanged.bind(this));
         
+        this.settingsWindow.addText(this.node.getClassName() + '<br><br>');
         var props = node.getPropertyDescriptors();
         this.props = props;
         for (var key in props) {
@@ -228,7 +234,7 @@ bamboo.PropertyPanel = game.Class.extend({
                     this.settingsWindow.setInputSelectValue(key, node[key]);
                     break;
                 case bamboo.Property.TYPE.COLOR:
-                    this.settingsWindow.addInputColor(key, '#'+node[key].toString(16), props[key].name, props[key].description, this.colorPropertyChanged.bind(this));
+                    this.settingsWindow.addInputColor(key, '#' + node[key].toString(16), props[key].name, props[key].description, this.colorPropertyChanged.bind(this));
                     break;
             }
         }
@@ -271,7 +277,6 @@ bamboo.PropertyPanel = game.Class.extend({
                 break;
         }
     },
-
 
     numberPropertyChanged: function(key) {
         var value = parseFloat(this.settingsWindow.inputs[key].value);
@@ -323,6 +328,7 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     imagePropertyChanged: function(key) {
+        this.focusOnCanvas();
         this.editor.activeNode._editorNode.setProperty(key, this.settingsWindow.inputs[key].value);
     },
 

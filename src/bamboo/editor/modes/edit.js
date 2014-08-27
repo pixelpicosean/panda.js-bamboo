@@ -28,18 +28,19 @@ bamboo.editor.ModeEdit = bamboo.editor.Mode.extend({
 
     click: function(event) {
         var pos = new game.Point(event.global.x, event.global.y);
+        pos = this.editor.toWorldSpace(pos);
         this.node._editorNode.click(pos);
     },
 
     mousemove: function(event) {
         var pos = new game.Point(event.global.x, event.global.y);
+        pos = this.editor.toWorldSpace(pos);
         this.node._editorNode.mousemove(pos);
     },
 
     keydown: function(key) {
         if (key === 'ESC') {
-            this.editor.changeMode('NodeMode');
-
+            this.editor.changeMode('Main');
             this.editor.controller.selectNode(this.node);
             this.editor.controller.setActiveNode(this.node);
         }

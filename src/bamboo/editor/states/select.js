@@ -282,7 +282,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
 
                 game.TextureCache[filename] = texture;
 
-                editor.addImage(filename, imgData.slice(22));
+                editor.addImage(filename);
             };
             reader.readAsDataURL(file);
         }

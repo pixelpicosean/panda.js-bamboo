@@ -40,10 +40,18 @@ bamboo.Editor = game.Class.extend({
         this.propertyPanel = new bamboo.PropertyPanel(this);
 
         this.changeMode('Main');
-        this.cameraWorldPosition = this.worldTargetPos.clone();
+        this.cameraWorldPosition = new game.Point(
+            this.worldTargetPos.x - this.world.cameraPosition.x,
+            this.worldTargetPos.y - this.world.cameraPosition.y
+        );
 
         this.errorWindow = new bamboo.UiWindow('center', 'center', 400, 115);
         this.errorWindow.setTitle('Error');
+
+        game.TextureCache['apple.png'] = game.TextureCache['media/test/apple.png'];
+        this.addImage('apple.png');
+        game.TextureCache['bg.png'] = game.TextureCache['media/test/bg.png'];
+        this.addImage('bg.png');
     },
 
     showError: function(error) {
@@ -55,6 +63,12 @@ bamboo.Editor = game.Class.extend({
 
     hideError: function() {
         this.errorWindow.hide();
+    },
+
+    updateLayers: function() {
+        for (var i = 0; i < this.layers.length; i++) {
+            this.layers[i].update();
+        }
     },
 
     changeMode: function(mode, param) {
@@ -153,6 +167,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     addImage: function(name) {
+        console.log('Image added: ' + name);
         this.images.push(name);
         // TODO sort images
         if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
@@ -406,15 +421,10 @@ Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
         var tgtCamPos = value.subtract(this.worldTargetPos);
 
         tgtCamPos.multiply(-1 / this.zoom);
-        this.world.setCameraPos(tgtCamPos);
-        // this.world.position.x = this.worldTargetPos.x + this.zoom * (this.world.cameraPosition.x - tgtCamPos.x);
-        // this.world.position.y = this.worldTargetPos.y + this.zoom * (this.world.cameraPosition.y - tgtCamPos.y);
-        // this.world.displayObject.position.set(this.world.position.x, this.world.position.y);
+        this.world.cameraPosition.x = tgtCamPos.x;
+        this.world.cameraPosition.y = tgtCamPos.y;
         this.boundaryLayer.updateBoundary();
-        
-        for (var i = 0; i < this.layers.length; i++) {
-            this.layers[i].update();
-        }
+        this.updateLayers();
     }
 });
 
@@ -423,15 +433,17 @@ bamboo.Editor.createFromJSON = function(sceneJSON) {
     data.width = data.width || game.System.width;
     data.height = data.height || game.System.height;
     
-    var world = new bamboo[data.world](data.width, data.height, data.images);
+    var world = new bamboo[data.world](data);
 
     var editor = new bamboo.Editor(world);
-    editor.images = data.images;
+    // editor.images = data.images;
 
     for (var i = 0; i < data.nodes.length; i++) {
         var node = data.nodes[i];
         editor.controller.createNode(node.class, node.properties);
     }
+
+    editor.updateLayers();
     return editor;
 };
 

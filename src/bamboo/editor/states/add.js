@@ -56,22 +56,19 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
     addPressed: function() {
         bamboo.ui.removeWindow(this.windowElem);
 
-        var parent = this.mode.editor.world.findNode(this.windowElem.inputs['parent'].value);
-        // var position = parent.toLocalSpace(new game.Point(this.mode.editor.prevMousePos.x, this.mode.editor.prevMousePos.y));
-        var position = this.mode.editor.toWorldSpace(this.mode.editor.prevMousePos);
-        // position.x += parent.position.x;
-        // position.y += parent.position.y;
-        
         var node = this.mode.editor.controller.createNode(this.windowElem.inputs['type'].value, {
             name: this.windowElem.inputs['name'].value,
-            position: position,
             parent: this.windowElem.inputs['parent'].value
         });
 
-        node.position.set(0, 0);
-
         this.mode.editor.controller.setActiveNode(node);
         this.mode.editor.changeState('Move');
+
+        var parentPos = node.parent.getWorldPosition();
+        var pos = this.mode.editor.toWorldSpace(this.mode.editor.prevMousePos);
+        this.mode.state.offset.x -= pos.x - parentPos.x;
+        this.mode.state.offset.y -= pos.y - parentPos.y;
+        this.mode.state.update(this.mode.editor.prevMousePos.x, this.mode.editor.prevMousePos.y);
     }
 });
 
