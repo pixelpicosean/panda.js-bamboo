@@ -5,34 +5,44 @@ game.module(
     'bamboo.runtime.property'
 )
 .body(function() {
+'use strict';
 
 bamboo.Node = game.Class.extend({
-    init: function(world, properties) {
-        if (this.displayObject === true) this.displayObject = new game.Container();
+    staticInit: function(world, properties) {
+        this.world = world;
+
+        this._init = this.init;
+        this.init = this.initProperties;
+    },
+
+    initProperties: function(world, properties) {
+        if (this._init) this._init();
 
         var propDescs = this.getPropertyDescriptors();
 
         for (var key in propDescs) {
-            this.setProperty(key, bamboo.Property.parse(world, properties, key, propDescs[key]));
+            this.setProperty(key, bamboo.Property.parse(this.world, properties, key, propDescs[key]));
         }
-        
-        this.world = world;
-        this.world.addNode(this);
+
+        if (this.ready) this.ready();
     },
 
     setProperty: function(name, value) {
         this[name] = value;
-        if (name === 'rotation') {
-            if (this.displayObject) this.displayObject.rotation = value;
-        }
-        if (name === 'position') {
-            if (this.displayObject) this.displayObject.position.set(value.x, value.y);
-        }
-        if (name === 'scale') {
-            if (this.displayObject) this.displayObject.scale.set(value.x, value.y);
-        }
-        if (name === 'parent') {
-            if (this.displayObject) this.parent.displayObject.addChild(this.displayObject);
+
+        if (this.displayObject) {
+            if (name === 'rotation') {
+                this.displayObject.rotation = value;
+            }
+            else if (name === 'position') {
+                this.displayObject.position.set(value.x, value.y);
+            }
+            else if (name === 'scale') {
+                this.displayObject.scale.set(value.x, value.y);
+            }
+            else if (name === 'parent') {
+                this.parent.displayObject.addChild(this.displayObject);
+            }
         }
     },
 
@@ -55,12 +65,6 @@ bamboo.Node = game.Class.extend({
             }
         }
         return props;
-    },
-
-    getClassName: function() {
-        for (var name in bamboo.nodes) {
-            if (this instanceof bamboo.nodes[name]) return name;
-        }
     },
 
     toLocalSpace: function(point) {
@@ -98,11 +102,9 @@ bamboo.Node.props = {
     parent: new bamboo.Property(true, 'Parent', 'Parent that this node will follow', bamboo.Property.TYPE.NODE),
     name: new bamboo.Property(true, 'Name', 'Name of the node', bamboo.Property.TYPE.STRING),
     position: new bamboo.Property(true, 'Position', 'Position of the node', bamboo.Property.TYPE.VECTOR),
-    size: new bamboo.Property(true, 'Size', 'Size of the node', bamboo.Property.TYPE.VECTOR, [100, 100]),
+    size: new bamboo.Property(true, 'Size', 'Size of the node', bamboo.Property.TYPE.VECTOR),
     rotation: new bamboo.Property(true, 'Rotation', 'Rotation of the node in degrees', bamboo.Property.TYPE.ANGLE, 0, { loop360: true }),
     scale: new bamboo.Property(true, 'Scale', 'Scale of the node', bamboo.Property.TYPE.VECTOR, [1, 1])
 };
-
-bamboo.nodes.Null = bamboo.Node.extend();
 
 });

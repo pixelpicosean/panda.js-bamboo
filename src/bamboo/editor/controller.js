@@ -13,9 +13,24 @@ bamboo.Controller = game.Class.extend({
 
         var node = new bamboo.nodes[className](this.editor.world, properties);
 
-        if (!bamboo.nodes[className].editor) bamboo.nodes[className].editor = bamboo.Node.editor;
+        if (!node.displayObject) node.displayObject = new game.Container();
+
+        if (!bamboo.nodes[className].editor) {
+            bamboo.nodes[className].editor = bamboo.Node.editor;
+        }
 
         var editorNode = new bamboo.nodes[className].editor(node, editorNodeProperties);
+        editorNode.connectedToLine.visible = this.editor.viewNodes;
+        editorNode.parentSelectionRect.visible = this.editor.viewNodes;
+
+        if (node.displayObject && node.size.x === 0 && node.size.y === 0 && node.displayObject.width > 1 && node.displayObject.height > 1) {
+            editorNode.setProperty('size', new game.Point(node.displayObject.width, node.displayObject.height));
+        }
+        if (node.size.x === 0 && node.size.y === 0) {
+            editorNode.setProperty('size', new game.Point(64, 64));
+        }
+
+        node.displayObject.addChild(editorNode.displayObject);
         
         switch (this.editor.editorNodeVisibility) {
             case 0:
@@ -31,6 +46,7 @@ bamboo.Controller = game.Class.extend({
                 break;
         }
         
+        this.editor.world.nodes.push(node);
         this.editor.nodes.push(editorNode);
         this.editor.nodeAdded(node);
         return node;
@@ -39,15 +55,9 @@ bamboo.Controller = game.Class.extend({
     deleteNode: function(node) {
         this.deselectNode(node);
         this.editor.nodes.splice(this.editor.nodes.indexOf(node._editorNode), 1);
-        node.connectedTo = null;
-        node.world = null;
+        this.editor.world.nodes.splice(this.editor.world.nodes.indexOf(node), 1);
+        node.parent.displayObject.removeChild(node.displayObject);
         this.editor.nodeRemoved(node);
-    },
-
-    changeMode: function(newMode) {
-        this.editor.mode.exit();
-        this.editor.mode = newMode;
-        this.editor.mode.enter();
     },
 
     selectAllNodes: function() {
@@ -75,14 +85,14 @@ bamboo.Controller = game.Class.extend({
         this.editor.selectedNodes.push(node);
         node._editorNode.selectionRect.visible = true;
         node._editorNode.selectionAxis.visible = true;
-        node._editorNode.connectedToLine.visible = true;
+        // node._editorNode.connectedToLine.visible = true;
         this.editor.nodeSelected(node);
 
         var markChildren = function(c) {
             for (var i=0; i<c.length; i++) {
                 var n = c[i];
-                n._editorNode.parentSelectionRect.visible = true;
-                n._editorNode.connectedToLine.visible = true;
+                // n._editorNode.parentSelectionRect.visible = true;
+                // n._editorNode.connectedToLine.visible = true;
                 // TODO: if (selectedNodes.indexOf(n) !== -1) continue
                 markChildren(n.world.getConnectedNodes(n));
             }
@@ -99,7 +109,7 @@ bamboo.Controller = game.Class.extend({
         this.editor.selectedNodes.splice(idx, 1);
         node._editorNode.selectionAxis.visible = false;
         node._editorNode.selectionRect.visible = false;
-        node._editorNode.connectedToLine.visible = false;
+        // node._editorNode.connectedToLine.visible = false;
         this.editor.nodeDeselected(node);
 
         if (this.editor.activeNode === node) this.setActiveNode(null);
@@ -107,8 +117,8 @@ bamboo.Controller = game.Class.extend({
         var unmarkChildren = function(c, selectedNodes) {
             for (var i=0; i<c.length; i++) {
                 var n = c[i];
-                n._editorNode.parentSelectionRect.visible = false;
-                n._editorNode.connectedToLine.visible = false;
+                // n._editorNode.parentSelectionRect.visible = false;
+                // n._editorNode.connectedToLine.visible = false;
 
                 if (selectedNodes.indexOf(n) !== -1)
                     continue;

@@ -6,11 +6,12 @@ game.module(
 )
 .body(function() {
 
-bamboo.nodes.Image = bamboo.Node.extend({
+bamboo.createNode('Image', {
+    init: function() {
+        this.displayObject = new game.Sprite(new game.Texture(new game.BaseTexture()));
+    },
+
     setProperty: function(name, value) {
-        if (!this.displayObject) {
-            this.displayObject = new game.Sprite(new game.Texture(new game.BaseTexture()));
-        }
         this._super(name, value);
         if (name === 'image' && this.image) this.displayObject.setTexture(this.image);
         if (name === 'alpha') this.displayObject.alpha = this.alpha;
@@ -18,10 +19,10 @@ bamboo.nodes.Image = bamboo.Node.extend({
     }
 });
 
-bamboo.nodes.Image.props = {
+bamboo.setNodeProperties('Image', {
     image: new bamboo.Property(true, 'Image', 'Filename of the image', bamboo.Property.TYPE.IMAGE),
     alpha: new bamboo.Property(true, 'Alpha', 'Opacity of the image', bamboo.Property.TYPE.NUMBER, 1, { min: 0, max: 1 }),
     anchor: new bamboo.Property(false, '', '', bamboo.Property.TYPE.VECTOR)
-};
+});
 
 });

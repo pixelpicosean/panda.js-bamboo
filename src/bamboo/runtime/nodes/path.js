@@ -13,10 +13,8 @@ bamboo.nodes.Path = bamboo.Node.extend({
     length: 0,
     segmentDistances: [],
     splineSegmentDistances: null,
-    displayObject: true,
 
-    init: function(world, properties) {
-        this._super(world, properties);
+    ready: function() {
         this.calculateLength();
     },
 
@@ -179,12 +177,9 @@ bamboo.nodes.Path = bamboo.Node.extend({
     getClosestPointOnLineSegment: function(a, b, v) {
         var delta = b.subtractc(a);
         var p = v.subtractc(a);
-
         var t = delta.dot(p) / delta.lengthSq();
-        if (t < 0)
-            return a;
-        if (t > 1)
-            return b;
+        if (t < 0) return a;
+        if (t > 1) return b;
         return delta.multiply(t).add(a);
     },
 

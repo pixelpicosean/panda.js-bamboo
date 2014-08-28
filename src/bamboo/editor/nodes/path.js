@@ -7,6 +7,12 @@ game.module(
 )
 .body(function() {
 
+bamboo.nodes.Path.inject({
+    init: function() {
+        this.displayObject = new game.Container();
+    }
+});
+
 bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
     helpText: 'Path: (A)dd point, (G)rab point, (D)elete point',
     color: 0x0000ee,

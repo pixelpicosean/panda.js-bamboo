@@ -13,6 +13,7 @@ bamboo.editor.ModeEdit = bamboo.editor.Mode.extend({
         this._super(editor);
         this.node = this.editor.activeNode;
         this.state = this.node._editorNode;
+        console.log('Edit mode inited');
     },
 
     enter: function() {

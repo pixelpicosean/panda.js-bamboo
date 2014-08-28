@@ -205,16 +205,15 @@ label {
     margin-right: 5px;
 }
 input[type=text] {
-    outline: none;
     color: #eee;
     border-style: none;
-    /*border-top: 1px solid #282828;*/
     box-shadow: 0px -1px 0px #282828;
     border-bottom: 1px solid #686868;
     background: #4a4a4a;
     width: 100%;
-    /*margin-bottom: 10px;*/
+    margin-top: 3px;
     height: 16px;
+    padding: 0;
 }
 .multiInput {
     width: 100%;
@@ -236,6 +235,18 @@ select {
     display: block;
     margin-bottom: 10px;
     width: 100%;
+
+    color: #eee;
+    border-style: none;
+    box-shadow: 0px -1px 0px #282828;
+    border-bottom: 1px solid #686868;
+    background: #4a4a4a;
+}
+select.layerList {
+    overflow: hidden;
+    background: #686868;
+    border-radius: 5px;
+    margin-top: 5px;
 }
 .window .button.confirm {
     width: 50px;

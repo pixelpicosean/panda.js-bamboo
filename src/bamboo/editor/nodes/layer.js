@@ -11,6 +11,11 @@ bamboo.nodes.Layer.editor = bamboo.Node.editor.extend({
     visible: true,
 
     propertyChanged: function(key, value, oldValue) {
+        if (key === 'size') {
+            if (value.x === 0 && value.y === 0) {
+                value.x = value.y = 128;
+            }
+        }
         this._super(key, value, oldValue);
         this.node.update();
     },

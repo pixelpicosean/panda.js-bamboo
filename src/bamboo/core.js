@@ -1,7 +1,6 @@
 var bamboo = {
     version: '1.0.0',
-    editorMode: false,
-    scenes: {},
+    scenes: [],
     nodes: {}
 };
 
@@ -11,11 +10,26 @@ if (typeof document !== 'undefined' && document.location.href.match(/\?editor/))
     bamboo.editorMode = true;
 }
 
+bamboo.createNode = function(name, content) {
+    bamboo.nodes[name] = bamboo.Node.extend(content);
+};
+
+bamboo.setNodeProperties = function(name, content) {
+    bamboo.nodes[name].props = content;
+};
+
+bamboo.createBambooScene = function(name, content) {
+    content = content || {};
+    content.name = name;
+    game['Scene' + name] = bamboo.Scene.extend(content);
+};
+
 game.module(
     'bamboo.core'
 )
 .require(
     bamboo.editorMode ? 'bamboo.editor.core' : 'bamboo.runtime.world',
+    'bamboo.runtime.nodes.null',
     'bamboo.runtime.nodes.image',
     'bamboo.runtime.nodes.layer',
     'bamboo.runtime.nodes.manualtrigger',
@@ -25,57 +39,26 @@ game.module(
     'bamboo.runtime.nodes.rotator',
     'bamboo.runtime.nodes.trigger',
     'bamboo.runtime.nodes.triggerbox',
-    'bamboo.runtime.nodes.triggercircle',
-    'engine.scene'
+    'bamboo.runtime.nodes.triggercircle'
 )
 .body(function() {
+'use strict';
 
-game.Scene.inject({
-    click: function(event) {
-        if (this.world) this.world.click(event);
-    },
+bamboo.Scene = game.Scene.extend({
+    staticInit: function() {
+        this._super();
 
-    mousedown: function(event) {
-        if (this.world) this.world.mousedown(event);
-    },
+        var data;
+        for (var key in game.json) {
+            if (game.json[key].name === this.name) {
+                data = game.json[key];
+            }
+        }
+        if (!data) throw 'Bamboo scene \'' + this.name + '\' not found';
 
-    mousemove: function(event) {
-        if (this.world) this.world.mousemove(event);
-    },
-
-    mouseup: function(event) {
-        if (this.world) this.world.mouseup(event);
-    },
-
-    keydown: function(key) {
-        if (this.world) this.world.keydown(key);
-    },
-
-    keyup: function(key) {
-        if (this.world) this.world.keyup(key);
+        this.world = new bamboo.World(data);
+        this.stage.addChild(this.world.displayObject);
     }
 });
-
-bamboo.createWorld = function(sceneName) {
-    var data = bamboo.scenes[sceneName];
-    
-    var world = new bamboo[data.world](data);
-    
-    var nodes = data.nodes;
-    for (var i = 0; i < nodes.length; i++) {
-        var node = nodes[i];
-        new bamboo.nodes[node.class](world, node.properties);
-    }
-
-    return world;
-};
-
-bamboo.load = function(scene, container) {
-    var world = bamboo.createWorld(scene);
-    var container = container || game.scene.stage;
-    container.addChild(world.displayObject);
-
-    game.scene.world = world;
-};
 
 });

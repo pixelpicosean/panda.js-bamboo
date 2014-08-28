@@ -7,6 +7,12 @@ game.module(
 .body(function() {
     
 bamboo.World.inject({
+    staticInit: function(data) {
+        game.merge(this, data);
+        this.displayObject = new game.Container();
+        this.position = new game.Point();
+    },
+
     getConnectedNodes: function(node) {
         var nodes = [];
         for (var i = 0; i < this.nodes.length; i++) {
@@ -29,11 +35,11 @@ bamboo.World.inject({
 
     toJSON: function() {
         var jsonObj = {
-            name: game.scene.editor.name,
-            world: this.getClassName(),
+            name: this.name,
             width: this.width,
             height: this.height,
-            images: this.images,
+            bgcolor: this.bgcolor,
+            camera: this.camera,
             nodes: []
         };
         this.addJSONConnections(this, jsonObj.nodes);
@@ -42,8 +48,14 @@ bamboo.World.inject({
 });
 
 bamboo.World.defaultJSON = {
-    world: 'World',
-    images: [],
+    name: 'Game',
+    bgcolor: '0x000000',
+    camera: {
+        position: {
+            x: 0,
+            y: 0
+        }
+    },
     nodes: [
         {
             class: 'Layer',

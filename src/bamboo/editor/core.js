@@ -1,5 +1,4 @@
 bamboo.editor = {};
-bamboo.config = typeof bambooConfig !== 'undefined' ? bambooConfig : {};
 
 game.module(
     'bamboo.editor.core'
@@ -9,7 +8,6 @@ game.module(
     'bamboo.editor.editor',
     'bamboo.editor.controller',
     'bamboo.editor.filesaver',
-    'bamboo.editor.jszip',
     'bamboo.editor.mode',
     'bamboo.editor.node',
     'bamboo.editor.propertypanel',
@@ -23,6 +21,7 @@ game.module(
     'bamboo.editor.modes.game',
     'bamboo.editor.modes.main',
 
+    'bamboo.editor.nodes.null',
     'bamboo.editor.nodes.image',
     'bamboo.editor.nodes.layer',
     'bamboo.editor.nodes.manualtrigger',
@@ -52,18 +51,26 @@ bamboo.EditorScene = game.Scene.extend({
 
         this.scenesWindow = bamboo.ui.addWindow('center', 'center', 400, 150);
         this.scenesWindow.setTitle('Bamboo scene editor ' + bamboo.version);
-        this.scenesWindow.addButton('New scene', this.loadEditor.bind(this));
+        this.scenesWindow.addButton('New scene', this.loadEditor.bind(this, null));
 
-        this.scenesWindow.addText('<br><br><br>Load scene:<br>');
-        
-        bamboo.scenes = game.ksort(bamboo.scenes);
-        for (var name in bamboo.scenes) {
-            this.scenesWindow.addButton(name, this.loadEditor.bind(this, name));
+        var scenes = [];
+        for (key in game.json) {
+            if (game.json[key].name) scenes.push(game.json[key]);
         }
+        if (scenes.length > 0) {
+            scenes.sort();
+            this.scenesWindow.addText('<br><br><br>Load scene:<br>');
+            for (var i = 0; i < scenes.length; i++) {
+                this.scenesWindow.addButton(scenes[i].name, this.loadEditor.bind(this, scenes[i]));
+            }
+        }
+
+        bamboo.nodes = game.ksort(bamboo.nodes);
+
         this.scenesWindow.show();
     },
 
-    loadEditor: function(name) {
+    loadEditor: function(data) {
         bamboo.ui.removeWindow(this.scenesWindow);
 
         if (this.editor) {
@@ -72,42 +79,9 @@ bamboo.EditorScene = game.Scene.extend({
             this.removeObject(this.editor);
         }
 
-        this.editor = bamboo.Editor.createFromJSON(bamboo.scenes[name]);
-        this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
+        this.editor = new bamboo.Editor(data);
         this.stage.addChild(this.editor.displayObject);
-
         this.addObject(this.editor);
-    },
-
-    save: function() {
-        if (!this.editor) return;
-
-        var name = this.editor.name.toLowerCase();
-
-        var zip = new JSZip();
-
-        var json = this.editor.world.toJSON();
-
-        var jsonText = JSON.stringify(json, null, '    ');
-        var js = 'game.module(\n    \'game.scenes.' + name + '\'\n)\n.require(\n    \'bamboo.core\'\n)\n.body(function() {\n\n';
-
-        js += 'bamboo.scenes.' + name + ' = '+jsonText+';\n';
-
-        if (json.images.length > 0) js += '\n';
-
-        for (var i = 0; i < json.images.length; i++) {
-            js += 'game.addAsset(\'' + name + '/' + json.images[i] + '\');\n';
-        }
-        
-        js += '\n});\n';
-
-        zip.file(name + '.js', js);
-
-        var blob = zip.generate({type: 'blob'});
-
-        var filename = name + '.zip';
-        if (game.config.name) filename = game.config.name + '_' + filename;
-        game.saveAs(blob, filename);
     },
 
     click: function(event) {
@@ -137,7 +111,7 @@ bamboo.EditorScene = game.Scene.extend({
         }
         if (document.activeElement !== document.body) return;
         if (this.editor) this.editor.keydown(key);
-        if (key === 'BACKSPACE' || key === 'SPACE') return true;
+        if (key === 'BACKSPACE') return true;
     },
 
     keyup: function(key) {

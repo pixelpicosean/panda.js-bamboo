@@ -4,7 +4,7 @@ game.module(
 .body(function() {
     
 bamboo.ToolBar = game.Class.extend({
-    height: 37,
+    height: 50,
 
     init: function(editor) {
         this.editor = editor;
@@ -16,7 +16,8 @@ bamboo.ToolBar = game.Class.extend({
 
     update: function() {
         this.windowElem.clear();
-        this.windowElem.addText('Scene: ' + this.editor.name);
+        this.windowElem.addButton('Save', this.editor.save.bind(this.editor));
+        this.windowElem.addButton('Download', this.editor.download.bind(this.editor));
     },
 
     hide: function() {

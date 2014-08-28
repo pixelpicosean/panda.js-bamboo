@@ -19,6 +19,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
         // create layer list
         this.layerList = document.createElement('select');
+        this.layerList.className = 'layerList';
         this.layerList.size = 6;
         this.layerList.addEventListener('click', this.layerSelectionChanged.bind(this), false);
         this.layerWindow.titleDiv.appendChild(this.layerList);
@@ -72,33 +73,33 @@ bamboo.PropertyPanel = game.Class.extend({
 
         this.settingsWindow.setTitle('Scene settings');
 
-        this.settingsWindow.addInputText('name', this.editor.name, 'Name', '', this.settingsChanged.bind(this, 'name'));
+        this.settingsWindow.addInputText('name', this.editor.world.name, 'Name', '', this.settingsChanged.bind(this, 'name'));
         this.settingsWindow.addInputText('width', this.editor.world.width, 'Width', '', this.settingsChanged.bind(this, 'width'));
         this.settingsWindow.addInputText('height', this.editor.world.height, 'Height', '', this.settingsChanged.bind(this, 'height'));
-        this.settingsWindow.addInputColor('bgcolor', '#' + this.editor.backgroundColor.toString(16), 'Backgroundc color', '', this.settingsChanged.bind(this, 'bgcolor'));
+        this.settingsWindow.addInputColor('bgcolor', '#' + this.editor.world.bgcolor.toString(16), 'Backgroundc color', '', this.settingsChanged.bind(this, 'bgcolor'));
     },
 
     settingsChanged: function(key) {
         var value = this.settingsWindow.inputs[key].value;
 
         if (key === 'name') {
-            this.editor.name = value;
+            this.editor.world.name = value;
             this.editor.toolBar.update();
         }
         if (key === 'width') {
             this.editor.world.width = parseInt(value) || this.editor.world.width;
             this.settingsWindow.inputs[key].value = this.editor.world.width;
-            this.editor.boundaryLayer.updateBoundary();
+            this.editor.boundaryLayer.resetGraphics();
         }
         if (key === 'height') {
             this.editor.world.height = parseInt(value) || this.editor.world.height;
             this.settingsWindow.inputs[key].value = this.editor.world.height;
-            this.editor.boundaryLayer.updateBoundary();
+            this.editor.boundaryLayer.resetGraphics();
         }
         if (key === 'bgcolor') {
             var color = parseInt('0x' + value.slice(1));
             game.system.stage.setBackgroundColor(color);
-            this.editor.backgroundColor = color;
+            this.editor.world.bgcolor = value.replace('#', '0x');
         }
     },
 
@@ -120,12 +121,12 @@ bamboo.PropertyPanel = game.Class.extend({
             layer._editorNode.setVisibility(this.inputs['visible'].checked);
         });
         this.layerWindow.addInputText('name', layer.name, 'Name', 'Name of the layer', function() {layer._editorNode.setProperty('name', this.inputs['name'].value); self.updateLayerList();});
-        this.layerWindow.addInputText('speedFactor', layer.speedFactor.toFixed(2), 'Parallax multiplier', 'Speed relative to camera', function() {layer._editorNode.setProperty('speedFactor', parseFloat(this.inputs['speedFactor'].value));});
+        this.layerWindow.addInputText('speedFactor', layer.speedFactor.toFixed(2), 'Speed', 'Speed relative to camera', function() {layer._editorNode.setProperty('speedFactor', parseFloat(this.inputs['speedFactor'].value));});
     },
 
     layerSelectionChanged: function() {
         this.focusOnCanvas();
-        this.editor.controller.setActiveLayer(this.editor.world.findNode(this.layerList.value));
+        this.editor.controller.setActiveLayer(this.editor.findNode(this.layerList.value));
     },
 
     focusOnCanvas: function() {
@@ -176,7 +177,7 @@ bamboo.PropertyPanel = game.Class.extend({
         this.layerWindow.setInputSelectValue('activeNode', node.name);
         this.node._editorNode.addPropertyChangeListener(this.propertyChanged.bind(this));
         
-        this.settingsWindow.addText(this.node.getClassName() + '<br><br>');
+        this.settingsWindow.addText(this.node._editorNode.getClassName() + '<br><br>');
         var props = node.getPropertyDescriptors();
         this.props = props;
         for (var key in props) {

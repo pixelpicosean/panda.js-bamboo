@@ -7,10 +7,9 @@ game.module(
 .body(function() {
 
 bamboo.editor.StateMove = bamboo.editor.State.extend({
-    helpText: 'Move state: (G)rid, X/Y lock axis, MOUSE apply',
+    helpText: 'Move state: X/Y lock axis, MOUSE apply',
     nodes: [],
     startValues: [],
-    snapToGrid: false,
 
     init: function(mode) {
         this._super(mode);
@@ -22,16 +21,19 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
         }
 
         this.offset = this.mode.editor.prevMousePos.clone();
-        this.offset.x += this.mode.editor.world.cameraPosition.x;
-        this.offset.y += this.mode.editor.world.cameraPosition.y;
+        this.offset.x += this.mode.editor.world.camera.position.x;
+        this.offset.y += this.mode.editor.world.camera.position.y;
+
+        document.body.style.cursor = 'move';
     },
 
     apply: function(event) {
-        this.mousemove(event);
+        document.body.style.cursor = 'default';
         this.mode.editor.changeState('Select');
     },
 
     cancel: function() {
+        document.body.style.cursor = 'default';
         for (var i = 0; i < this.nodes.length; i++) {
             var node = this.nodes[i];
             node._editorNode.setProperty('position', this.startValues[i]);
@@ -49,15 +51,15 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
             var node = this.nodes[i];
             var newPos = new game.Point(x - this.offset.x + this.startValues[i].x, y - this.offset.y + this.startValues[i].y);
 
-            newPos.x += this.mode.editor.world.cameraPosition.x;
-            newPos.y += this.mode.editor.world.cameraPosition.y;
+            newPos.x += this.mode.editor.world.camera.position.x;
+            newPos.y += this.mode.editor.world.camera.position.y;
 
             if (this.lockToAxis === 'X') newPos.y = this.startValues[i].y;
             else if (this.lockToAxis === 'Y') newPos.x = this.startValues[i].x;
 
-            if (this.snapToGrid) {
-                newPos.x = Math.round(newPos.x / 10) * 10;
-                newPos.y = Math.round(newPos.y / 10) * 10;
+            if (this.mode.editor.gridSize > 0) {
+                newPos.x = Math.round(newPos.x / this.mode.editor.gridSize) * this.mode.editor.gridSize;
+                newPos.y = Math.round(newPos.y / this.mode.editor.gridSize) * this.mode.editor.gridSize;
             }
 
             node._editorNode.setProperty('position', newPos);
@@ -65,10 +67,7 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
     },
 
     keydown: function(key) {
-        if (key === 'G') {
-            this.snapToGrid = !this.snapToGrid;
-        }
-        else if (key === 'X') {
+        if (key === 'X') {
             if (this.lockToAxis === 'X') this.lockToAxis = null;
             else this.lockToAxis = 'X';
         }

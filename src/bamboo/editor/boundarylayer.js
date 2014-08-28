@@ -12,18 +12,20 @@ bamboo.BoundaryLayer = game.Class.extend({
     },
 
     updateBoundary: function() {
-        var world = this.editor.world;
         var left = game.system.width / 2 - game.System.width / 2;
         var top = game.system.height / 2 - game.System.height / 2;
 
-        this.leftLine.position.x = left + world.displayObject.scale.x * (0 - world.cameraPosition.x);
-        this.topLine.position.y = top + world.displayObject.scale.y * (0 - world.cameraPosition.y);
-        this.rightLine.position.x = left + world.displayObject.scale.x * (world.width - world.cameraPosition.x);
-        this.bottomLine.position.y = top + world.displayObject.scale.y * (world.height - world.cameraPosition.y);
+        this.leftLine.position.x = left + this.editor.displayObject.scale.x * (0 - this.editor.world.camera.position.x) - 1;
+        this.topLine.position.y = top + this.editor.displayObject.scale.y * (0 - this.editor.world.camera.position.y) - 1;
+        this.rightLine.position.x = left + this.editor.displayObject.scale.x * (this.editor.world.width - this.editor.world.camera.position.x) + 1;
+        this.bottomLine.position.y = top + this.editor.displayObject.scale.y * (this.editor.world.height - this.editor.world.camera.position.y) + 1;
+
+        this.grid.position.x = this.leftLine.position.x;
+        this.grid.position.y = this.topLine.position.y;
 
         this.screenRect.clear();
-        this.screenRect.lineStyle(2, 0xffffff);
-        this.screenRect.drawRect(-1, -1, 2 + world.displayObject.scale.x * game.System.width, 2 + world.displayObject.scale.y * game.System.height);
+        this.screenRect.lineStyle(1, 0xffffff);
+        this.screenRect.drawRect(-1, -1, 2 + this.editor.displayObject.scale.x * game.System.width, 2 + this.editor.displayObject.scale.y * game.System.height);
         this.screenRect.position.x = left;
         this.screenRect.position.y = top;
         
@@ -38,13 +40,13 @@ bamboo.BoundaryLayer = game.Class.extend({
             this.screenDim.drawRect(0, 0, game.system.width, miny);
         }
 
-        if (top + world.displayObject.scale.y * game.System.height < game.system.height) {
-            maxy = top + world.displayObject.scale.y * game.System.height;
+        if (top + this.editor.displayObject.scale.y * game.System.height < game.system.height) {
+            maxy = top + this.editor.displayObject.scale.y * game.System.height;
             this.screenDim.drawRect(0, maxy, game.system.width, game.system.height - maxy);
         }
 
         if(left > 0) this.screenDim.drawRect(0, miny, left, maxy - miny);
-        if(left + world.displayObject.scale.x * game.System.width < game.system.width) this.screenDim.drawRect(left + world.displayObject.scale.x * game.System.width, miny, game.system.width - (left + world.displayObject.scale.x * game.System.width), maxy - miny);
+        if(left + this.editor.displayObject.scale.x * game.System.width < game.system.width) this.screenDim.drawRect(left + this.editor.displayObject.scale.x * game.System.width, miny, game.system.width - (left + this.editor.displayObject.scale.x * game.System.width), maxy - miny);
     },
 
     resetGraphics: function() {
@@ -56,6 +58,7 @@ bamboo.BoundaryLayer = game.Class.extend({
         this.boundaries.removeChild(this.rightLine);
         this.boundaries.removeChild(this.bottomLine);
         this.boundaries.removeChild(this.screenRect);
+        this.boundaries.removeChild(this.grid);
 
         this.createGraphics();
         this.updateBoundary();
@@ -71,17 +74,17 @@ bamboo.BoundaryLayer = game.Class.extend({
         this.screenDim = new game.Graphics();
 
         var color = 0x77ff55;
-        this.leftLine.lineStyle(2, color);
-        this.leftLine.moveTo(-1, 0);
-        this.leftLine.lineTo(-1, game.system.height);
-        this.topLine.lineStyle(2, color);
-        this.topLine.moveTo(0, -1);
-        this.topLine.lineTo(game.system.width, -1);
-        this.rightLine.lineStyle(2, color);
-        this.rightLine.moveTo(1, 0);
-        this.rightLine.lineTo(1, game.system.height);
-        this.bottomLine.lineStyle(2, color);
-        this.bottomLine.moveTo(0, 1);
+        this.leftLine.lineStyle(1, color);
+        this.leftLine.moveTo(0, 0);
+        this.leftLine.lineTo(0, game.system.height);
+        this.topLine.lineStyle(1, color);
+        this.topLine.moveTo(0, 0);
+        this.topLine.lineTo(game.system.width, 0);
+        this.rightLine.lineStyle(1, color);
+        this.rightLine.moveTo(0, 0);
+        this.rightLine.lineTo(0, game.system.height);
+        this.bottomLine.lineStyle(1, color);
+        this.bottomLine.moveTo(0, 0);
         this.bottomLine.lineTo(game.system.width, 1);
 
         this.displayObject.addChild(this.boundaries);
@@ -92,6 +95,24 @@ bamboo.BoundaryLayer = game.Class.extend({
         this.boundaries.addChild(this.rightLine);
         this.boundaries.addChild(this.bottomLine);
         this.boundaries.addChild(this.screenRect);
+
+        this.grid = new game.Graphics();
+        this.boundaries.addChild(this.grid);
+
+        if (this.editor.gridSize === 0) return;
+
+        var x = Math.ceil(this.editor.world.width / this.editor.gridSize);
+        var y = Math.ceil(this.editor.world.height / this.editor.gridSize);
+
+        this.grid.lineStyle(1, 0xffffff, 0.3);
+        for (var i = 0; i < x; i++) {
+            this.grid.moveTo(i * this.editor.gridSize, 0);
+            this.grid.lineTo(i * this.editor.gridSize, this.editor.world.height);
+        }
+        for (var i = 0; i < y; i++) {
+            this.grid.moveTo(0, i * this.editor.gridSize);
+            this.grid.lineTo(this.editor.world.width, i * this.editor.gridSize);
+        }
     }
 });
 

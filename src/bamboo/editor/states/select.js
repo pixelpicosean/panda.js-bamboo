@@ -7,21 +7,32 @@ game.module(
 .body(function() {
 
 bamboo.editor.StateSelect = bamboo.editor.State.extend({
-    helpText: 'Select state: (A)dd node, MOUSE select, ENTER enter game',
-
     init: function(mode) {
         this._super(mode);
         
         if (this.mode.editor.activeNode) {
-            this.helpText = 'Selection state: (G)rab, (E)dit, BACKSPACE remove';
+            this.helpText = 'Selection state: (E)dit, BACKSPACE remove';
         }
         else {
+            this.helpText = 'Select state: (A)dd node, MOUSE select, ENTER enter game';
             this.mode.editor.showSettings();
         }
     },
 
     cancel: function() {
         this.mode.editor.controller.deselectAllNodes();
+    },
+
+    mousedown: function(event) {
+        var mousePos = new game.Point(event.global.x, event.global.y);
+
+        if (this.mode.editor.activeNode) {
+            var node = this.mode.editor.getNodeAt(mousePos, this.mode.editor.activeLayer);
+
+            if (this.mode.editor.activeNode === node) {
+                this.mode.editor.changeState('Move');
+            }
+        }
     },
 
     apply: function(event) {
@@ -51,6 +62,8 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             this.mode.editor.controller.selectNode(node);
             this.mode.editor.controller.setActiveNode(node);
         }
+
+        this.mode.editor.changeState('Select');
     },
 
     assignGroup: function(number) {
@@ -85,9 +98,11 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
     },
 
     keydown: function(key) {
-        if (key === 'G') {
-            if (this.mode.editor.selectedNodes.length > 0) {
-                this.mode.editor.changeState('Move');
+        if (key === 'M') {
+            if (this.mode.editor.activeNode) {
+                this.mode.editor.world.width = this.mode.editor.activeNode.size.x;
+                this.mode.editor.world.height = this.mode.editor.activeNode.size.y;
+                this.mode.editor.boundaryLayer.resetGraphics();
             }
             return;
         }

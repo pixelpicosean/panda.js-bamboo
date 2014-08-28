@@ -5,19 +5,21 @@ game.module(
     'bamboo.runtime.node'
 )
 .body(function() {
+'use strict';
 
-bamboo.nodes.Layer = bamboo.Node.extend({
-    displayObject: true,
-    needUpdates: true,
+bamboo.createNode('Layer', {
+    init: function() {
+        this.displayObject = new game.Container();
+    },
 
     update: function() {
-        this.displayObject.position.x = this.position.x + this.world.cameraPosition.x * -this.speedFactor;
-        this.displayObject.position.y = this.position.y + this.world.cameraPosition.y * -this.speedFactor;
+        this.displayObject.position.x = this.position.x + this.world.camera.position.x * -this.speedFactor;
+        this.displayObject.position.y = this.position.y + this.world.camera.position.y * -this.speedFactor;
     }
 });
 
-bamboo.nodes.Layer.props = {
+bamboo.setNodeProperties('Layer', {
     speedFactor: new bamboo.Property(true, 'Speed', 'Speed relative to camera', bamboo.Property.TYPE.NUMBER, 1)
-};
+});
 
 });

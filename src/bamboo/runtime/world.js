@@ -5,30 +5,35 @@ game.module(
     'bamboo.runtime.node'
 )
 .body(function() {
+'use strict';
 
 bamboo.World = bamboo.Node.extend({
-    width: 0,
-    height: 0,
     nodes: [],
-    updateableNodes: [],
     layers: [],
+    updateableNodes: [],
     triggers: {},
     triggerNodes: [],
     triggerNodesActivated: [],
     triggerActivators: [],
     time: 0,
 
-    init: function(data) {
-        this.width = data.width || this.width;
-        this.height = data.height || this.height;
-        this.position = new game.Point();
+    staticInit: function(data) {
+        game.merge(this, data);
         this.displayObject = new game.Container();
-        this.cameraPosition = new game.Point();
+        this.initNodes();
+    },
 
-        if (data.camera && data.camera.position) this.setCameraPos(data.camera.position.x, data.camera.position.y);
+    initNodes: function() {
+        for (var i = 0; i < this.nodes.length; i++) {
+            if (!bamboo.nodes[this.nodes[i].class]) throw 'Node \'' + this.nodes[i].class + '\' not found';
+            var node = new bamboo.nodes[this.nodes[i].class](this, this.nodes[i].properties);
+            this.nodes[i] = node;
+            this.nodeAdded(node);
+        }
     },
 
     findNode: function(name) {
+        if (this.name === name) return this;
         for (var i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i].name === name) return this.nodes[i];
         }
@@ -40,13 +45,14 @@ bamboo.World = bamboo.Node.extend({
     },
 
     removeNode: function(node) {
-        var idx = this.nodes.indexOf(node);
-        this.nodes.splice(idx, 1);
+        var index = this.nodes.indexOf(node);
+        if (index === -1) return;
+        this.nodes.splice(index, 1);
         this.nodeRemoved(node);
     },
 
     nodeAdded: function(node) {
-        if (node.needUpdates) this.updateableNodes.push(node);
+        if (typeof node.update === 'function') this.updateableNodes.push(node);
         if (node instanceof bamboo.nodes.Layer) this.layers.push(node);
         if (node instanceof bamboo.nodes.Trigger) this.triggerNodes.push(node);
     },
@@ -88,18 +94,6 @@ bamboo.World = bamboo.Node.extend({
             this.layers[i].update();
         }
     },
-
-    getClassName: function() {
-        return 'World';
-    },
-
-    click: function() {},
-    mousedown: function() {},
-    mouseup: function() {},
-    mousemove: function() {},
-    mouseout: function() {},
-    keydown: function() {},
-    keyup: function() {},
 
     update: function() {
         this.time += game.system.delta;

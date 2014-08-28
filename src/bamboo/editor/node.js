@@ -9,6 +9,27 @@ game.module(
 game.addAsset('../src/bamboo/editor/media/axis.png');
 game.addAsset('../src/bamboo/editor/media/axis_hover.png');
 
+bamboo.Node.inject({
+    staticInit: function(world, properties) {
+        this.world = world;
+        
+        this._init = this.init;
+        this.init = this.initEditor;
+        this.ready = null;
+    },
+
+    initEditor: function(world, properties) {
+        if (this._init) {
+            this._init();
+            this._init = null;
+        }
+
+        if (!this.displayObject) this.displayObject = new game.Container();
+
+        this.initProperties(world, properties);
+    }
+});
+
 bamboo.Node.editor = game.Class.extend({
     helpText: '',
     editEnabled: false,
@@ -21,10 +42,6 @@ bamboo.Node.editor = game.Class.extend({
     init: function(node) {
         this.node = node;
         this.node._editorNode = this;
-        if (!this.node.displayObject) {
-            this.node.displayObject = new game.Container();
-            this.node.parent.displayObject.addChild(this.node.displayObject);
-        }
 
         // create container for all editor-related graphics
         this.displayObject = new game.Container();
@@ -65,8 +82,6 @@ bamboo.Node.editor = game.Class.extend({
 
         this.redrawConnectedToLine();
         this.connectedToLine.visible = false;
-
-        this.node.displayObject.addChild(this.displayObject);
     },
 
     layerChanged: function() {
@@ -98,7 +113,6 @@ bamboo.Node.editor = game.Class.extend({
 
     updateRect: function() {
         if (this._cachedScale === this.node.scale && this._cachedSize === this.node.size) {
-            console.log('no need to updater');
             return;
         }
         
@@ -140,7 +154,8 @@ bamboo.Node.editor = game.Class.extend({
 
     setProperty: function(property, value) {
         var oldValue = this.node[property];
-        this.node[property] = value;
+        // this.node[property] = value;
+        this.node.setProperty(property, value);
         this.propertyChanged(property, value, oldValue);
     },
 
@@ -245,6 +260,12 @@ bamboo.Node.editor = game.Class.extend({
         return false;
     },
 
+    getClassName: function() {
+        for (var name in bamboo.nodes) {
+            if (this.node instanceof bamboo.nodes[name]) return name;
+        }
+    },
+
     toJSON: function() {
         var propDescs = this.node.getPropertyDescriptors();
         var jsonProperties = {};
@@ -252,12 +273,10 @@ bamboo.Node.editor = game.Class.extend({
             jsonProperties[key] = bamboo.Property.toJSON(this.node, key, propDescs[key]);
         }
         return {
-            class: this.node.getClassName(),
+            class: this.getClassName(),
             properties: jsonProperties
         };
     }
 });
-
-bamboo.nodes.Null.editor = bamboo.Node.editor.extend();
 
 });

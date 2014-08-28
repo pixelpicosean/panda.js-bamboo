@@ -4,8 +4,6 @@ game.module(
 .body(function() {
 
 bamboo.Editor = game.Class.extend({
-    name: 'Untitled',
-    backgroundColor: 0x00000,
     nodes: [],
     editorNodeVisibility: 2, // 0=hidden, 1=partly visible, 2=fully visible
     _zoom: 1,
@@ -14,10 +12,16 @@ bamboo.Editor = game.Class.extend({
     selectedNodes: [],
     images: [],
     windowsHidden: false,
+    gridSize: 16,
+    viewNodes: false,
 
-    init: function(world) {
-        this.world = world;
-        this.world.inEditor = true;
+    init: function(data) {
+        if (!data) {
+            data = bamboo.World.defaultJSON;
+            data.width = game.System.width;
+            data.height = game.System.height;
+        }
+        this.world = new bamboo.World(data);
 
         this.displayObject = new game.Container();
         this.controller = new bamboo.Controller(this);
@@ -31,7 +35,7 @@ bamboo.Editor = game.Class.extend({
         this.displayObject.addChild(this.overlay);
 
         this.targetCameraWorldPosition = this.worldTargetPos.clone();
-
+        // this.cameraPosition = new game.Point(this.world.camera.position.x, this.world.camera.position.y);
         this.boundaryLayer = new bamboo.BoundaryLayer(this);
         this.overlay.addChild(this.boundaryLayer.displayObject);
 
@@ -41,17 +45,41 @@ bamboo.Editor = game.Class.extend({
 
         this.changeMode('Main');
         this.cameraWorldPosition = new game.Point(
-            this.worldTargetPos.x - this.world.cameraPosition.x,
-            this.worldTargetPos.y - this.world.cameraPosition.y
+            this.worldTargetPos.x - this.world.camera.position.x,
+            this.worldTargetPos.y - this.world.camera.position.y
         );
 
         this.errorWindow = new bamboo.UiWindow('center', 'center', 400, 115);
         this.errorWindow.setTitle('Error');
 
+        this.initNodes();
+
+        this.propertyPanel.activeLayerChanged(this.activeLayer);
+
+        // Debug
         game.TextureCache['apple.png'] = game.TextureCache['media/test/apple.png'];
         this.addImage('apple.png');
         game.TextureCache['bg.png'] = game.TextureCache['media/test/bg.png'];
         this.addImage('bg.png');
+        game.TextureCache['bg2.png'] = game.TextureCache['media/test/bg2.png'];
+        this.addImage('bg2.png');
+    },
+
+    initNodes: function() {
+        var nodes = game.copy(this.world.nodes);
+        this.world.nodes.length = 0;
+
+        for (var i = 0; i < nodes.length; i++) {
+            this.controller.createNode(nodes[i].class, nodes[i].properties);
+        }
+    },
+
+    toggleViewNodes: function() {
+        this.viewNodes = !this.viewNodes;
+        for (var i = 0; i < this.nodes.length; i++) {
+            this.nodes[i].parentSelectionRect.visible = this.viewNodes;
+            this.nodes[i].connectedToLine.visible = this.viewNodes;
+        }
     },
 
     showError: function(error) {
@@ -72,7 +100,9 @@ bamboo.Editor = game.Class.extend({
     },
 
     changeMode: function(mode, param) {
+        if (this.mode) this.mode.exit();
         this.mode = new bamboo.editor['Mode' + mode.ucfirst()](this, param);
+        this.mode.enter();
         this.updateStatus();
     },
 
@@ -94,7 +124,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     getUniqueName: function(name) {
-        if (!this.world.findNode(name)) return name;
+        if (!this.findNode(name)) return name;
 
         var parts = name.split('.');
         if (parts.length > 1) {
@@ -105,7 +135,7 @@ bamboo.Editor = game.Class.extend({
 
         var i = 1;
         while (true) {
-            var newName = name + '.' + ('000' + i).slice(-4);
+            var newName = name + ('000' + i).slice(-4);
             if (!this.world.findNode(newName)) return newName;
             i++;
         }
@@ -233,6 +263,12 @@ bamboo.Editor = game.Class.extend({
         return null;
     },
 
+    findNode: function(name) {
+        for (var i = 0; i < this.world.nodes.length; i++) {
+            if (this.world.nodes[i].name === name) return this.world.nodes[i];
+        }
+    },
+
     isNodeAt: function(p, n) {
         return false;
 
@@ -260,14 +296,14 @@ bamboo.Editor = game.Class.extend({
                     p +=  '┣ ';
                     np += '┃ ';
                 }
-                window.addInputSelectOption(key, nodes[i].name, p + '[' + nodes[i].getClassName() + '] - ' + nodes[i].name);
+                window.addInputSelectOption(key, nodes[i].name, p + '[' + nodes[i]._editorNode.getClassName() + '] - ' + nodes[i].name);
                 addNodeInputOption(window, key, nodes[i], np);
             }
         };
 
         var nodes = this.world.getConnectedNodes(node);
         for (var i = 0; i < nodes.length; i++) {
-            window.addInputSelectOption(key, nodes[i].name, '[' + nodes[i].getClassName() + '] - ' + nodes[i].name);
+            window.addInputSelectOption(key, nodes[i].name, '[' + nodes[i]._editorNode.getClassName() + '] - ' + nodes[i].name);
             addNodeInputOption(window, key, nodes[i], ' ');
         }
     },
@@ -281,8 +317,8 @@ bamboo.Editor = game.Class.extend({
     },
 
     toWorldSpace: function(point) {
-        var x = point.x - this.world.position.x + this.world.cameraPosition.x - this.worldTargetPos.x;
-        var y = point.y - this.world.position.y + this.world.cameraPosition.y - this.worldTargetPos.y;
+        var x = point.x - this.world.position.x + this.world.camera.position.x - this.worldTargetPos.x;
+        var y = point.y - this.world.position.y + this.world.camera.position.y - this.worldTargetPos.y;
 
         return new game.Point(x, y);
     },
@@ -397,6 +433,46 @@ bamboo.Editor = game.Class.extend({
 
     update: function() {
         this.mode.update();
+    },
+
+    download: function() {
+        var json = this.world.toJSON();
+        var filename = json.name.toLowerCase() + '.json';
+        var data = JSON.stringify(json, null, '    ');
+
+        var blob = new Blob([data]);
+        game.saveAs(blob, filename);
+    },
+
+    save: function() {
+        var json = this.world.toJSON();
+
+        var data = {
+            filename: json.name.toLowerCase() + '.json',
+            data: JSON.stringify(json, null, '    ')
+        };
+
+        var query = [];
+        for (var key in data) {
+            query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+        }
+
+        var request = new XMLHttpRequest();
+        request.open('POST', 'src/bamboo/editor/save.php');
+        request.onreadystatechange = function() {
+            if (request.readyState === 4) {
+                if (request.responseText === 'success') {
+                    // Saved
+                    console.log('Scene saved');
+                }
+                else {
+                    // Error
+                    console.log('Error saving scene');
+                }
+            }
+        };
+        request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        request.send(query.join('&'));
     }
 });
 
@@ -415,36 +491,22 @@ Object.defineProperty(bamboo.Editor.prototype, 'zoom', {
 
 Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
     get: function() {
-        return this.world.cameraPosition.multiplyc(-this.zoom).add(this.worldTargetPos);
+        var point = new game.Point(
+            this.world.camera.position.x * -this.zoom + this.worldTargetPos.x,
+            this.world.camera.position.y * -this.zoom + this.worldTargetPos.y
+        );
+        return point;
+        // return this.world.camera.position.multiplyc(-this.zoom).add(this.worldTargetPos);
     },
     set: function(value) {
         var tgtCamPos = value.subtract(this.worldTargetPos);
 
         tgtCamPos.multiply(-1 / this.zoom);
-        this.world.cameraPosition.x = tgtCamPos.x;
-        this.world.cameraPosition.y = tgtCamPos.y;
+        this.world.camera.position.x = tgtCamPos.x;
+        this.world.camera.position.y = tgtCamPos.y;
         this.boundaryLayer.updateBoundary();
         this.updateLayers();
     }
 });
-
-bamboo.Editor.createFromJSON = function(sceneJSON) {
-    var data = sceneJSON || bamboo.World.defaultJSON;
-    data.width = data.width || game.System.width;
-    data.height = data.height || game.System.height;
-    
-    var world = new bamboo[data.world](data);
-
-    var editor = new bamboo.Editor(world);
-    // editor.images = data.images;
-
-    for (var i = 0; i < data.nodes.length; i++) {
-        var node = data.nodes[i];
-        editor.controller.createNode(node.class, node.properties);
-    }
-
-    editor.updateLayers();
-    return editor;
-};
 
 });

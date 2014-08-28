@@ -9,7 +9,7 @@ game.module(
 game.addAsset('../src/bamboo/editor/media/font.fnt');
 
 bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
-    helpText: 'Main mode: (W)indows, (B)oundaries, (L)ights, (P)lay, (R)eset view, SPACE pan view, ESC cancel',
+    helpText: 'Main mode: (W)indows, (B)oundaries, (L)ights, (P)lay, (G)rid, (V)iew nodes, (R)eset view, SPACE pan view, ESC cancel',
     state: null,
     timeDisplay: null,
     zoomDisplay: null,
@@ -36,11 +36,11 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
     },
 
     exit: function() {
-        if (this.animationRunning) this.stopAnimation();
+        // if (this.animationRunning) this.stopAnimation();
 
-        this.editor.overlay.removeChild(this.timeDisplay);
-        this.editor.overlay.removeChild(this.zoomDisplay);
-        this.state.cancel();
+        // this.editor.overlay.removeChild(this.timeDisplay);
+        // this.editor.overlay.removeChild(this.zoomDisplay);
+        // this.state.cancel();
     },
 
     zoomChanged: function(newZoom) {
@@ -78,6 +78,10 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         this.state.apply(event);
     },
 
+    mousedown: function(event) {
+        if (this.state.mousedown) this.state.mousedown(event);
+    },
+
     mousemove: function(event) {
         this.state.mousemove(event);
     },
@@ -87,12 +91,31 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         if (key === 'ALT') this.altDown = true;
         if (key === 'CTRL') this.ctrlDown = true;
 
+        if (key === 'V') {
+            this.editor.toggleViewNodes();
+            return;
+        }
+        if (key === 'G') {
+            if (this.shiftDown) {
+                this.editor.gridSize /= 2;
+                if (this.editor.gridSize === 0) this.editor.gridSize = 128;
+                if (this.editor.gridSize === 4) this.editor.gridSize = 0;
+            }
+            else {
+                this.editor.gridSize *= 2;
+                if (this.editor.gridSize === 0) this.editor.gridSize = 8;
+                if (this.editor.gridSize > 128) this.editor.gridSize = 0;
+            }
+
+            this.editor.boundaryLayer.resetGraphics();
+            return;
+        }
         if (key === 'R') {
             this.editor.cameraWorldPosition = new game.Point(this.editor.worldTargetPos.x, this.editor.worldTargetPos.y);
             return;
         }
         if (key === 'S') {
-            game.scene.save();
+            this.editor.save();
             return;
         }
         // if (key === 'NUM_PLUS') return this.editor.onmousewheel(0.5);
@@ -104,7 +127,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             return;
         }
         if (key === 'SPACE') {
-            document.body.style.cursor = 'move';
             this.editor.cameraOffset = this.editor.prevMousePos.subtractc(this.editor.cameraWorldPosition);
             return;
         }
@@ -135,7 +157,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         if (key === 'CTRL') this.ctrlDown = false;
         
         if (key === 'SPACE') {
-            document.body.style.cursor = 'default';
             this.editor.cameraOffset = null;
             return;
         }
