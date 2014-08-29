@@ -84,7 +84,6 @@ bamboo.PropertyPanel = game.Class.extend({
 
         if (key === 'name') {
             this.editor.world.name = value;
-            this.editor.toolBar.update();
         }
         if (key === 'width') {
             this.editor.world.width = parseInt(value) || this.editor.world.width;
@@ -303,6 +302,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
     booleanPropertyChanged: function(key) {
         this.editor.activeNode._editorNode.setProperty(key, this.settingsWindow.inputs[key].checked);
+        this.focusOnCanvas();
     },
 
     vectorPropertyChanged: function(key) {

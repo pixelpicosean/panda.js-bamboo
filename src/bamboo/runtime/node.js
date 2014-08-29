@@ -15,6 +15,12 @@ bamboo.Node = game.Class.extend({
         this.init = this.initProperties;
     },
 
+    onRemove: function() {},
+
+    remove: function() {
+        return this.world.removeNode(this);
+    },
+
     initProperties: function(world, properties) {
         if (this._init) this._init();
 
@@ -23,7 +29,7 @@ bamboo.Node = game.Class.extend({
         for (var key in propDescs) {
             this.setProperty(key, bamboo.Property.parse(this.world, properties, key, propDescs[key]));
         }
-
+        
         if (this.ready) this.ready();
     },
 
@@ -70,17 +76,21 @@ bamboo.Node = game.Class.extend({
     toLocalSpace: function(point) {
         var pos = this.getWorldPosition();
 
-        var x = point.x - pos.x - this.world.position.x;
-        var y = point.y - pos.y - this.world.position.y;
+        var x = point.x - pos.x;
+        var y = point.y - pos.y;
         
-        return new game.Point(x, y);
+        pos.set(x, y);
+        return pos;
     },
 
     toWorldSpace: function(point) {
-        var x = point.x - this.world.position.x + this.world.cameraPosition.x;
-        var y = point.y - this.world.position.y + this.world.cameraPosition.y;
+        var pos = this.getWorldPosition();
 
-        return new game.Point(x, y);
+        var x = point.x + pos.x;
+        var y = point.y + pos.y;
+
+        pos.set(x, y);
+        return pos;
     },
 
     getWorldPosition: function() {
@@ -89,12 +99,15 @@ bamboo.Node = game.Class.extend({
 
         var parent = this.parent;
         while (parent) {
+            if (!parent.position) break;
             x += parent.position.x;
             y += parent.position.y;
             parent = parent.parent;
         }
 
-        return new game.Point(x, y);
+        var point = bamboo.pool.get();
+        point.set(x, y);
+        return point;
     }
 });
 

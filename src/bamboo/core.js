@@ -1,7 +1,8 @@
 var bamboo = {
     version: '1.0.0',
     scenes: [],
-    nodes: {}
+    nodes: {},
+    config: typeof bambooConfig !== 'undefined' ? bambooConfig : {}
 };
 
 if (typeof document !== 'undefined' && document.location.href.match(/\?editor/)) {
@@ -10,8 +11,13 @@ if (typeof document !== 'undefined' && document.location.href.match(/\?editor/))
     bamboo.editorMode = true;
 }
 
-bamboo.createNode = function(name, content) {
-    bamboo.nodes[name] = bamboo.Node.extend(content);
+bamboo.createNode = function(name, className, content) {
+    if (!content) {
+        content = className;
+        className = null;
+    }
+    var extendClass = className ? bamboo.nodes[className] : bamboo.Node;
+    bamboo.nodes[name] = extendClass.extend(content);
 };
 
 bamboo.setNodeProperties = function(name, content) {
@@ -29,6 +35,7 @@ game.module(
 )
 .require(
     bamboo.editorMode ? 'bamboo.editor.core' : 'bamboo.runtime.world',
+    'bamboo.runtime.pool',
     'bamboo.runtime.nodes.null',
     'bamboo.runtime.nodes.image',
     'bamboo.runtime.nodes.layer',
@@ -39,7 +46,9 @@ game.module(
     'bamboo.runtime.nodes.rotator',
     'bamboo.runtime.nodes.trigger',
     'bamboo.runtime.nodes.triggerbox',
-    'bamboo.runtime.nodes.triggercircle'
+    'bamboo.runtime.nodes.triggercircle',
+    'engine.scene',
+    'engine.pool'
 )
 .body(function() {
 'use strict';

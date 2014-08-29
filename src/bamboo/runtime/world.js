@@ -21,7 +21,11 @@ bamboo.World = bamboo.Node.extend({
         game.merge(this, data);
         this.displayObject = new game.Container();
         this.initNodes();
+        this.updateLayers();
+        this.ready();
     },
+
+    ready: function() {},
 
     initNodes: function() {
         for (var i = 0; i < this.nodes.length; i++) {
@@ -46,9 +50,20 @@ bamboo.World = bamboo.Node.extend({
 
     removeNode: function(node) {
         var index = this.nodes.indexOf(node);
-        if (index === -1) return;
+        if (index === -1) return false;
         this.nodes.splice(index, 1);
+        
+        index = this.updateableNodes.indexOf(node);
+        if (index > -1) this.updateableNodes.splice(index, 1);
+
+        node.onRemove();
+
+        if (node.displayObject && node.displayObject.parent) {
+            node.displayObject.parent.removeChild(node.displayObject);
+        }
+
         this.nodeRemoved(node);
+        return true;
     },
 
     nodeAdded: function(node) {

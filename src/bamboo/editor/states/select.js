@@ -11,10 +11,10 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
         this._super(mode);
         
         if (this.mode.editor.activeNode) {
-            this.helpText = 'Selection state: (E)dit, BACKSPACE remove';
+            this.helpText = 'Select state: (D)uplicate, (E)dit, BACKSPACE remove';
         }
         else {
-            this.helpText = 'Select state: (A)dd node, MOUSE select, ENTER enter game';
+            this.helpText = 'Select state: MOUSE select';
             this.mode.editor.showSettings();
         }
     },
@@ -109,8 +109,24 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
         if (key === 'ENTER') {
             if (!this.mode.editor.activeNode) return this.mode.editor.changeMode('Game');
         }
-        if (key === 'A') {
-            if (!this.mode.editor.activeNode) return this.mode.editor.changeState('Add');
+        if (key === 'D') {
+            if (this.mode.editor.activeNode) {
+                var node = this.mode.editor.activeNode;
+                var json = node._editorNode.toJSON();
+                json.properties.name = json.class;
+                var newNode = this.mode.editor.controller.createNode(json.class, json.properties);
+                this.mode.editor.controller.deselectAllNodes();
+                this.mode.editor.controller.setActiveNode(newNode);
+                this.mode.editor.changeState('Move');
+
+                var parentPos = node.getWorldPosition();
+                var pos = this.mode.editor.toWorldSpace(this.mode.editor.prevMousePos);
+                this.mode.state.offset.x -= pos.x - parentPos.x;
+                this.mode.state.offset.y -= pos.y - parentPos.y;
+                this.mode.state.update(this.mode.editor.prevMousePos.x, this.mode.editor.prevMousePos.y);
+
+                return;
+            }
         }
         if (key === 'E') {
             if (this.mode.editor.activeNode) return this.mode.editor.changeMode('Edit');

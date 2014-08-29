@@ -104,6 +104,8 @@ bamboo.Node.editor = game.Class.extend({
         this.connectedToLine.clear();
 
         if (this.node.parent) {
+            if (this.node.parent instanceof bamboo.nodes.Layer) return;
+            if (this.node.parent instanceof bamboo.World) return;
             this.connectedToLine.lineStyle(1, 0xffffff, 0.5);
             this.connectedToLine.moveTo(0,0);
             var point = this.node.toLocalSpace(this.node.parent.getWorldPosition());

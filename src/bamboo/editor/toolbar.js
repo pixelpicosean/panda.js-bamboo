@@ -10,14 +10,10 @@ bamboo.ToolBar = game.Class.extend({
         this.editor = editor;
 
         this.windowElem = bamboo.ui.addWindow(0, 0, 'window', this.height);
-        this.update();
-        this.windowElem.show();
-    },
-
-    update: function() {
-        this.windowElem.clear();
+        this.windowElem.addButton('Add node', this.editor.addNode.bind(this.editor));
         this.windowElem.addButton('Save', this.editor.save.bind(this.editor));
         this.windowElem.addButton('Download', this.editor.download.bind(this.editor));
+        this.show();
     },
 
     hide: function() {

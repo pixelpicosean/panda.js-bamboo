@@ -74,6 +74,11 @@ bamboo.Editor = game.Class.extend({
         }
     },
 
+    addNode: function() {
+        this.changeMode('Main');
+        this.changeState('Add');
+    },
+
     toggleViewNodes: function() {
         this.viewNodes = !this.viewNodes;
         for (var i = 0; i < this.nodes.length; i++) {

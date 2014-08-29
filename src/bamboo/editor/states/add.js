@@ -33,6 +33,7 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
         }
 
         this.windowElem.addButton('Add', this.addPressed.bind(this));
+        this.windowElem.addButton('Cancel', this.cancel.bind(this));
         this.windowElem.show();
 
         this.nodeTypeChanged();
@@ -54,6 +55,8 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
     },
 
     addPressed: function() {
+        this.mode.editor.controller.deselectAllNodes();
+        
         bamboo.ui.removeWindow(this.windowElem);
 
         var node = this.mode.editor.controller.createNode(this.windowElem.inputs['type'].value, {

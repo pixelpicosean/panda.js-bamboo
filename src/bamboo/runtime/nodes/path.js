@@ -12,30 +12,30 @@ bamboo.nodes.Path = bamboo.Node.extend({
     spline: false,
     length: 0,
     segmentDistances: [],
-    splineSegmentDistances: null,
+    splineSegmentDistances: [],
 
     ready: function() {
         this.calculateLength();
     },
 
-    addPoint: function(p) {
-        this.points.push(p);
+    addPoint: function(point) {
+        this.points.push(point);
     },
     
-    insertPoint: function(idx, p) {
-        this.points.splice(idx, 0, p);
+    insertPoint: function(index, point) {
+        this.points.splice(index, 0, point);
     },
 
-    removePoint: function(idx) {
-        this.points.splice(idx, 1);
+    removePoint: function(index) {
+        this.points.splice(index, 1);
     },
 
-    getClosestPoint: function(p) {
+    getClosestPosition: function(point) {
         var closestDistanceSq = Number.MAX_VALUE;
-        var closestPoint = null;
-        for(var i=1; i<this.points.length; i++) {
-            var v = this.getClosestPointOnLineSegment(this.points[i-1], this.points[i], p);
-            var distSq = v.distanceSq(p);
+        var closestPoint;
+        for (var i = 1; i < this.points.length; i++) {
+            var v = this.getClosestPositionOnLineSegment(this.points[i - 1], this.points[i], point);
+            var distSq = v.distanceSq(point);
             if (distSq < closestDistanceSq) {
                 closestPoint = v;
                 closestDistanceSq = distSq;
@@ -44,137 +44,7 @@ bamboo.nodes.Path = bamboo.Node.extend({
         return closestPoint;
     },
 
-    calculateLength: function() {
-        var ps = this.points;
-
-        this.segmentDistances = [0];
-        this.splineSegmentDistances = [];
-        this.length = 0.0;
-        if (!this.spline) {
-            var lastp = ps[0];
-            for (var i = 1; i < ps.length; i++) {
-                var p = ps[i];
-                this.length += p.distance(lastp);
-                this.segmentDistances.push(this.length);
-                lastp = p;
-            }
-            if (this.loop) {
-                this.length += ps[0].distance(lastp);
-                this.segmentDistances.push(this.length);
-            }
-
-        } else {
-            var p1 = ps[0];
-            var p0 = p1;
-            if (this.loop)
-                p0 = this.points[this.points.length-1];
-            var p2,p3;
-            var lastp = ps[0];
-            for(var i = 1; i < ps.length; i++) {
-                p2 = ps[i];
-                p3 = p2;
-                if (i < ps.length - 1)
-                    p3 = ps[i+1];
-                else if (this.loop)
-                    p3 = ps[0];
-
-                var splineDistances = [];
-                for(var t = 1; t<21; t++) {
-                    var f = t * 1.0/20.0;
-                    var p = this.catmullRomEvaluate(p0,p1,p2,p3, f);
-                    this.length += p.distance(lastp);
-                    splineDistances.push(this.length);
-                    lastp = p;
-                }
-                this.segmentDistances.push(this.length);
-                this.splineSegmentDistances.push(splineDistances);
-                p0 = p1;
-                p1 = p2;
-            }
-            if (this.loop) {
-                p2 = ps[0];
-                p3 = p2;
-                if (ps.length > 1)
-                    p3 = ps[1];
-                var splineDistances = [];
-                for(var t = 1; t<21; t++) {
-                    var f = t * 1.0/20.0;
-                    var p = this.catmullRomEvaluate(p0,p1,p2,p3, f);
-                    this.length += p.distance(lastp);
-                    splineDistances.push(this.length);
-                    lastp = p;
-                }
-                this.segmentDistances.push(this.length);
-                this.splineSegmentDistances.push(splineDistances);
-            }
-        }
-    },
-
-    getPositionAtDistance: function(l) {
-        // TODO: binary search..
-        if (l < 0)
-            l = 0;
-        if (l > this.length)
-            l = this.length;
-
-        var i = 0;
-        for(i=0; i<this.segmentDistances.length; i++) {
-            if (this.segmentDistances[i] > l) {
-                break;
-            }
-        }
-        if (i === this.segmentDistances.length)
-            i = this.segmentDistances.length-1;
-
-        if (!this.spline) {
-            // interpolate
-            var delta;
-            if (i === this.points.length) {
-                // loop
-                delta = this.points[0].subtractc(this.points[i-1]).normalize();
-            } else {
-                delta = this.points[i].subtractc(this.points[i-1]).normalize();
-            }
-            return delta.multiply(l-this.segmentDistances[i-1]).add(this.points[i-1]);
-
-
-        } else {
-            var splineDistances = this.splineSegmentDistances[i-1];
-            var t;
-            for(t=0; t<20; t++) {
-                if (splineDistances[t] > l)
-                    break;
-            }
-            var f;
-            if (t === 0)
-                f = (l - this.segmentDistances[i-1]) / (splineDistances[t] - this.segmentDistances[i-1]);
-            else
-                f = (l - splineDistances[t-1]) / (splineDistances[t] - splineDistances[t-1]);
-
-            f = (t + f) * 1.0 / 20.0;
-
-            var p1 = this.points[i-1];
-            var p0 = p1;
-            var p2 = this.points[i];
-            var p3 = p2;
-            if (i > 1)
-                p0 = this.points[i-2];
-            else if (this.loop)
-                p0 = this.points[this.points.length-1];
-
-            if (i < this.points.length-1)
-                p3 = this.points[i+1];
-            else if (this.loop && i === this.points.length) {
-                p2 = this.points[0];
-                p3 = this.points[1];
-            } else if (this.loop && i === this.points.length-1)
-                p3 = this.points[0];
-
-            return this.catmullRomEvaluate(p0,p1,p2,p3, f);
-        }
-    },
-
-    getClosestPointOnLineSegment: function(a, b, v) {
+    getClosestPositionOnLineSegment: function(a, b, v) {
         var delta = b.subtractc(a);
         var p = v.subtractc(a);
         var t = delta.dot(p) / delta.lengthSq();
@@ -183,15 +53,142 @@ bamboo.nodes.Path = bamboo.Node.extend({
         return delta.multiply(t).add(a);
     },
 
+    calculateLength: function() {
+        this.length = 0;
+        this.segmentDistances.length = 0;
+        this.segmentDistances.push(0);
+
+        var points = this.points;
+
+        if (this.spline) {
+            this.splineSegmentDistances.length = 0;
+            var p1 = points[0];
+            var p0 = p1;
+            if (this.loop) p0 = points[points.length - 1];
+            var p2, p3;
+            var lastp = bamboo.pool.get();
+            lastp.set(points[0].x, points[0].y);
+            for (var i = 1; i < points.length; i++) {
+                p2 = points[i];
+                p3 = p2;
+                if (i < points.length - 1) p3 = points[i + 1];
+                else if (this.loop) p3 = points[0];
+
+                var splineDistances = [];
+                for (var t = 1; t < 21; t++) {
+                    var f = t * 1.0 / 20.0;
+                    var p = this.catmullRomEvaluate(p0, p1, p2, p3, f);
+                    this.length += p.distance(lastp);
+                    splineDistances.push(this.length);
+                    lastp.x = p.x;
+                    lastp.y = p.y;
+                    bamboo.pool.put(p);
+                }
+                this.segmentDistances.push(this.length);
+                this.splineSegmentDistances.push(splineDistances);
+                p0 = p1;
+                p1 = p2;
+            }
+            if (this.loop) {
+                p2 = points[0];
+                p3 = p2;
+                if (points.length > 1) p3 = points[1];
+                splineDistances.length = 0;
+                for (var t = 1; t < 21; t++) {
+                    var f = t * 1.0 / 20.0;
+                    var p = this.catmullRomEvaluate(p0, p1, p2, p3, f);
+                    this.length += p.distance(lastp);
+                    splineDistances.push(this.length);
+                    lastp.x = p.x;
+                    lastp.y = p.y;
+                    bamboo.pool.put(p);
+                }
+                this.segmentDistances.push(this.length);
+                this.splineSegmentDistances.push(splineDistances);
+            }
+        }
+        else {
+            var prevPoint = points[0];
+            var point;
+            for (var i = 1; i < points.length; i++) {
+                point = points[i];
+                this.length += point.distance(prevPoint);
+                this.segmentDistances.push(this.length);
+                prevPoint = point;
+            }
+            if (this.loop) {
+                this.length += points[0].distance(prevPoint);
+                this.segmentDistances.push(this.length);
+            }
+        }
+    },
+
+    getPositionAtDistance: function(dist) {
+        if (dist < 0) dist = this.length + (dist % this.length);
+        if (dist > this.length) dist = dist % this.length;
+
+        var i;
+        for (i = 0; i < this.segmentDistances.length; i++) {
+            if (this.segmentDistances[i] > dist) break;
+        }
+        if (i === this.segmentDistances.length) i = this.segmentDistances.length - 1;
+
+        if (this.spline) {
+            var splineDistances = this.splineSegmentDistances[i - 1];
+            var t;
+            for (t = 0; t < 20; t++) {
+                if (splineDistances[t] > dist) break;
+            }
+            var f;
+            if (t === 0)
+                f = (dist - this.segmentDistances[i - 1]) / (splineDistances[t] - this.segmentDistances[i-1]);
+            else
+                f = (dist - splineDistances[t - 1]) / (splineDistances[t] - splineDistances[t-1]);
+
+            f = (t + f) * 1.0 / 20.0;
+
+            var p1 = this.points[i - 1];
+            var p0 = p1;
+            var p2 = this.points[i];
+            var p3 = p2;
+            if (i > 1) p0 = this.points[i - 2];
+            else if (this.loop) p0 = this.points[this.points.length - 1];
+
+            if (i < this.points.length - 1) {
+                p3 = this.points[i + 1];
+            }
+            else if (this.loop && i === this.points.length) {
+                p2 = this.points[0];
+                p3 = this.points[1];
+            }
+            else if (this.loop && i === this.points.length-1) {
+                p3 = this.points[0];
+            }
+
+            return this.catmullRomEvaluate(p0, p1, p2, p3, f);
+        }
+        else {
+            // interpolate
+            var delta;
+            if (i === this.points.length) {
+                // loop
+                delta = this.points[0].subtractc(this.points[i - 1]).normalize();
+            } else {
+                delta = this.points[i].subtractc(this.points[i - 1]).normalize();
+            }
+            return delta.multiply(dist - this.segmentDistances[i - 1]).add(this.points[i - 1]);
+        }
+    },
+
     catmullRomEvaluate: function(p0, p1, p2, p3, t) {
         var c0 = ((-t + 2.0) * t - 1.0) * t * 0.5;
         var c1 = (((3.0 * t - 5.0) * t) * t + 2.0) * 0.5;
         var c2 = ((-3.0 * t + 4.0) * t + 1.0) * t * 0.5;
         var c3 = ((t - 1.0) * t * t) * 0.5;
 
-        return new game.Point(
-            p0.x * c0 + p1.x * c1 + p2.x * c2 + p3.x * c3,
-            p0.y * c0 + p1.y * c1 + p2.y * c2 + p3.y * c3);
+        var point = bamboo.pool.get();
+        point.set(p0.x * c0 + p1.x * c1 + p2.x * c2 + p3.x * c3, p0.y * c0 + p1.y * c1 + p2.y * c2 + p3.y * c3);
+        return point;
     }
 });
 

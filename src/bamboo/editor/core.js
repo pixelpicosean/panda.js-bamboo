@@ -152,7 +152,7 @@ game.start = function() {
 window.addEventListener('resize', function() {
     if (game.system) game.system.resize(window.innerWidth, window.innerHeight);
     if (bamboo.ui) bamboo.ui.update();
-    if (game.scene) {
+    if (game.scene && game.scene.editor) {
         game.scene.editor.boundaryLayer.resetGraphics();
     }
 });

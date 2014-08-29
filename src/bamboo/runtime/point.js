@@ -27,7 +27,9 @@ game.Point = game.Class.extend({
     },
 
     clone: function() {
-        return new game.Point(this.x, this.y);
+        var point = bamboo.pool.get();
+        point.set(this.x, this.y);
+        return point;
     },
 
     add: function(v) {
@@ -37,7 +39,9 @@ game.Point = game.Class.extend({
     },
 
     addc: function(v) {
-        return new game.Point(this.x + v.x, this.y + v.y);
+        var point = bamboo.pool.get();
+        point.set(this.x + v.x, this.y + v.y);
+        return point;
     },
 
     subtract: function(v) {
@@ -47,7 +51,9 @@ game.Point = game.Class.extend({
     },
 
     subtractc: function(v) {
-        return new game.Point(this.x - v.x, this.y - v.y);
+        var point = bamboo.pool.get();
+        point.set(this.x - v.x, this.y - v.y);
+        return point;
     },
 
     length: function() {
@@ -82,7 +88,9 @@ game.Point = game.Class.extend({
     },
 
     multiplyc: function(f) {
-        return new game.Point(this.x * f, this.y * f);
+        var point = bamboo.pool.get();
+        point.set(this.x * f, this.y * f);
+        return point;
     },
 
     multiplyAdd: function(v, f) {
@@ -92,7 +100,9 @@ game.Point = game.Class.extend({
     },
 
     multiplyAddc: function(v, f) {
-        return new game.Point(this.x + v.x * f, this.y + v.y * f);
+        var point = bamboo.pool.get();
+        point.set(this.x + v.x * f, this.y + v.y * f);
+        return point;
     },
 
     distance: function(v) {
