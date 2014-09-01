@@ -24,7 +24,7 @@ bamboo.setNodeProperties = function(name, content) {
     bamboo.nodes[name].props = content;
 };
 
-bamboo.createBambooScene = function(name, content) {
+bamboo.createScene = function(name, content) {
     content = content || {};
     content.name = name;
     game['Scene' + name] = bamboo.Scene.extend(content);
@@ -39,14 +39,14 @@ game.module(
     'bamboo.runtime.nodes.null',
     'bamboo.runtime.nodes.image',
     'bamboo.runtime.nodes.layer',
-    'bamboo.runtime.nodes.manualtrigger',
-    'bamboo.runtime.nodes.movingimage',
+    // 'bamboo.runtime.nodes.manualtrigger',
+    // 'bamboo.runtime.nodes.movingimage',
     'bamboo.runtime.nodes.path',
-    'bamboo.runtime.nodes.pathfollower',
-    'bamboo.runtime.nodes.rotator',
-    'bamboo.runtime.nodes.trigger',
-    'bamboo.runtime.nodes.triggerbox',
-    'bamboo.runtime.nodes.triggercircle',
+    // 'bamboo.runtime.nodes.pathfollower',
+    // 'bamboo.runtime.nodes.rotator',
+    // 'bamboo.runtime.nodes.trigger',
+    // 'bamboo.runtime.nodes.triggerbox',
+    // 'bamboo.runtime.nodes.triggercircle',
     'engine.scene',
     'engine.pool'
 )

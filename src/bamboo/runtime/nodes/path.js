@@ -8,11 +8,11 @@ game.module(
 
 bamboo.nodes.Path = bamboo.Node.extend({
     points: [],
+    segmentDistances: [],
+    splineSegmentDistances: [],
     loop: false,
     spline: false,
     length: 0,
-    segmentDistances: [],
-    splineSegmentDistances: [],
 
     ready: function() {
         this.calculateLength();
@@ -30,27 +30,66 @@ bamboo.nodes.Path = bamboo.Node.extend({
         this.points.splice(index, 1);
     },
 
-    getClosestPosition: function(point) {
-        var closestDistanceSq = Number.MAX_VALUE;
-        var closestPoint;
-        for (var i = 1; i < this.points.length; i++) {
-            var v = this.getClosestPositionOnLineSegment(this.points[i - 1], this.points[i], point);
-            var distSq = v.distanceSq(point);
-            if (distSq < closestDistanceSq) {
-                closestPoint = v;
-                closestDistanceSq = distSq;
+    getClosestPoint: function(point) {
+        var closestDistance = Number.MAX_VALUE;
+        var closestPoint = bamboo.pool.get();
+        var dist;
+        for (var i = 0; i < this.points.length; i++) {
+            dist = this.points[i].distance(point);
+            if (dist < closestDistance) {
+                closestPoint.copy(this.points[i]);
+                closestDistance = dist;
             }
         }
         return closestPoint;
     },
 
+    getClosestPosition: function(point) {
+        // TODO spline
+
+        var closestDistance = Number.MAX_VALUE;
+        var closestPoint = bamboo.pool.get();
+        var distPoint;
+        var dist;
+        for (var i = 1; i < this.points.length; i++) {
+            distPoint = this.getClosestPositionOnLineSegment(this.points[i - 1], this.points[i], point);
+            dist = distPoint.distance(point);
+            if (dist < closestDistance) {
+                closestPoint.copy(distPoint);
+                closestDistance = dist;
+            }
+            bamboo.pool.put(distPoint);
+        }
+        if (this.loop) {
+            distPoint = this.getClosestPositionOnLineSegment(this.points[this.points.length - 1], this.points[0], point);
+            dist = distPoint.distance(point);
+            if (dist < closestDistance) {
+                closestPoint.copy(distPoint);
+                closestDistance = dist;
+            }
+            bamboo.pool.put(distPoint);
+        }
+        return closestPoint;
+    },
+
     getClosestPositionOnLineSegment: function(a, b, v) {
+        var result = bamboo.pool.get();
+
         var delta = b.subtractc(a);
         var p = v.subtractc(a);
+        
         var t = delta.dot(p) / delta.lengthSq();
-        if (t < 0) return a;
-        if (t > 1) return b;
-        return delta.multiply(t).add(a);
+
+        if (t < 0) result.copy(a);
+        else if (t > 1) result.copy(b);
+        else {
+            result.set(delta.x * t + a.x, delta.y * t + a.y);
+        }
+
+        bamboo.pool.put(delta);
+        bamboo.pool.put(p);
+
+        return result;
     },
 
     calculateLength: function() {
@@ -106,6 +145,7 @@ bamboo.nodes.Path = bamboo.Node.extend({
                 this.segmentDistances.push(this.length);
                 this.splineSegmentDistances.push(splineDistances);
             }
+            bamboo.pool.put(lastp);
         }
         else {
             var prevPoint = points[0];

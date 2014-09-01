@@ -55,14 +55,6 @@ bamboo.Editor = game.Class.extend({
         this.initNodes();
 
         this.propertyPanel.activeLayerChanged(this.activeLayer);
-
-        // Debug
-        game.TextureCache['apple.png'] = game.TextureCache['media/test/apple.png'];
-        this.addImage('apple.png');
-        game.TextureCache['bg.png'] = game.TextureCache['media/test/bg.png'];
-        this.addImage('bg.png');
-        game.TextureCache['bg2.png'] = game.TextureCache['media/test/bg2.png'];
-        this.addImage('bg2.png');
     },
 
     initNodes: function() {

@@ -73,27 +73,39 @@ bamboo.Node = game.Class.extend({
         return props;
     },
 
-    toLocalSpace: function(point) {
+    toLocalSpace: function(point, to) {
         var pos = this.getWorldPosition();
 
         var x = point.x - pos.x;
         var y = point.y - pos.y;
         
+        if (to) {
+            bamboo.pool.put(pos);
+            to.set(x, y);
+            return;
+        }
+
         pos.set(x, y);
         return pos;
     },
 
-    toWorldSpace: function(point) {
+    toWorldSpace: function(point, to) {
         var pos = this.getWorldPosition();
 
         var x = point.x + pos.x;
         var y = point.y + pos.y;
 
+        if (to) {
+            bamboo.pool.put(pos);
+            to.set(x, y);
+            return;
+        }
+
         pos.set(x, y);
         return pos;
     },
 
-    getWorldPosition: function() {
+    getWorldPosition: function(to) {
         var x = this.position.x;
         var y = this.position.y;
 
@@ -103,6 +115,11 @@ bamboo.Node = game.Class.extend({
             x += parent.position.x;
             y += parent.position.y;
             parent = parent.parent;
+        }
+
+        if (to) {
+            to.set(x, y);
+            return;
         }
 
         var point = bamboo.pool.get();
