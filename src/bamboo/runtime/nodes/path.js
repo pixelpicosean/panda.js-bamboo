@@ -44,6 +44,32 @@ bamboo.nodes.Path = bamboo.Node.extend({
         return closestPoint;
     },
 
+    getClosestLineSegment: function(point) {
+        var closestDistance = Number.MAX_VALUE;
+        var segmentIndex;
+        var distPoint;
+        var dist;
+        for (var i = 1; i < this.points.length; i++) {
+            distPoint = this.getClosestPositionOnLineSegment(this.points[i - 1], this.points[i], point);
+            dist = distPoint.distance(point);
+            if (dist < closestDistance) {
+                segmentIndex = i - 1;
+                closestDistance = dist;
+            }
+            bamboo.pool.put(distPoint);
+        }
+        if (this.loop) {
+            distPoint = this.getClosestPositionOnLineSegment(this.points[this.points.length - 1], this.points[0], point);
+            dist = distPoint.distance(point);
+            if (dist < closestDistance) {
+                segmentIndex = this.points.length;
+                closestDistance = dist;
+            }
+            bamboo.pool.put(distPoint);
+        }
+        return segmentIndex;
+    },
+
     getClosestPosition: function(point) {
         // TODO spline
 
