@@ -63,6 +63,7 @@ bamboo.Editor = game.Class.extend({
 
         for (var i = 0; i < nodes.length; i++) {
             this.controller.createNode(nodes[i].class, nodes[i].properties);
+            if (nodes[i].properties.image) this.addImage(nodes[i].properties.image);
         }
     },
 
