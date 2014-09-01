@@ -69,7 +69,7 @@ bamboo.World = bamboo.Node.extend({
     nodeAdded: function(node) {
         if (typeof node.update === 'function') this.updateableNodes.push(node);
         if (node instanceof bamboo.nodes.Layer) this.layers.push(node);
-        if (node instanceof bamboo.nodes.Trigger) this.triggerNodes.push(node);
+        // if (node instanceof bamboo.nodes.Trigger) this.triggerNodes.push(node);
     },
 
     nodeRemoved: function(node) {
