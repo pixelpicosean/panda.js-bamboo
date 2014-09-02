@@ -101,7 +101,8 @@ bamboo.World = bamboo.Node.extend({
         if (y < 0) y = 0;
         else if (y > this.height - game.System.height) y = this.height - game.System.height;
 
-        this.cameraPosition.set(x, y || this.cameraPosition.y);
+        this.camera.position.x = x;
+        this.camera.position.y = y;
     },
 
     updateLayers: function() {

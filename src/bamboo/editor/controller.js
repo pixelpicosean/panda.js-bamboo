@@ -16,7 +16,7 @@ bamboo.Controller = game.Class.extend({
         if (!node.displayObject) node.displayObject = new game.Container();
 
         if (!bamboo.nodes[className].editor) {
-            bamboo.nodes[className].editor = bamboo.Node.editor;
+            bamboo.nodes[className].editor = bamboo.nodes[bamboo.nodes[className].parent].editor;
         }
 
         var editorNode = new bamboo.nodes[className].editor(node, editorNodeProperties);

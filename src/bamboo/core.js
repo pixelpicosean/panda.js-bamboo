@@ -18,6 +18,7 @@ bamboo.createNode = function(name, className, content) {
     }
     var extendClass = className ? bamboo.nodes[className] : bamboo.Node;
     bamboo.nodes[name] = extendClass.extend(content);
+    bamboo.nodes[name].parent = className || 'Null';
 };
 
 bamboo.setNodeProperties = function(name, content) {
