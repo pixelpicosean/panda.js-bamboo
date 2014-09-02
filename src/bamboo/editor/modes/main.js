@@ -58,20 +58,15 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
 
     startAnimation: function() {
         this.animationRunning = true;
-        this.setAnimationTime(0);
-        this.timeDisplay.visible = true;
+        this.editor.world.time = 0;
+        // this.timeDisplay.visible = true;
     },
     
     stopAnimation: function() {
         this.animationRunning = false;
-        this.setAnimationTime(0);
-        this.timeDisplay.visible = false;
-    },
-
-    setAnimationTime: function(time) {
-        this.animationTime = time;
-        this.editor.world.update(this.animationTime);
-        this.timeDisplay.setText(this.animationTime.toFixed(1)+'s');
+        this.editor.world.time = 0;
+        this.editor.world.update();
+        // this.timeDisplay.visible = false;
     },
 
     click: function(event) {
@@ -224,7 +219,8 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
 
     update: function() {
         if (this.animationRunning) {
-            this.setAnimationTime(this.animationTime + game.system.delta);
+            this.editor.world.update();
+            // this.timeDisplay.setText(this.editor.world.time.toFixed(1) + 's');
         }
     }
 });

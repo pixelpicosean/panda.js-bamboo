@@ -19,6 +19,10 @@ bamboo.World = bamboo.Node.extend({
 
     staticInit: function(data) {
         game.merge(this, data);
+        this.camera = new game.Camera();
+        this.camera.minX = this.camera.minY = 0;
+        this.camera.maxX = this.width - game.system.width;
+        this.camera.maxY = this.height - game.system.height;
         this.displayObject = new game.Container();
         this.initNodes();
         this.updateLayers();
@@ -115,7 +119,7 @@ bamboo.World = bamboo.Node.extend({
         this.time += game.system.delta;
 
         for (var i = this.updateableNodes.length - 1; i >= 0; i--) {
-            this.updateableNodes[i].update(this.time);
+            this.updateableNodes[i].update();
         }
 
         for (var i = 0; i < this.triggerActivators.length; i++) {

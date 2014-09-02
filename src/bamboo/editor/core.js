@@ -27,7 +27,7 @@ game.module(
     // 'bamboo.editor.nodes.manualtrigger',
     // 'bamboo.editor.nodes.movingimage',
     'bamboo.editor.nodes.path',
-    // 'bamboo.editor.nodes.pathfollower',
+    'bamboo.editor.nodes.pathfollower',
     // 'bamboo.editor.nodes.rotator',
     // 'bamboo.editor.nodes.trigger',
     // 'bamboo.editor.nodes.triggerbox',
@@ -107,6 +107,9 @@ bamboo.EditorScene = game.Scene.extend({
 
     keydown: function(key) {
         if (key === 'ESC' && document.activeElement !== document.body) {
+            document.activeElement.blur();
+        }
+        if (key === 'ENTER' && document.activeElement !== document.body) {
             document.activeElement.blur();
         }
         if (document.activeElement !== document.body) return;

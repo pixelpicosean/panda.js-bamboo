@@ -121,6 +121,7 @@ game.Tween.Easing.getNamesList = function() {
 };
 
 game.Tween.Easing.getByName = function(name) {
+    if (!name) return game.Tween.Easing.Linear.None;
     name = name.split('.');
     return game.Tween.Easing[name[0]][name[1]];
 };

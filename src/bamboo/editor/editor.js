@@ -55,6 +55,8 @@ bamboo.Editor = game.Class.extend({
         this.initNodes();
 
         this.propertyPanel.activeLayerChanged(this.activeLayer);
+
+        this.updateLayers();
     },
 
     initNodes: function() {
@@ -465,7 +467,7 @@ bamboo.Editor = game.Class.extend({
                 }
                 else {
                     // Error
-                    console.log('Error saving scene');
+                    alert('Error saving scene');
                 }
             }
         };

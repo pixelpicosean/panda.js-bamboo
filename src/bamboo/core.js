@@ -43,7 +43,7 @@ game.module(
     // 'bamboo.runtime.nodes.manualtrigger',
     // 'bamboo.runtime.nodes.movingimage',
     'bamboo.runtime.nodes.path',
-    // 'bamboo.runtime.nodes.pathfollower',
+    'bamboo.runtime.nodes.pathfollower',
     // 'bamboo.runtime.nodes.rotator',
     // 'bamboo.runtime.nodes.trigger',
     // 'bamboo.runtime.nodes.triggerbox',

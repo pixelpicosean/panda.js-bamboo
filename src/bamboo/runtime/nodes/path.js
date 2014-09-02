@@ -14,6 +14,10 @@ bamboo.nodes.Path = bamboo.Node.extend({
     spline: false,
     length: 0,
 
+    init: function() {
+        this.displayObject = new game.Container();
+    },
+
     ready: function() {
         this.calculateLength();
     },

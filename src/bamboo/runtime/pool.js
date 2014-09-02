@@ -16,7 +16,7 @@ bamboo.Pool = game.Class.extend({
     },
 
     get: function() {
-        if (this.objects.length === 0) console.log('POOL EMPTY');
+        if (this.objects.length === 0 && !bamboo.editorMode) console.log('POOL EMPTY');
         return this.objects.pop() || new game.Point();
     },
 

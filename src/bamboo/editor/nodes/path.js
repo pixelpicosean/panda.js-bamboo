@@ -24,6 +24,8 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
             node.points.push(new game.Point());
         }
 
+        node.calculateLength();
+
         this.lastMousePos = new game.Point();
         this._super(node);
         this.lineNode = new game.Graphics();
