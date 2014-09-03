@@ -2,7 +2,8 @@ game.module(
     'game.main'
 )
 .require(
-    'bamboo.core'
+    'bamboo.core',
+    'game.scenes.main'
 )
 .body(function() {
 
