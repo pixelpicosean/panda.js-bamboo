@@ -14,15 +14,13 @@ bamboo.createNode('Image', {
     setProperty: function(name, value) {
         this._super(name, value);
         if (name === 'image' && this.image) this.displayObject.setTexture(this.image);
-        if (name === 'alpha') this.displayObject.alpha = this.alpha;
-        if (name === 'anchor') this.displayObject.anchor.set(value.x, value.y);
+        else if (name === 'alpha') this.displayObject.alpha = this.alpha;
+        else if (name === 'anchor') this.displayObject.anchor.set(value.x, value.y);
     }
 });
 
-bamboo.setNodeProperties('Image', {
-    image: new bamboo.Property(true, 'Image', 'Filename of the image', bamboo.Property.TYPE.IMAGE),
-    alpha: new bamboo.Property(true, 'Alpha', 'Opacity of the image', bamboo.Property.TYPE.NUMBER, 1, { min: 0, max: 1 }),
-    anchor: new bamboo.Property(false, '', '', bamboo.Property.TYPE.VECTOR)
-});
+bamboo.addNodeProperty('Image', 'image', 'image');
+bamboo.addNodeProperty('Image', 'alpha', 'number', 1);
+bamboo.addNodeProperty('Image', 'anchor', 'vector');
 
 });

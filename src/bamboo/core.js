@@ -5,6 +5,8 @@ var bamboo = {
     config: typeof bambooConfig !== 'undefined' ? bambooConfig : {}
 };
 
+game.config.bamboo = game.config.bamboo || {};
+
 if (typeof document !== 'undefined' && document.location.href.match(/\?editor/)) {
     game.config.debug = game.config.debug || {};
     game.config.debug.enabled = true;
@@ -18,11 +20,12 @@ bamboo.createNode = function(name, className, content) {
     }
     var extendClass = className ? bamboo.nodes[className] : bamboo.Node;
     bamboo.nodes[name] = extendClass.extend(content);
-    bamboo.nodes[name].parent = className || 'Null';
 };
 
-bamboo.setNodeProperties = function(name, content) {
-    bamboo.nodes[name].props = content;
+bamboo.addNodeProperty = function(node, name, type, defaultValue, hidden) {
+    node = bamboo.nodes[node] || bamboo.Node;
+    if (!node.props) node.props = {};
+    node.props[name] = new bamboo.Property(hidden ? false : true, name, '', bamboo.Property.TYPE[type.toUpperCase()], defaultValue);
 };
 
 bamboo.createScene = function(name, content) {
@@ -40,12 +43,12 @@ game.module(
     'bamboo.runtime.nodes.null',
     'bamboo.runtime.nodes.image',
     'bamboo.runtime.nodes.layer',
-    // 'bamboo.runtime.nodes.manualtrigger',
-    // 'bamboo.runtime.nodes.movingimage',
     'bamboo.runtime.nodes.path',
     'bamboo.runtime.nodes.pathfollower',
-    // 'bamboo.runtime.nodes.rotator',
-    // 'bamboo.runtime.nodes.trigger',
+    'bamboo.runtime.nodes.trigger',
+    'bamboo.runtime.nodes.rotator',
+    // 'bamboo.runtime.nodes.manualtrigger',
+    // 'bamboo.runtime.nodes.movingimage',
     // 'bamboo.runtime.nodes.triggerbox',
     // 'bamboo.runtime.nodes.triggercircle',
     'engine.scene',

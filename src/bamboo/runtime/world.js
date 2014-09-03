@@ -11,25 +11,26 @@ bamboo.World = bamboo.Node.extend({
     nodes: [],
     layers: [],
     updateableNodes: [],
-    triggers: {},
-    triggerNodes: [],
-    triggerNodesActivated: [],
-    triggerActivators: [],
     time: 0,
 
-    staticInit: function(data) {
+    initNode: function(data) {
+        this.originalInit();
         game.merge(this, data);
+        this.initCamera();
+        this.initNodes();
+        // this.updateLayers();
+        this.ready();
+    },
+
+    ready: function() {
+    },
+
+    initCamera: function() {
         this.camera = new game.Camera();
         this.camera.minX = this.camera.minY = 0;
         this.camera.maxX = this.width - game.system.width;
         this.camera.maxY = this.height - game.system.height;
-        this.displayObject = new game.Container();
-        this.initNodes();
-        this.updateLayers();
-        this.ready();
     },
-
-    ready: function() {},
 
     initNodes: function() {
         for (var i = 0; i < this.nodes.length; i++) {
@@ -60,11 +61,8 @@ bamboo.World = bamboo.Node.extend({
         index = this.updateableNodes.indexOf(node);
         if (index > -1) this.updateableNodes.splice(index, 1);
 
+        node.parent.removeChild(node);
         node.onRemove();
-
-        if (node.displayObject && node.displayObject.parent) {
-            node.displayObject.parent.removeChild(node.displayObject);
-        }
 
         this.nodeRemoved(node);
         return true;
@@ -73,16 +71,9 @@ bamboo.World = bamboo.Node.extend({
     nodeAdded: function(node) {
         if (typeof node.update === 'function') this.updateableNodes.push(node);
         if (node instanceof bamboo.nodes.Layer) this.layers.push(node);
-        // if (node instanceof bamboo.nodes.Trigger) this.triggerNodes.push(node);
     },
 
     nodeRemoved: function(node) {
-        if(node instanceof bamboo.nodes.Trigger) {
-            var idx = this.triggerNodes.indexOf(node);
-            this.triggerNodes.splice(idx,1);
-            idx = this.triggerNodesActivated.indexOf(node);
-            if (idx !== -1) this.triggerNodesActivated.splice(idx, 1);
-        }
     },
 
     removeFromUpdateables: function(node) {
@@ -116,31 +107,10 @@ bamboo.World = bamboo.Node.extend({
     },
 
     update: function() {
-        this.time += game.system.delta;
-
         for (var i = this.updateableNodes.length - 1; i >= 0; i--) {
             this.updateableNodes[i].update();
         }
-
-        for (var i = 0; i < this.triggerActivators.length; i++) {
-            var wp = this.triggerActivators[i].getWorldPosition();
-
-            for (var j = 0; j < this.triggerNodes.length; j++) {
-                var lp = this.triggerNodes[j].toLocalSpace(wp);
-                var aid = this.triggerNodesActivated.indexOf(this.triggerNodes[j]);
-                if (aid === -1) {
-                    if(this.triggerNodes[j].hitTest(lp)) {
-                        // first touch (entry)
-                        this.triggerNodesActivated.push(this.triggerNodes[j]);
-                        this.triggerNodes[j].trigger(this.triggerActivators[i]);
-                    }
-                }
-                else if (!this.triggerNodes[j].hitTest(lp)) {
-                    // after last touch (exit)
-                    this.triggerNodesActivated.splice(aid, 1);
-                }
-            }
-        }
+        this.time += game.system.delta;
     }
 });
 

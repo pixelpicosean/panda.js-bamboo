@@ -6,39 +6,43 @@ game.module(
 )
 .body(function() {
 
-bamboo.nodes.Rotator = bamboo.Node.extend({
-    duration: 1,
-    timeOffset: 0,
-    startAngle: 0,
-    amplitude: Math.PI,
-    mode: 'loop',
-    easing: game.Tween.Easing.Linear.None,
+bamboo.createNode('Rotator', {
+    active: true,
+    offset: 0,
 
-    init: function(world, properties) {
-        this.displayObject = new game.Container();
-        this._super(world, properties);
-        this.needUpdates = true;
+    trigger: function() {
+        this.offset = this.world.time;
+        this.active = true;
     },
 
-    update: function(worldTime) {
-        var f = ((worldTime+this.timeOffset+this.duration*0.5) % this.duration) / this.duration;
+    ready: function() {
+        if (this.triggered) this.active = false;
+    },
 
-        if (this.mode === 'backAndForth') {
-            var rounds = Math.floor((worldTime+this.timeOffset+this.duration*0.5) / this.duration);
-            if (rounds % 2 !== 0) f = 1 - f;
+    update: function() {
+        if (!this.active) return;
+
+        var elapsed = ((this.world.time - this.offset) % this.duration) / this.duration;
+
+        if (!this.loop && this.world.time - this.offset >= this.duration) {
+            elapsed = 1;
         }
-        f = this.easing(f);
-        this.rotation = this.startAngle + this.amplitude * (f*2 - 1);
+
+        // if (this.mode === 'backAndForth') {
+        //     var rounds = Math.floor((this.world.time+this.duration*0.5) / this.duration);
+        //     if (rounds % 2 !== 0) f = 1 - f;
+        // }
+
+        var radians = this.degrees * (Math.PI / 180);
+        
+        this.displayObject.rotation = this.rotation + radians * this.easing(elapsed);
     }
 });
 
-bamboo.nodes.Rotator.props = {
-    duration: new bamboo.Property(true, 'Duration', 'Duration.', bamboo.Property.TYPE.NUMBER),
-    timeOffset: new bamboo.Property(true, 'Offset (s)', 'Time offset.', bamboo.Property.TYPE.NUMBER),
-    startAngle: new bamboo.Property(false, '', '', bamboo.Property.TYPE.NUMBER),
-    amplitude: new bamboo.Property(true, 'Amplitude', 'Angle amplitude in one direction', bamboo.Property.TYPE.ANGLE),
-    mode: new bamboo.Property(true, 'Loop mode', 'Loop mode', bamboo.Property.TYPE.ENUM, ['loop','backAndForth']),
-    easing: new bamboo.Property(true, 'Easing', 'Easing curve', bamboo.Property.TYPE.EASING)
-};
+bamboo.addNodeProperty('Rotator', 'duration', 'number', 3);
+bamboo.addNodeProperty('Rotator', 'degrees', 'number', 360);
+bamboo.addNodeProperty('Rotator', 'easing', 'easing');
+bamboo.addNodeProperty('Rotator', 'loop', 'boolean');
+bamboo.addNodeProperty('Rotator', 'triggered', 'boolean');
 
 });

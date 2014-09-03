@@ -9,27 +9,6 @@ game.module(
 game.addAsset('../src/bamboo/editor/media/axis.png');
 game.addAsset('../src/bamboo/editor/media/axis_hover.png');
 
-bamboo.Node.inject({
-    staticInit: function(world, properties) {
-        this.world = world;
-        
-        this._init = this.init;
-        this.init = this.initEditor;
-        this.ready = null;
-    },
-
-    initEditor: function(world, properties) {
-        if (this._init) {
-            this._init();
-            this._init = null;
-        }
-
-        if (!this.displayObject) this.displayObject = new game.Container();
-
-        this.initProperties(world, properties);
-    }
-});
-
 bamboo.Node.editor = game.Class.extend({
     helpText: '',
     editEnabled: false,
@@ -39,7 +18,8 @@ bamboo.Node.editor = game.Class.extend({
         linkable: false
     },
 
-    init: function(node) {
+    init: function(node, editor) {
+        this.editor = editor;
         this.node = node;
         this.node._editorNode = this;
 
@@ -58,6 +38,11 @@ bamboo.Node.editor = game.Class.extend({
         this.displayObject.addChild(this.parentSelectionRect);
         this.connectedToLine = new game.Graphics();
         this.displayObject.addChild(this.connectedToLine);
+
+        this.nameText = new game.Text(this.node.name, { font: '12px Arial', fill: 'white' });
+        this.nameText.alpha = 0.7;
+        this.nameText.visible = false;
+        this.displayObject.addChild(this.nameText);
 
         this.activeRect = new game.Graphics();
         this.activeAxis = new game.Sprite('../src/bamboo/editor/media/axis_hover.png');
@@ -126,8 +111,15 @@ bamboo.Node.editor = game.Class.extend({
         this.displayObject.scale.x = this.node.scale.x;
         this.displayObject.scale.y = this.node.scale.y;
 
+        this.debugDisplayObject.position.x = -this.node.size.x * this.node.anchor.x;
+        this.debugDisplayObject.position.y = -this.node.size.y * this.node.anchor.y;
+
         size.x *= this.node.scale.x;
         size.y *= this.node.scale.y;
+
+        this.nameText.setText(this.node.name);
+        this.nameText.position.x = -this.node.size.x * this.node.anchor.x;
+        this.nameText.position.y = -this.node.size.y * this.node.anchor.y - 18;
 
         this.selectionRect.clear();
         // this.selectionRect.lineStyle(1, 0xff0000);
@@ -136,14 +128,14 @@ bamboo.Node.editor = game.Class.extend({
 
         this.parentSelectionRect.clear();
         this.parentSelectionRect.lineStyle(1, 0xff00aa, 0.5);
-        this.parentSelectionRect.drawRect(0, 0, size.x, size.y);
+        this.parentSelectionRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
 
         this.activeRect.clear();
-        this.activeRect.beginFill(0xffaa00, 0.2);
-        this.activeRect.drawRect(0, 0, size.x, size.y);
+        this.activeRect.beginFill(0xffaa00, 0.3);
+        this.activeRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
         this.activeRect.endFill();
         this.activeRect.lineStyle(1, 0xffaa00, 0.5);
-        this.activeRect.drawRect(0, 0, size.x, size.y);
+        this.activeRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
 
         this.editableRect.clear();
         this.editableRect.lineStyle(1, 0x0066ff);
@@ -162,7 +154,7 @@ bamboo.Node.editor = game.Class.extend({
     },
 
     propertyChanged: function(property, value, oldValue) {
-        if (property === 'scale' || property === 'size') {
+        if (property === 'scale' || property === 'size' || property === 'anchor' || property === 'name') {
             this.sizeChanged();
         }
         else if (property === 'connectedTo') {

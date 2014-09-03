@@ -7,19 +7,13 @@ game.module(
 )
 .body(function() {
 
-bamboo.nodes.Path.inject({
-    init: function() {
-        this.displayObject = new game.Container();
-    }
-});
-
 bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
     helpText: 'Path: (A)dd point, (G)rab point, (D)elete point',
     color: 0x0000ee,
     selectedPointIndex: -1,
     moving: -1,
 
-    init: function(node) {
+    init: function(node, editor) {
         if (node.points.length === 0) {
             node.points.push(new game.Point());
         }
@@ -27,7 +21,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         node.calculateLength();
 
         this.lastMousePos = new game.Point();
-        this._super(node);
+        this._super(node, editor);
         this.lineNode = new game.Graphics();
         
         this.debugDisplayObject.addChild(this.lineNode);
@@ -111,14 +105,14 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         var sx = this.node.scale.x;
         var sy = this.node.scale.y;
 
-        this.lineNode.lineStyle(2, this.color);
+        this.lineNode.lineStyle(1, this.color);
         
         var ps = this.node.points;
 
         if (!this.node.spline) {
-            this.lineNode.moveTo(ps[0].x * sx, ps[0].y * sy);
+            this.lineNode.moveTo(ps[0].x, ps[0].y);
             for (var i = 1; i < ps.length; i++) {
-                this.lineNode.lineTo(ps[i].x * sx, ps[i].y * sy);
+                this.lineNode.lineTo(ps[i].x, ps[i].y);
             }
             if (this.node.loop) this.lineNode.lineTo(ps[0].x*sx, ps[0].y*sy);
         } else {
@@ -157,10 +151,11 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         }
 
         if (this.editEnabled) {
-            this.lineNode.lineStyle(1, 0x000000);
-            this.lineNode.beginFill(0x0000ff);
+            this.lineNode.lineStyle(0, 0x000000);
+            this.lineNode.beginFill(this.color, 0.5);
             for (var i = 0; i < ps.length; i++) {
-                this.lineNode.drawCircle(ps[i].x*sx,ps[i].y*sy,5);
+                this.lineNode.moveTo(ps[i].x, ps[i].y);
+                this.lineNode.drawCircle(ps[i].x, ps[i].y, 6);
             }
         }
     },
@@ -283,6 +278,11 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
 
         if (this.selectedPointIndex === this.moving) this.selectionCircle.position = pos;
         
+        if (this.editor.gridSize > 0) {
+            pos.x = Math.round(pos.x / this.editor.gridSize) * this.editor.gridSize;
+            pos.y = Math.round(pos.y / this.editor.gridSize) * this.editor.gridSize;
+        }
+
         this.updateRect();
         this.redrawPath();
         this.node.calculateLength();
@@ -305,6 +305,11 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
             }
             this.hoverCircle.visible = false;
             return;
+        }
+
+        if (this.editor.gridSize > 0) {
+            pos.x = Math.round(pos.x / this.editor.gridSize) * this.editor.gridSize;
+            pos.y = Math.round(pos.y / this.editor.gridSize) * this.editor.gridSize;
         }
 
         // we were moving

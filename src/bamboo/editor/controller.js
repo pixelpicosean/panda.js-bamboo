@@ -11,17 +11,26 @@ bamboo.Controller = game.Class.extend({
     createNode: function(className, properties, editorNodeProperties) {
         properties.name = this.editor.getUniqueName(properties.name);
 
+        bamboo.nodes[className].prototype.ready = function() {};
         var node = new bamboo.nodes[className](this.editor.world, properties);
 
         if (!node.displayObject) node.displayObject = new game.Container();
 
         if (!bamboo.nodes[className].editor) {
-            bamboo.nodes[className].editor = bamboo.nodes[bamboo.nodes[className].parent].editor;
+            var proto = bamboo.nodes[className].prototype;
+            while (true) {
+                if (proto.constructor.editor) break;
+                proto = Object.getPrototypeOf(proto);
+                if (proto === game.Class.prototype) break;
+            }
+
+            bamboo.nodes[className].editor = proto.constructor.editor;
         }
 
-        var editorNode = new bamboo.nodes[className].editor(node, editorNodeProperties);
+        var editorNode = new bamboo.nodes[className].editor(node, this.editor, editorNodeProperties);
         editorNode.connectedToLine.visible = this.editor.viewNodes;
         editorNode.parentSelectionRect.visible = this.editor.viewNodes;
+        editorNode.nameText.visible = this.editor.viewNodes;
 
         if (typeof editorNode.update === 'function') this.editor.world.updateableNodes.push(editorNode);
 
@@ -138,6 +147,7 @@ bamboo.Controller = game.Class.extend({
         if (this.editor.activeNode) {
             this.editor.activeNode._editorNode.activeRect.visible = false;
             this.editor.activeNode._editorNode.activeAxis.visible = false;
+            // this.editor.activeNode._editorNode.nameText.visible = false;
         }
 
         this.editor.activeNode = node;
@@ -146,6 +156,7 @@ bamboo.Controller = game.Class.extend({
             this.selectNode(this.editor.activeNode);
             this.editor.activeNode._editorNode.activeAxis.visible = true;
             this.editor.activeNode._editorNode.activeRect.visible = true;
+            // this.editor.activeNode._editorNode.nameText.visible = true;
         }
         
         if (node) this.editor.activeNodeChanged(node);

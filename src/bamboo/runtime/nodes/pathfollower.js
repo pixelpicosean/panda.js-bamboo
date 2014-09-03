@@ -6,57 +6,63 @@ game.module(
 )
 .body(function() {
 
-bamboo.nodes.PathFollower = bamboo.Node.extend({
-    mode: 'loop',
-    direction: 'forward',
+bamboo.createNode('PathFollower', {
+    offset: 0,
+    active: false,
 
-    init: function(world, properties) {
+    init: function() {
         this.displayObject = new game.Container();
+        this.origPosition = new game.Point();
     },
 
     ready: function() {
+        if (!this.triggered) this.start();
+    },
+
+    trigger: function() {
+        if (!this.triggered) return;
+        this.stop();
+        this.start();
+    },
+
+    start: function() {
+        this.active = true;
+        this.offset = this.world.time;
+        this.origPosition.copy(this.position);
+    },
+
+    stop: function() {
+        this.active = false;
+        this.position.copy(this.origPosition);
+        this.setProperty('position', this.position);
     },
 
     update: function() {
+        if (!this.active) return;
         if (!this.parent.length) return;
 
-        var f = ((this.world.time + this.timeOffset) % this.duration) / this.duration;
-        var e;
+        var elapsed = ((this.world.time - this.offset) % this.duration) / this.duration;
 
-        if (this.mode === 'loop') {
-            e = this.easing;
-            if (this.direction === 'backward') f = 1.0 - f;
-        } else {
-            var rounds = Math.floor((this.world.time + this.timeOffset) / this.duration);
-            if (this.direction === 'backward') f = 1.0 - f;
-            if (rounds % 2 === 0) {
-                e = this.easing;
-            } else {
-                f = 1.0 - f;
-                e = this.easing;
-            }
+        if (!this.loop && this.world.time - this.offset >= this.duration) elapsed = 1;
+
+        if (this.yoyo && this.loop) {
+            var rounds = Math.floor((this.world.time - this.offset) / this.duration);
+            if (rounds % 2 === 1) elapsed = 1.0 - elapsed;
         }
 
-        var curDistance = this.parent.length * e(f);
+        var curDistance = this.parent.length * this.easing(elapsed);
         var newPos = this.parent.getPositionAtDistance(curDistance);
-        // console.log(newPos.x, newPos.y);
-        // this.parent.toLocalSpace(newPos, newPos);
-        // newPos.x -= this.position.x;
-        // newPos.y -= this.position.y;
-        // this.position.copy(newPos);
-        this.displayObject.position.x = this.position.x + newPos.x;
-        this.displayObject.position.y = this.position.y + newPos.y;
-        // this.setProperty('position', newPos);
+        this.position.x = this.origPosition.x + newPos.x;
+        this.position.y = this.origPosition.y + newPos.y;
+        this.setProperty('position', this.position);
         bamboo.pool.put(newPos);
     }
 });
 
-bamboo.nodes.PathFollower.props = {
-    duration: new bamboo.Property(true, 'Duration', 'Duration for one round', bamboo.Property.TYPE.NUMBER, 1),
-    timeOffset: new bamboo.Property(true, 'Offset (s)', 'Time offset from the start', bamboo.Property.TYPE.NUMBER, 0),
-    mode: new bamboo.Property(true, 'Loop mode', 'Loop mode', bamboo.Property.TYPE.ENUM, ['loop', 'backAndForth']),
-    direction: new bamboo.Property(true, 'Direction', 'Starting direction', bamboo.Property.TYPE.ENUM, ['forward', 'backward']),
-    easing: new bamboo.Property(true, 'Easing', 'Easing curve', bamboo.Property.TYPE.EASING, 'Linear')
-};
+bamboo.addNodeProperty('PathFollower', 'duration', 'number', 2);
+bamboo.addNodeProperty('PathFollower', 'loop', 'boolean');
+bamboo.addNodeProperty('PathFollower', 'yoyo', 'boolean');
+bamboo.addNodeProperty('PathFollower', 'triggered', 'boolean');
+bamboo.addNodeProperty('PathFollower', 'easing', 'easing');
 
 });

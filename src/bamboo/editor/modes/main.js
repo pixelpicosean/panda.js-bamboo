@@ -59,6 +59,9 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
     startAnimation: function() {
         this.animationRunning = true;
         this.editor.world.time = 0;
+        for (var i = 0; i < this.editor.world.updateableNodes.length; i++) {
+            this.editor.world.updateableNodes[i].node.start();
+        }
         // this.timeDisplay.visible = true;
     },
     
@@ -66,6 +69,9 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         this.animationRunning = false;
         this.editor.world.time = 0;
         this.editor.world.update();
+        for (var i = 0; i < this.editor.world.updateableNodes.length; i++) {
+            this.editor.world.updateableNodes[i].node.stop();
+        }
         // this.timeDisplay.visible = false;
     },
 

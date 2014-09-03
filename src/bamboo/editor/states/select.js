@@ -106,9 +106,6 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             }
             return;
         }
-        if (key === 'ENTER') {
-            if (!this.mode.editor.activeNode) return this.mode.editor.changeMode('Game');
-        }
         if (key === 'D') {
             if (this.mode.editor.activeNode) {
                 var node = this.mode.editor.activeNode;

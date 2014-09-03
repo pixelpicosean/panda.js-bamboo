@@ -65,7 +65,7 @@ bamboo.PropertyPanel = game.Class.extend({
             this.layerList.appendChild(opt);
         }
 
-        this.activeLayerChanged(this.editor.activeLayer);
+        if (this.editor.activeLayer) this.activeLayerChanged(this.editor.activeLayer);
     },
 
     showSettings: function() {
@@ -108,16 +108,19 @@ bamboo.PropertyPanel = game.Class.extend({
 
         this.layerWindow.clear();
 
-        this.layerWindow.addInputSelect('activeNode', 'Active node', 'Active node', function() {self.editor.controller.setActiveNode(self.editor.world.findNode(this.inputs['activeNode'].value));});
+        this.layerWindow.addInputSelect('activeNode', 'Active node', 'Active node', function() {
+            self.editor.controller.setActiveNode(self.editor.world.findNode(this.inputs['activeNode'].value));
+            self.focusOnCanvas();
+        });
         this.editor.buildNodeDropdown(this.layerWindow, 'activeNode', layer);
         if(!this.editor.activeNode)
             this.layerWindow.setInputSelectValue('activeNode', '');
         else
             this.layerWindow.setInputSelectValue('activeNode', this.editor.activeNode.name);
 
-        
         this.layerWindow.addInputCheckbox('visible', layer._editorNode.visible, 'Visible', 'Is layer visible in editor', function() {
             layer._editorNode.setVisibility(this.inputs['visible'].checked);
+            self.focusOnCanvas();
         });
         this.layerWindow.addInputText('name', layer.name, 'Name', 'Name of the layer', function() {layer._editorNode.setProperty('name', this.inputs['name'].value); self.updateLayerList();});
         this.layerWindow.addInputText('speedFactor', layer.speedFactor.toFixed(2), 'Speed', 'Speed relative to camera', function() {layer._editorNode.setProperty('speedFactor', parseFloat(this.inputs['speedFactor'].value));});
@@ -318,10 +321,12 @@ bamboo.PropertyPanel = game.Class.extend({
 
     nodePropertyChanged: function(key) {
         this.editor.activeNode._editorNode.setProperty(key, this.editor.world.findNode(this.settingsWindow.inputs[key].value));
+        this.focusOnCanvas();
     },
 
     easingPropertyChanged: function(key) {
         this.editor.activeNode._editorNode.setProperty(key, game.Tween.Easing.getByName(this.settingsWindow.inputs[key].value));
+        this.focusOnCanvas();
     },
 
     enumPropertyChanged: function(key) {

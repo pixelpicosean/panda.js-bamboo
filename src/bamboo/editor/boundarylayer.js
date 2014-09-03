@@ -20,8 +20,8 @@ bamboo.BoundaryLayer = game.Class.extend({
         this.rightLine.position.x = left + this.editor.displayObject.scale.x * (this.editor.world.width - this.editor.world.camera.position.x) + 1;
         this.bottomLine.position.y = top + this.editor.displayObject.scale.y * (this.editor.world.height - this.editor.world.camera.position.y) + 1;
 
-        this.grid.position.x = this.leftLine.position.x;
-        this.grid.position.y = this.topLine.position.y;
+        this.grid.position.x = this.leftLine.position.x + 1;
+        this.grid.position.y = this.topLine.position.y + 1;
 
         this.screenRect.clear();
         this.screenRect.lineStyle(1, 0xffffff);
@@ -105,11 +105,11 @@ bamboo.BoundaryLayer = game.Class.extend({
         var y = Math.ceil(this.editor.world.height / this.editor.gridSize);
 
         this.grid.lineStyle(1, 0xffffff, 0.3);
-        for (var i = 0; i < x; i++) {
+        for (var i = 1; i < x; i++) {
             this.grid.moveTo(i * this.editor.gridSize, 0);
             this.grid.lineTo(i * this.editor.gridSize, this.editor.world.height);
         }
-        for (var i = 0; i < y; i++) {
+        for (var i = 1; i < y; i++) {
             this.grid.moveTo(0, i * this.editor.gridSize);
             this.grid.lineTo(this.editor.world.width, i * this.editor.gridSize);
         }

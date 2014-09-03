@@ -24,11 +24,11 @@ game.module(
     'bamboo.editor.nodes.null',
     'bamboo.editor.nodes.image',
     'bamboo.editor.nodes.layer',
-    // 'bamboo.editor.nodes.manualtrigger',
-    // 'bamboo.editor.nodes.movingimage',
     'bamboo.editor.nodes.path',
     'bamboo.editor.nodes.pathfollower',
-    // 'bamboo.editor.nodes.rotator',
+    'bamboo.editor.nodes.rotator',
+    // 'bamboo.editor.nodes.manualtrigger',
+    // 'bamboo.editor.nodes.movingimage',
     // 'bamboo.editor.nodes.trigger',
     // 'bamboo.editor.nodes.triggerbox',
     // 'bamboo.editor.nodes.triggercircle',
@@ -149,15 +149,19 @@ game.start = function() {
 
     bamboo.ui = new bamboo.Ui();
 
-    game._start(bamboo.EditorScene, window.innerWidth, window.innerHeight);
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    width += width % 2 === 0 ? 1 : 0;
+    height += height % 2 === 0 ? 1 : 0;
+    game._start(bamboo.EditorScene, width, height);
 };
 
 window.addEventListener('resize', function() {
-    if (game.system) game.system.resize(window.innerWidth, window.innerHeight);
-    if (bamboo.ui) bamboo.ui.update();
-    if (game.scene && game.scene.editor) {
-        game.scene.editor.boundaryLayer.resetGraphics();
-    }
+    // if (game.system) game.system.resize(window.innerWidth, window.innerHeight);
+    // if (bamboo.ui) bamboo.ui.update();
+    // if (game.scene && game.scene.editor) {
+    //     game.scene.editor.boundaryLayer.resetGraphics();
+    // }
 });
 
 });

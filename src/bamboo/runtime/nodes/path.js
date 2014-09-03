@@ -6,17 +6,13 @@ game.module(
 )
 .body(function() {
 
-bamboo.nodes.Path = bamboo.Node.extend({
+bamboo.createNode('Path', {
     points: [],
     segmentDistances: [],
     splineSegmentDistances: [],
     loop: false,
     spline: false,
     length: 0,
-
-    init: function() {
-        this.displayObject = new game.Container();
-    },
 
     ready: function() {
         this.calculateLength();
@@ -262,10 +258,9 @@ bamboo.nodes.Path = bamboo.Node.extend({
     }
 });
 
-bamboo.nodes.Path.props = {
-    loop: new bamboo.Property(true, 'Loop', 'Connect endpoints', bamboo.Property.TYPE.BOOLEAN, false),
-    spline: new bamboo.Property(true, 'Spline', 'Use spline-smoothing', bamboo.Property.TYPE.BOOLEAN, false),
-    points: new bamboo.Property(false, '', '', bamboo.Property.TYPE.ARRAY, [], new bamboo.Property(false, '','', bamboo.Property.TYPE.VECTOR))
-};
+bamboo.addNodeProperty('Path', 'loop', 'boolean');
+bamboo.addNodeProperty('Path', 'spline', 'boolean');
+
+bamboo.nodes.Path.props.points = new bamboo.Property(false, '', '', bamboo.Property.TYPE.ARRAY, [], new bamboo.Property(false, '','', bamboo.Property.TYPE.VECTOR));
 
 });

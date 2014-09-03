@@ -12,7 +12,7 @@ bamboo.Editor = game.Class.extend({
     selectedNodes: [],
     images: [],
     windowsHidden: false,
-    gridSize: 16,
+    gridSize: 0,
     viewNodes: false,
 
     init: function(data) {
@@ -54,6 +54,12 @@ bamboo.Editor = game.Class.extend({
 
         this.initNodes();
 
+        for (var i = 0; i < this.layers.length; i++) {
+            if (this.layers[i].name === 'main') {
+                this.activeLayer = this.layers[i];
+                break;
+            }
+        }
         this.propertyPanel.activeLayerChanged(this.activeLayer);
 
         this.updateLayers();
@@ -79,6 +85,7 @@ bamboo.Editor = game.Class.extend({
         for (var i = 0; i < this.nodes.length; i++) {
             this.nodes[i].parentSelectionRect.visible = this.viewNodes;
             this.nodes[i].connectedToLine.visible = this.viewNodes;
+            this.nodes[i].nameText.visible = this.viewNodes;
         }
     },
 
@@ -197,9 +204,10 @@ bamboo.Editor = game.Class.extend({
     },
 
     addImage: function(name) {
-        console.log('Image added: ' + name);
+        if (this.images.indexOf(name) !== -1) return;
         this.images.push(name);
-        // TODO sort images
+        this.images.sort();
+        
         if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
     },
 
@@ -227,6 +235,8 @@ bamboo.Editor = game.Class.extend({
 
             var node = _editorNode.node;
             var loc = node.getWorldPosition();
+            loc.x -= node.size.x * node.anchor.x;
+            loc.y -= node.size.y * node.anchor.y;
         
             if (pos.x >= loc.x && pos.x <= loc.x + node.size.x &&
                pos.y >= loc.y && pos.y <= loc.y + node.size.y) {
