@@ -6,7 +6,7 @@ game.module(
     'engine.tween'
 )
 .body(function() {
-    
+
 bamboo.Property = game.Class.extend({
     editable: false,
     name: null,

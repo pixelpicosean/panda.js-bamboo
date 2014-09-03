@@ -48,7 +48,7 @@ bamboo.World.inject({
 });
 
 bamboo.World.defaultJSON = {
-    name: 'Game',
+    name: 'Main',
     bgcolor: '0x000000',
     camera: {
         position: {

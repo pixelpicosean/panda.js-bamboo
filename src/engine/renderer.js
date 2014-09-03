@@ -355,11 +355,7 @@ game.Animation = game.PIXI.MovieClip.extend({
     addTo: function(container) {
         container.addChild(this);
         return this;
-    },
-
-    remove: function() {
-        if (this.parent) this.parent.removeChild(this);
-    },
+    }
 
     /**
         @method play

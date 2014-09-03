@@ -6,6 +6,7 @@ game.module(
 )
 .body(function () {
 
+// Replace this with game.Vector ?
 game.Point = game.Class.extend({
     x: 0,
     y: 0,

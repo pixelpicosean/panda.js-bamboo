@@ -1,5 +1,14 @@
-{
-    "name": "Game",
+game.module(
+    'game.scenes.main'
+)
+.require(
+    'bamboo.core',
+    'bamboo.runtime.nodes.layer'
+)
+.body(function() {
+
+game.json['game.scenes.main'] = {
+    "name": "Main",
     "width": 1024,
     "height": 768,
     "bgcolor": "0x000000",
@@ -13,7 +22,7 @@
         {
             "class": "Layer",
             "properties": {
-                "parent": "Game",
+                "parent": "Main",
                 "name": "main",
                 "position": {
                     "x": 0,
@@ -28,8 +37,14 @@
                     "x": 1,
                     "y": 1
                 },
+                "anchor": {
+                    "x": 0,
+                    "y": 0
+                },
                 "speedFactor": 1
             }
         }
     ]
 }
+
+});

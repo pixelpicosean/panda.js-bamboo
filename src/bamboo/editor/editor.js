@@ -12,7 +12,7 @@ bamboo.Editor = game.Class.extend({
     selectedNodes: [],
     images: [],
     windowsHidden: false,
-    gridSize: 0,
+    gridSize: 16,
     viewNodes: false,
 
     init: function(data) {
@@ -445,7 +445,7 @@ bamboo.Editor = game.Class.extend({
         this.mode.update();
     },
 
-    download: function() {
+    downloadAsJSON: function() {
         var json = this.world.toJSON();
         var filename = json.name.toLowerCase() + '.json';
         var data = JSON.stringify(json, null, '    ');
@@ -454,35 +454,90 @@ bamboo.Editor = game.Class.extend({
         game.saveAs(blob, filename);
     },
 
-    save: function() {
+    saveAsJSON: function() {
         var json = this.world.toJSON();
+        var filename = json.name.toLowerCase() + '.json';
+        var content = JSON.stringify(json, null, '    ');
 
-        var data = {
-            filename: json.name.toLowerCase() + '.json',
-            data: JSON.stringify(json, null, '    ')
-        };
+        this.saveToFile('../../../media/', filename, content);
+    },
 
-        var query = [];
-        for (var key in data) {
-            query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+    downloadAsModule: function() {
+        var json = this.world.toJSON();
+        var name = json.name.toLowerCase();
+        var filename = json.name.toLowerCase() + '.js';
+        var data = this.buildModuleFromJSON(json);
+
+        var blob = new Blob([data]);
+        game.saveAs(blob, filename);
+    },
+
+    saveAsModule: function() {
+        var json = this.world.toJSON();
+        var name = json.name.toLowerCase();
+        var content = this.buildModuleFromJSON(json);
+
+        this.saveToFile('../../game/scenes/', name + '.js', content);
+    },
+
+    buildModuleFromJSON: function(json) {
+        var name = json.name.toLowerCase();
+
+        var nodeClasses = [];
+        for (var i = 0; i < json.nodes.length; i++) {
+            if (game.modules['bamboo.runtime.nodes.' + json.nodes[i].class.toLowerCase()]) {
+                if (nodeClasses.indexOf(json.nodes[i].class) === -1) {
+                    nodeClasses.push(json.nodes[i].class);
+                }
+            }
         }
+
+        var images = [];
+        for (var i = 0; i < json.nodes.length; i++) {
+            for (var key in json.nodes[i].properties) {
+                if (key === 'image' && images.indexOf(json.nodes[i].properties[key]) === -1) {
+                    images.push(json.nodes[i].properties[key]);
+                }
+            }
+        } 
+
+        var content = 'game.module(\n    \'game.scenes.' + name + '\'\n)\n';
+        content += '.require(\n';
+        content += '    \'bamboo.core\',\n';
+        for (var i = 0; i < nodeClasses.length; i++) {
+            content += '    \'bamboo.runtime.nodes.' + nodeClasses[i].toLowerCase() + '\'';
+            if (i < nodeClasses.length - 1) content += ',\n';
+        }
+        content += '\n)\n';
+        content += '.body(function() {\n\n';
+        for (var i = 0; i < images.length; i++) {
+            content += 'game.addAsset(\'' + images[i] + '\');\n';
+        }
+        if (images.length > 0) content += '\n';
+        content += 'game.json[\'game.scenes.' + name + '\'] = ' + JSON.stringify(json, null, '    ');
+        content += '\n\n});\n';
+
+        return content;
+    },
+
+    saveToFile: function(folder, filename, content) {
+        var query = [];
+        query.push('folder=' + encodeURIComponent(folder));
+        query.push('filename=' + encodeURIComponent(filename));
+        query.push('content=' + encodeURIComponent(content));
 
         var request = new XMLHttpRequest();
         request.open('POST', 'src/bamboo/editor/save.php');
-        request.onreadystatechange = function() {
-            if (request.readyState === 4) {
-                if (request.responseText === 'success') {
-                    // Saved
-                    console.log('Scene saved');
-                }
-                else {
-                    // Error
-                    alert('Error saving scene');
-                }
-            }
-        };
+        request.onreadystatechange = this.saveToFileComplete.bind(this, request);
         request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         request.send(query.join('&'));
+    },
+
+    saveToFileComplete: function(request) {
+        if (request.readyState === 4) {
+            if (request.responseText === 'success') console.log('Scene saved to file');
+            else this.showError('Error saving to file');
+        }
     }
 });
 

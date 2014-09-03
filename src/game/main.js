@@ -6,10 +6,6 @@ game.module(
 )
 .body(function() {
 
-game.addAsset('game.json');
-
-bamboo.createScene('Game');
-
-game.start();
+bamboo.createScene('Main');
 
 });

@@ -5,7 +5,7 @@ game.module(
 
 bamboo.PropertyPanel = game.Class.extend({
     width: 200,
-    layerWindowHeight: 330,
+    layerWindowHeight: 340,
 
     init: function(editor) {
         this.editor = editor;
@@ -56,6 +56,14 @@ bamboo.PropertyPanel = game.Class.extend({
         this.layerWindow.titleDiv.style.display = 'block';
     },
 
+    updateWindows: function() {
+        var settingsWindowHeight = window.innerHeight - this.layerWindowHeight - this.editor.toolBar.height - this.editor.statusBar.height;
+        var layerWindowY = window.innerHeight - this.layerWindowHeight - this.editor.statusBar.height;
+
+        this.settingsWindow.height = settingsWindowHeight;
+        this.layerWindow.y = layerWindowY;
+    },
+
     updateLayerList: function() {
         this.layerList.innerHTML = '';
         for (var i = 0; i < this.editor.layers.length; i++) {
@@ -76,7 +84,11 @@ bamboo.PropertyPanel = game.Class.extend({
         this.settingsWindow.addInputText('name', this.editor.world.name, 'Name', '', this.settingsChanged.bind(this, 'name'));
         this.settingsWindow.addInputText('width', this.editor.world.width, 'Width', '', this.settingsChanged.bind(this, 'width'));
         this.settingsWindow.addInputText('height', this.editor.world.height, 'Height', '', this.settingsChanged.bind(this, 'height'));
-        this.settingsWindow.addInputColor('bgcolor', '#' + this.editor.world.bgcolor.toString(16), 'Backgroundc color', '', this.settingsChanged.bind(this, 'bgcolor'));
+        this.settingsWindow.addInputColor('bgcolor', '#' + this.editor.world.bgcolor.toString(16), 'Background color', '', this.settingsChanged.bind(this, 'bgcolor'));
+
+        // this.settingsWindow.addInputSelect('cameraTarget', 'Camera target', '', this.settingsChanged.bind(this, 'cameraTarget'));
+        // this.editor.buildNodeDropdown(this.settingsWindow, 'cameraTarget', this.editor.world);
+        // this.settingsWindow.setInputSelectValue('cameraTarget', this.editor.world.cameraTarget);
     },
 
     settingsChanged: function(key) {

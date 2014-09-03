@@ -50,7 +50,7 @@ bamboo.UiWindow = game.Class.extend({
     visible: false,
     align: 'left',
 
-    init: function(x, y, width, height, align) {
+    init: function(x, y, width, height, align, dynamic) {
         this.align = align || this.align;
         if (typeof(x) !== 'undefined') this.x = x;
         if (typeof(y) !== 'undefined') this.y = y;
