@@ -117,6 +117,8 @@ bamboo.UiWindow = game.Class.extend({
     },
 
     addText: function(content) {
+        content = content.replace(/\(/g, '<span class="key">');
+        content = content.replace(/\)/g, '</span>');
         var div = document.createElement('div');
         div.className = 'text';
         div.innerHTML = content;

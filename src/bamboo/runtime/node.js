@@ -10,26 +10,22 @@ game.module(
 bamboo.Node = game.Class.extend({
     children: [],
 
-    staticInit: function() {
-        this.originalInit = this.init;
-        this.init = this.initNode;
+    staticInit: function(world, properties) {
+        this.world = world;
+        this.properties = properties;
+        this.name = properties.name;
     },
 
     init: function() {
         this.displayObject = new game.Container();
     },
 
-    initNode: function(world, properties) {
-        this.world = world;
-        this.originalInit(world, properties);
-
+    initProperties: function() {
         var propDescs = this.getPropertyDescriptors();
 
         for (var key in propDescs) {
-            this.setProperty(key, bamboo.Property.parse(this.world, properties, key, propDescs[key]));
+            this.setProperty(key, bamboo.Property.parse(this.world, this.properties, key, propDescs[key]));
         }
-        
-        this.ready();
     },
 
     ready: function() {

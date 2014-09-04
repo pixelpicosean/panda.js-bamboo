@@ -38,28 +38,10 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         this.hoverCircle.visible = false;
         
         this.debugDisplayObject.addChild(this.hoverCircle);
-        this.redrawPath();
     },
 
-    getBounds: function() {
-        var ps = this.node.points;
-        var minx = ps[0].x;
-        var miny = ps[0].y;
-        var maxx = minx;
-        var maxy = miny;
-        for (var i = 0; i < ps.length; i++) {
-            if (minx > ps[i].x) minx = ps[i].x;
-            else if (maxx < ps[i].x) maxx = ps[i].x;
-
-            if (miny > ps[i].y) miny = ps[i].y;
-            else if (maxy < ps[i].y) maxy = ps[i].y;
-        }
-        return {
-            x: minx,
-            y: miny,
-            width: maxx - minx,
-            height: maxy - miny
-        };
+    ready: function() {
+        this.redrawPath();
     },
 
     enableEditMode: function(enabled) {
@@ -118,21 +100,18 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         } else {
             var p1 = ps[0];
             var p0 = p1;
-            if (this.node.loop)
-                p0 = ps[this.node.points.length-1];
+            if (this.node.loop) p0 = ps[this.node.points.length-1];
             var p2,p3;
             this.lineNode.moveTo(p1.x*sx, p1.y*sy);
             for (var i = 1; i < ps.length; i++) {
                 p2 = ps[i];
                 p3 = p2;
-                if (i < ps.length - 1)
-                    p3 = ps[i+1];
-                else if (this.node.loop)
-                    p3 = ps[0];
-                for(var t = 1; t<21; t++) {
-                    var f = t * 1.0/20.0;
-                    var p = this.node.catmullRomEvaluate(p0,p1,p2,p3, f);
-                    this.lineNode.lineTo(p.x*sx,p.y*sy);
+                if (i < ps.length - 1) p3 = ps[i + 1];
+                else if (this.node.loop) p3 = ps[0];
+                for (var t = 1; t < 21; t++) {
+                    var f = t * 1 / 20;
+                    var p = this.node.catmullRomEvaluate(p0, p1, p2, p3, f);
+                    this.lineNode.lineTo(p.x * sx, p.y * sy);
                 }
                 p0 = p1;
                 p1 = p2;
@@ -140,10 +119,9 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
             if (this.node.loop) {
                 p2 = ps[0];
                 p3 = p2;
-                if (ps.length > 1)
-                    p3 = ps[1];
-                for(var t = 1; t<21; t++) {
-                    var f = t * 1.0/20.0;
+                if (ps.length > 1) p3 = ps[1];
+                for (var t = 1; t < 21; t++) {
+                    var f = t * 1 / 20;
                     var p = this.node.catmullRomEvaluate(p0,p1,p2,p3, f);
                     this.lineNode.lineTo(p.x*sx,p.y*sy);
                 }

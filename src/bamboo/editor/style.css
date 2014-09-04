@@ -52,6 +52,7 @@ body.notready div {
     margin-bottom: 0px;
     /*display: block;*/
     /*float: left;*/
+    line-height: 18px;
 }
 .window .content .input {
     margin-bottom: 10px;
@@ -246,12 +247,14 @@ select {
     box-shadow: 0px -1px 0px #282828;
     border-bottom: 1px solid #686868;
     background: #4a4a4a;
+    height: 20px;
 }
 select.layerList {
     overflow: hidden;
     background: #686868;
     border-radius: 5px;
     margin-top: 5px;
+    height: 85px;
 }
 .window .button.confirm {
     width: 50px;
@@ -279,4 +282,9 @@ select.layerList {
 .buttonContainer .button {
 	float: left;
 	margin-right: 6px;
+}
+span.key {
+    /*color: #888;*/
+    /*font-weight: bold;*/
+    text-decoration: underline;
 }

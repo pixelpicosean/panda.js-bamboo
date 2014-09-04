@@ -64,6 +64,17 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
             parent: this.windowElem.inputs['parent'].value
         });
 
+        node.initProperties();
+        node._editorNode.layerChanged();
+        node._editorNode.ready();
+
+        if (node.displayObject && node.size.x === 0 && node.size.y === 0 && node.displayObject.width > 1 && node.displayObject.height > 1) {
+            node._editorNode.setProperty('size', new game.Point(node.displayObject.width, node.displayObject.height));
+        }
+        if (node.size.x === 0 && node.size.y === 0) {
+            node._editorNode.setProperty('size', new game.Point(64, 64));
+        }
+
         this.mode.editor.controller.setActiveNode(node);
         this.mode.editor.changeState('Move');
 

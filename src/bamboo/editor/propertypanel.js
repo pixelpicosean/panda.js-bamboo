@@ -5,7 +5,7 @@ game.module(
 
 bamboo.PropertyPanel = game.Class.extend({
     width: 200,
-    layerWindowHeight: 368,
+    layerWindowHeight: 372,
 
     init: function(editor) {
         this.editor = editor;
@@ -143,8 +143,8 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     layerSelectionChanged: function() {
-        this.focusOnCanvas();
         this.editor.controller.setActiveLayer(this.editor.findNode(this.layerList.value));
+        this.focusOnCanvas();
     },
 
     focusOnCanvas: function() {
@@ -152,7 +152,13 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     newLayerClicked: function() {
-        this.editor.controller.createNode('Layer', { name: 'Layer' });
+        var node = this.editor.controller.createNode('Layer', {
+            name: 'Layer',
+            parent: this.editor.world.name
+        });
+        node.initProperties();
+        this.editor.nodeAdded(node);
+        // this.updateLayerList();
         this.layerSelectionChanged();
     },
 
@@ -177,6 +183,11 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     activeNodeChanged: function(node) {
+        if (!node) {
+            this.showSettings();
+            return;
+        }
+
         this.activeElement = null;
         if (this.node) {
             this.node._editorNode.removePropertyChangeListener(this.propertyChanged.bind(this));
@@ -220,7 +231,8 @@ bamboo.PropertyPanel = game.Class.extend({
                 case bamboo.Property.TYPE.NODE:
                     this.settingsWindow.addInputSelect(key, props[key].name, props[key].description, this.nodePropertyChanged.bind(this));
                     this.editor.buildNodeDropdown(this.settingsWindow, key, this.editor.world);
-                    this.settingsWindow.setInputSelectValue(key, node[key].name);
+                    if (node[key]) this.settingsWindow.setInputSelectValue(key, node[key].name);
+                    else this.settingsWindow.setInputSelectValue(key, '');
                     break;
                 case bamboo.Property.TYPE.ARRAY:
                     throw 'Cannot edit array type properties!';

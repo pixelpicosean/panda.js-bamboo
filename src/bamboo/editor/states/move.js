@@ -21,8 +21,8 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
         }
 
         this.offset = this.mode.editor.prevMousePos.clone();
-        this.offset.x += this.mode.editor.world.camera.position.x;
-        this.offset.y += this.mode.editor.world.camera.position.y;
+        this.offset.x += this.mode.editor.camera.position.x;
+        this.offset.y += this.mode.editor.camera.position.y;
 
         document.body.style.cursor = 'move';
     },
@@ -51,8 +51,8 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
             var node = this.nodes[i];
             var newPos = new game.Point(x - this.offset.x + this.startValues[i].x, y - this.offset.y + this.startValues[i].y);
 
-            newPos.x += this.mode.editor.world.camera.position.x;
-            newPos.y += this.mode.editor.world.camera.position.y;
+            newPos.x += this.mode.editor.camera.position.x;
+            newPos.y += this.mode.editor.camera.position.y;
 
             if (this.lockToAxis === 'X') newPos.y = this.startValues[i].y;
             else if (this.lockToAxis === 'Y') newPos.x = this.startValues[i].x;

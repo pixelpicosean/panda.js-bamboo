@@ -7,12 +7,7 @@ game.module(
 .body(function() {
 'use strict';
 
-bamboo.createNode('Layer', {
-    update: function() {
-        this.displayObject.position.x = this.position.x + this.world.camera.position.x * -this.speedFactor;
-        this.displayObject.position.y = this.position.y + this.world.camera.position.y * -this.speedFactor;
-    }
-});
+bamboo.createNode('Layer');
 
 bamboo.addNodeProperty('Layer', 'speedFactor', 'number', 1);
 

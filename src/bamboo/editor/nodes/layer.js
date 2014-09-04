@@ -11,6 +11,11 @@ bamboo.nodes.Layer.editor = bamboo.Node.editor.extend({
     visible: true,
     locked: false,
 
+    ready: function() {
+        this.displayObject.removeChild(this.nameText);
+        this.displayObject.removeChild(this.parentSelectionRect);
+    },
+
     propertyChanged: function(key, value, oldValue) {
         if (key === 'size') {
             if (value.x === 0 && value.y === 0) {
@@ -27,8 +32,8 @@ bamboo.nodes.Layer.editor = bamboo.Node.editor.extend({
 
     setLocked: function(value) {
         this.locked = value;
-        if (this.editor.activeNode && this.editor.activeNode._editorNode.layer._editorNode === this) {
-            this.editor.controller.deselectNode(this.editor.activeNode);
+        if (this.locked) {
+            this.editor.controller.deselectAllNodes(this.node);
         }
     }
 });

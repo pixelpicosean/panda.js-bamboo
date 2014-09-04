@@ -5,7 +5,8 @@ game.module(
     'bamboo.runtime.node'
 )
 .body(function() {
-    
+'use strict';
+
 bamboo.createNode('Null');
 
 });

@@ -62,8 +62,13 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
         if (this.mode.altDown) {
             this.mode.editor.controller.deselectNode(node);
         } else {
-            this.mode.editor.controller.selectNode(node);
-            this.mode.editor.controller.setActiveNode(node);
+            if (this.mode.shiftDown && this.mode.editor.selectedNodes.indexOf(node) !== -1) {
+                this.mode.editor.controller.deselectNode(node);
+            }
+            else {
+                this.mode.editor.controller.selectNode(node);
+            }
+            if (!this.mode.shiftDown) this.mode.editor.controller.setActiveNode(node);
         }
 
         this.mode.editor.changeState('Select');

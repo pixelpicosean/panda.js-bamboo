@@ -13,7 +13,7 @@ bamboo.Controller = game.Class.extend({
 
         bamboo.nodes[className].prototype.ready = function() {};
         var node = new bamboo.nodes[className](this.editor.world, properties);
-
+        
         if (!node.displayObject) node.displayObject = new game.Container();
 
         if (!bamboo.nodes[className].editor) {
@@ -34,13 +34,6 @@ bamboo.Controller = game.Class.extend({
 
         if (typeof editorNode.update === 'function') this.editor.world.updateableNodes.push(editorNode);
 
-        if (node.displayObject && node.size.x === 0 && node.size.y === 0 && node.displayObject.width > 1 && node.displayObject.height > 1) {
-            editorNode.setProperty('size', new game.Point(node.displayObject.width, node.displayObject.height));
-        }
-        if (node.size.x === 0 && node.size.y === 0) {
-            editorNode.setProperty('size', new game.Point(64, 64));
-        }
-
         node.displayObject.addChild(editorNode.displayObject);
         
         switch (this.editor.editorNodeVisibility) {
@@ -59,7 +52,7 @@ bamboo.Controller = game.Class.extend({
         
         this.editor.world.nodes.push(node);
         this.editor.nodes.push(editorNode);
-        this.editor.nodeAdded(node);
+        // this.editor.nodeAdded(node);
         return node;
     },
 
@@ -72,7 +65,7 @@ bamboo.Controller = game.Class.extend({
     },
 
     selectAllNodes: function() {
-        for (var i=0; i<this.editor.nodes.length; i++) {
+        for (var i = 0; i < this.editor.nodes.length; i++) {
             var n = this.editor.nodes[i];
             if (n instanceof bamboo.nodes.Layer.editor) continue;
             if (n.layer === this.editor.activeLayer) {
@@ -81,26 +74,26 @@ bamboo.Controller = game.Class.extend({
         }
     },
 
-    deselectAllNodes: function() {
+    deselectAllNodes: function(layer) {
         for (var i = this.editor.selectedNodes.length-1; i >= 0; i--) {
+            if (layer && this.editor.selectedNodes[i]._editorNode.layer !== layer) continue;
             this.deselectNode(this.editor.selectedNodes[i]);
         }
+        this.editor.changeState('Select');
     },
 
     selectNode: function(node) {
         if (!node) return;
         
-        // node is already selected
         if (this.editor.selectedNodes.indexOf(node) !== -1) return;
 
         this.editor.selectedNodes.push(node);
-        node._editorNode.selectionRect.visible = true;
         node._editorNode.selectionAxis.visible = true;
-        // node._editorNode.connectedToLine.visible = true;
+        node._editorNode.selectionRect.visible = true;
         this.editor.nodeSelected(node);
 
         var markChildren = function(c) {
-            for (var i=0; i<c.length; i++) {
+            for (var i = 0; i < c.length; i++) {
                 var n = c[i];
                 // n._editorNode.parentSelectionRect.visible = true;
                 // n._editorNode.connectedToLine.visible = true;
@@ -120,10 +113,9 @@ bamboo.Controller = game.Class.extend({
         this.editor.selectedNodes.splice(idx, 1);
         node._editorNode.selectionAxis.visible = false;
         node._editorNode.selectionRect.visible = false;
-        // node._editorNode.connectedToLine.visible = false;
         this.editor.nodeDeselected(node);
 
-        if (this.editor.activeNode === node) this.setActiveNode(null);
+        if (this.editor.activeNode === node) this.setActiveNode();
 
         var unmarkChildren = function(c, selectedNodes) {
             for (var i=0; i<c.length; i++) {
@@ -147,7 +139,6 @@ bamboo.Controller = game.Class.extend({
         if (this.editor.activeNode) {
             this.editor.activeNode._editorNode.activeRect.visible = false;
             this.editor.activeNode._editorNode.activeAxis.visible = false;
-            // this.editor.activeNode._editorNode.nameText.visible = false;
         }
 
         this.editor.activeNode = node;
@@ -156,17 +147,23 @@ bamboo.Controller = game.Class.extend({
             this.selectNode(this.editor.activeNode);
             this.editor.activeNode._editorNode.activeAxis.visible = true;
             this.editor.activeNode._editorNode.activeRect.visible = true;
-            // this.editor.activeNode._editorNode.nameText.visible = true;
         }
         
-        if (node) this.editor.activeNodeChanged(node);
+        this.editor.activeNodeChanged(node);
     },
 
     setActiveLayer: function(layer) {
         this.editor.activeLayer = layer;
         this.editor.propertyPanel.activeLayerChanged(layer);
-        // this.deselectAllNodes();
-        // this.setActiveNode(layer);
+
+        for (var i = 0; i < this.editor.nodes.length; i++) {
+            if (this.editor.nodes[i].layer === layer) {
+                this.editor.nodes[i].displayObject.visible = true;
+            }
+            else {
+                this.editor.nodes[i].displayObject.visible = false;
+            }
+        }
     },
 
     moveNodeUp: function(node) {
@@ -232,15 +229,9 @@ bamboo.Controller = game.Class.extend({
     },
 
     enableEditMode: function(node, enabled) {
-        if (enabled) {
-            node._editorNode.selectionRect.visible = false;
-            node._editorNode.editableRect.visible = true;
-            node._editorNode.selectionAxis.visible = true;
-        } else {
-            node._editorNode.selectionRect.visible = true;
-            node._editorNode.editableRect.visible = false;
-            node._editorNode.selectionAxis.visible = false;
-        }
+        node._editorNode.enableEditMode(enabled);
+        node._editorNode.editableRect.visible = enabled;
+        node._editorNode.selectionAxis.visible = enabled;
     }
 });
 

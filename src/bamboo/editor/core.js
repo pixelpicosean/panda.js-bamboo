@@ -27,9 +27,11 @@ game.module(
     'bamboo.editor.nodes.path',
     'bamboo.editor.nodes.pathfollower',
     'bamboo.editor.nodes.rotator',
+    'bamboo.editor.nodes.emitter',
+    'bamboo.editor.nodes.trigger',
     // 'bamboo.editor.nodes.manualtrigger',
     // 'bamboo.editor.nodes.movingimage',
-    // 'bamboo.editor.nodes.trigger',
+    
     // 'bamboo.editor.nodes.triggerbox',
     // 'bamboo.editor.nodes.triggercircle',
     
@@ -59,7 +61,7 @@ bamboo.EditorScene = game.Scene.extend({
         }
         if (scenes.length > 0) {
             scenes.sort();
-            this.scenesWindow.addText('<br><br><br>Load scene:<br>');
+            this.scenesWindow.addText('<br><br>Load scene:<br>');
             for (var i = 0; i < scenes.length; i++) {
                 this.scenesWindow.addButton(scenes[i].name, this.loadEditor.bind(this, scenes[i]));
             }
@@ -134,6 +136,7 @@ game.start = function() {
     game.System.center = false;
     game.System.left = 0;
     game.System.top = 0;
+    game.Storage.id = 'bamboo';
 
     var style = document.createElement('link');
     style.rel = 'stylesheet';

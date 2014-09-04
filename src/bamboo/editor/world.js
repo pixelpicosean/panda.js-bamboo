@@ -7,7 +7,7 @@ game.module(
 .body(function() {
     
 bamboo.World.inject({
-    staticInit: function(data) {
+    init: function(data) {
         game.merge(this, data);
         this.displayObject = new game.Container();
         this.position = new game.Point();
@@ -50,17 +50,12 @@ bamboo.World.inject({
 bamboo.World.defaultJSON = {
     name: 'Main',
     bgcolor: '0x000000',
-    camera: {
-        position: {
-            x: 0,
-            y: 0
-        }
-    },
     nodes: [
         {
             class: 'Layer',
             properties: {
-                name: 'main'
+                name: 'main',
+                parent: 'Main'
             }
         }
     ]

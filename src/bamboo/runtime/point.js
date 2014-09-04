@@ -123,4 +123,8 @@ game.Point = game.Class.extend({
     }
 });
 
+game.Point.from = function(point) {
+    return new game.Point(point.x, point.y);
+};
+
 });

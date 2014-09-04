@@ -6,14 +6,8 @@ game.module(
 )
 .body(function() {
 
-game.addAsset('../src/bamboo/editor/media/font.fnt');
-
 bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
     helpText: 'Main mode: (W)indows, (B)oundaries, (L)ights, (P)lay, (G)rid, (V)iew nodes, (R)eset view, SPACE pan view, ESC cancel',
-    state: null,
-    timeDisplay: null,
-    zoomDisplay: null,
-    zoomTween: null,
     animationRunning: false,
     shiftDown: false,
     altDown: false,
@@ -24,15 +18,15 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
 
         this.state = new bamboo.editor.StateSelect(this);
 
-        this.timeDisplay = new game.BitmapText('', { font: 'Buu' });
-        this.timeDisplay.position.set(20, 20);
-        this.timeDisplay.visible = false;
-        this.editor.overlay.addChild(this.timeDisplay);
+        // this.timeDisplay = new game.BitmapText('', { font: 'Buu' });
+        // this.timeDisplay.position.set(20, 20);
+        // this.timeDisplay.visible = false;
+        // this.editor.overlay.addChild(this.timeDisplay);
 
-        this.zoomDisplay = new game.BitmapText('', { font: 'Buu' });
-        this.zoomDisplay.position.set(20, 50);
-        this.zoomDisplay.visible = false;
-        this.editor.overlay.addChild(this.zoomDisplay);
+        // this.zoomDisplay = new game.BitmapText('', { font: 'Buu' });
+        // this.zoomDisplay.position.set(20, 50);
+        // this.zoomDisplay.visible = false;
+        // this.editor.overlay.addChild(this.zoomDisplay);
     },
 
     exit: function() {
@@ -112,6 +106,7 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
                 if (this.editor.gridSize === 0) this.editor.gridSize = 8;
                 if (this.editor.gridSize > 128) this.editor.gridSize = 0;
             }
+            game.storage.set('gridSize', this.editor.gridSize);
 
             this.editor.boundaryLayer.resetGraphics();
             return;
@@ -168,51 +163,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         }
 
         this.state.keyup(key);
-    },
-
-    onkeydown: function(keycode, p) {
-        // overrides from mode
-        switch(keycode) {
-            case 16:// SHIFT
-                this.shiftDown = true;
-                return true;
-            case 17:// CTRL
-                this.ctrlDown = true;
-                // pass to state
-                this.state.onkeydown(keycode, p);
-                return true;
-            case 18:// ALT
-                this.altDown = true;
-                return true;
-            case 27:// ESC
-            case 32:// SPACE
-                return true;
-        }
-        return this.state.onkeydown(keycode, p);
-    },
-
-    onkeyup: function(keycode, p) {
-        // overrides from editor
-        switch(keycode) {
-            case 16:// SHIFT
-                this.shiftDown = false;
-                return true;
-            case 17:// CTRL
-                this.ctrlDown = false;
-                // pass to state
-                this.state.onkeyup(keycode, p);
-                return true;
-            case 18:// ALT
-                 this.altDown = false;
-                 return true;
-            case 32:// SPACE - start/stop animation
-                if (this.animationRunning)
-                    this.stopAnimation();
-                else
-                    this.startAnimation();
-                return true;
-        }
-        return this.state.onkeyup(keycode, p);
     },
 
     filedrop: function(event) {

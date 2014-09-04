@@ -15,10 +15,10 @@ bamboo.BoundaryLayer = game.Class.extend({
         var left = game.system.width / 2 - game.System.width / 2;
         var top = game.system.height / 2 - game.System.height / 2;
 
-        this.leftLine.position.x = left + this.editor.displayObject.scale.x * (0 - this.editor.world.camera.position.x) - 1;
-        this.topLine.position.y = top + this.editor.displayObject.scale.y * (0 - this.editor.world.camera.position.y) - 1;
-        this.rightLine.position.x = left + this.editor.displayObject.scale.x * (this.editor.world.width - this.editor.world.camera.position.x) + 1;
-        this.bottomLine.position.y = top + this.editor.displayObject.scale.y * (this.editor.world.height - this.editor.world.camera.position.y) + 1;
+        this.leftLine.position.x = left + this.editor.displayObject.scale.x * (0 - this.editor.camera.position.x) - 1;
+        this.topLine.position.y = top + this.editor.displayObject.scale.y * (0 - this.editor.camera.position.y) - 1;
+        this.rightLine.position.x = left + this.editor.displayObject.scale.x * (this.editor.world.width - this.editor.camera.position.x) + 1;
+        this.bottomLine.position.y = top + this.editor.displayObject.scale.y * (this.editor.world.height - this.editor.camera.position.y) + 1;
 
         this.grid.position.x = this.leftLine.position.x + 1;
         this.grid.position.y = this.topLine.position.y + 1;

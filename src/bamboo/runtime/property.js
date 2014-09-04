@@ -56,7 +56,7 @@ bamboo.Property.parse = function(world, obj, name, prop) {
             return typeof obj[name] !== 'undefined' ? new game.Point(obj[name].x, obj[name].y) : prop.defaultValue ? new game.Point(prop.defaultValue[0], prop.defaultValue[1]) : new game.Point();
 
         case bamboo.Property.TYPE.NODE:
-            if (!obj[name]) return world;
+            // if (!obj[name]) return world;
             return world.findNode(obj[name]);
 
         case bamboo.Property.TYPE.EASING:

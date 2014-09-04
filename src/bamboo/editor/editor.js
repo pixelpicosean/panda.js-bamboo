@@ -12,8 +12,8 @@ bamboo.Editor = game.Class.extend({
     selectedNodes: [],
     images: [],
     windowsHidden: false,
-    gridSize: 16,
     viewNodes: false,
+    camera: {},
 
     init: function(data) {
         if (!data) {
@@ -23,6 +23,9 @@ bamboo.Editor = game.Class.extend({
         }
         this.world = new bamboo.World(data);
 
+        this.gridSize = game.storage.get('gridSize', 16);
+
+        this.camera.position = new game.Point();
         this.displayObject = new game.Container();
         this.controller = new bamboo.Controller(this);
         this.prevMousePos = new game.Point(game.system.width / 2, game.system.height / 2);
@@ -45,22 +48,22 @@ bamboo.Editor = game.Class.extend({
 
         this.changeMode('Main');
         this.cameraWorldPosition = new game.Point(
-            this.worldTargetPos.x - this.world.camera.position.x,
-            this.worldTargetPos.y - this.world.camera.position.y
+            this.worldTargetPos.x - this.camera.position.x,
+            this.worldTargetPos.y - this.camera.position.y
         );
 
-        this.errorWindow = new bamboo.UiWindow('center', 'center', 400, 115);
+        this.errorWindow = new bamboo.UiWindow('center', 'center', 400, 124);
         this.errorWindow.setTitle('Error');
 
         this.initNodes();
+        this.initNodeProperties();
 
         for (var i = 0; i < this.layers.length; i++) {
             if (this.layers[i].name === 'main') {
-                this.activeLayer = this.layers[i];
+                this.controller.setActiveLayer(this.layers[i]);
                 break;
             }
         }
-        this.propertyPanel.activeLayerChanged(this.activeLayer);
 
         this.updateLayers();
     },
@@ -72,6 +75,13 @@ bamboo.Editor = game.Class.extend({
         for (var i = 0; i < nodes.length; i++) {
             this.controller.createNode(nodes[i].class, nodes[i].properties);
             if (nodes[i].properties.image) this.addImage(nodes[i].properties.image);
+        }
+    },
+
+    initNodeProperties: function() {
+        for (var i = 0; i < this.world.nodes.length; i++) {
+            this.world.nodes[i].initProperties();
+            this.nodeAdded(this.world.nodes[i]);
         }
     },
 
@@ -101,8 +111,14 @@ bamboo.Editor = game.Class.extend({
     },
 
     updateLayers: function() {
+        var layer;
         for (var i = 0; i < this.layers.length; i++) {
-            this.layers[i].update();
+            // this.layers[i].update();
+            layer = this.layers[i];
+            layer.displayObject.position.set(
+                layer.position.x + this.camera.position.x * -layer.speedFactor,
+                layer.position.y + this.camera.position.y * -layer.speedFactor
+            );
         }
     },
 
@@ -172,13 +188,16 @@ bamboo.Editor = game.Class.extend({
     },
 
     nodeAdded: function(node) {
+        node._editorNode.updateRect();
+        node._editorNode.layerChanged();
+        node._editorNode.ready();
         if (node instanceof bamboo.nodes.Layer) {
             this.layers.push(node);
             this.layerAdded(node);
         }
         else {
             // force update for node-list
-            this.propertyPanel.activeLayerChanged(this.activeLayer);
+            if (this.activeLayer) this.propertyPanel.activeLayerChanged(this.activeLayer);
         }
     },
 
@@ -231,9 +250,12 @@ bamboo.Editor = game.Class.extend({
         for (var i = this.nodes.length - 1; i >= 0; i--) {
             var _editorNode = this.nodes[i];
             
+            if (!_editorNode.layer) continue;
             if (ignoreLockedLayers && _editorNode.layer._editorNode.locked) continue;
 
             var node = _editorNode.node;
+            if (node instanceof bamboo.nodes.Layer) continue;
+            
             var loc = node.getWorldPosition();
             loc.x -= node.size.x * node.anchor.x;
             loc.y -= node.size.y * node.anchor.y;
@@ -327,8 +349,8 @@ bamboo.Editor = game.Class.extend({
     },
 
     toWorldSpace: function(point) {
-        var x = point.x - this.world.position.x + this.world.camera.position.x - this.worldTargetPos.x;
-        var y = point.y - this.world.position.y + this.world.camera.position.y - this.worldTargetPos.y;
+        var x = point.x - this.world.position.x + this.camera.position.x - this.worldTargetPos.x;
+        var y = point.y - this.world.position.y + this.camera.position.y - this.worldTargetPos.y;
 
         return new game.Point(x, y);
     },
@@ -557,8 +579,8 @@ Object.defineProperty(bamboo.Editor.prototype, 'zoom', {
 Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
     get: function() {
         var point = new game.Point(
-            this.world.camera.position.x * -this.zoom + this.worldTargetPos.x,
-            this.world.camera.position.y * -this.zoom + this.worldTargetPos.y
+            this.camera.position.x * -this.zoom + this.worldTargetPos.x,
+            this.camera.position.y * -this.zoom + this.worldTargetPos.y
         );
         return point;
         // return this.world.camera.position.multiplyc(-this.zoom).add(this.worldTargetPos);
@@ -567,8 +589,8 @@ Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
         var tgtCamPos = value.subtract(this.worldTargetPos);
 
         tgtCamPos.multiply(-1 / this.zoom);
-        this.world.camera.position.x = tgtCamPos.x;
-        this.world.camera.position.y = tgtCamPos.y;
+        this.camera.position.x = tgtCamPos.x;
+        this.camera.position.y = tgtCamPos.y;
         this.boundaryLayer.updateBoundary();
         this.updateLayers();
     }

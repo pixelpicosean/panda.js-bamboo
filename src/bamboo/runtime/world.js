@@ -7,28 +7,28 @@ game.module(
 .body(function() {
 'use strict';
 
-bamboo.World = bamboo.Node.extend({
+bamboo.World = game.Class.extend({
     nodes: [],
     layers: [],
     updateableNodes: [],
     time: 0,
 
-    initNode: function(data) {
-        this.originalInit();
+    init: function(data) {
         game.merge(this, data);
-        this.initCamera();
+        this.displayObject = new game.Container();
         this.initNodes();
+        this.initNodeProperties();
         this.ready();
     },
 
     ready: function() {
+        for (var i = 0; i < this.nodes.length; i++) {
+            this.nodes[i].ready();
+        }
     },
 
-    initCamera: function() {
-        this.camera = new game.Camera();
-        this.camera.minX = this.camera.minY = 0;
-        this.camera.maxX = this.width - game.system.width;
-        this.camera.maxY = this.height - game.system.height;
+    addChild: function(node) {
+        this.displayObject.addChild(node.displayObject);
     },
 
     initNodes: function() {
@@ -37,6 +37,12 @@ bamboo.World = bamboo.Node.extend({
             var node = new bamboo.nodes[this.nodes[i].class](this, this.nodes[i].properties);
             this.nodes[i] = node;
             this.addNode(node);
+        }
+    },
+
+    initNodeProperties: function() {
+        for (var i = 0; i < this.nodes.length; i++) {
+            this.nodes[i].initProperties();
         }
     },
 
