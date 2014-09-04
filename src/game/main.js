@@ -3,6 +3,7 @@ game.module(
 )
 .require(
     'bamboo.core',
+    'game.nodes.mynode',
     'game.scenes.main'
 )
 .body(function() {

@@ -23,7 +23,7 @@ body.notready div {
     position: absolute;
     border: 1px solid #202020;
     /*box-shadow: 0px 2px 0px rgba(0,0,0,0.2);*/
-    overflow: scroll;
+    overflow: auto;
 }
 .window .title .input {
     margin-bottom: 10px;

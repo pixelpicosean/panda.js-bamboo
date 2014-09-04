@@ -71,12 +71,11 @@ bamboo.createNode('Path', {
     },
 
     getClosestPosition: function(point) {
-        // TODO spline
-
         var closestDistance = Number.MAX_VALUE;
         var closestPoint = bamboo.pool.get();
         var distPoint;
         var dist;
+        // TODO spline
         for (var i = 1; i < this.points.length; i++) {
             distPoint = this.getClosestPositionOnLineSegment(this.points[i - 1], this.points[i], point);
             dist = distPoint.distance(point);
@@ -108,9 +107,7 @@ bamboo.createNode('Path', {
 
         if (t < 0) result.copy(a);
         else if (t > 1) result.copy(b);
-        else {
-            result.set(delta.x * t + a.x, delta.y * t + a.y);
-        }
+        else result.set(delta.x * t + a.x, delta.y * t + a.y);
 
         bamboo.pool.put(delta);
         bamboo.pool.put(p);
@@ -207,9 +204,9 @@ bamboo.createNode('Path', {
             }
             var f;
             if (t === 0)
-                f = (dist - this.segmentDistances[i - 1]) / (splineDistances[t] - this.segmentDistances[i-1]);
+                f = (dist - this.segmentDistances[i - 1]) / (splineDistances[t] - this.segmentDistances[i - 1]);
             else
-                f = (dist - splineDistances[t - 1]) / (splineDistances[t] - splineDistances[t-1]);
+                f = (dist - splineDistances[t - 1]) / (splineDistances[t] - splineDistances[t - 1]);
 
             f = (t + f) * 1.0 / 20.0;
 
@@ -227,7 +224,7 @@ bamboo.createNode('Path', {
                 p2 = this.points[0];
                 p3 = this.points[1];
             }
-            else if (this.loop && i === this.points.length-1) {
+            else if (this.loop && i === this.points.length - 1) {
                 p3 = this.points[0];
             }
 
@@ -239,7 +236,8 @@ bamboo.createNode('Path', {
             if (i === this.points.length) {
                 // loop
                 delta = this.points[0].subtractc(this.points[i - 1]).normalize();
-            } else {
+            }
+            else {
                 delta = this.points[i].subtractc(this.points[i - 1]).normalize();
             }
             return delta.multiply(dist - this.segmentDistances[i - 1]).add(this.points[i - 1]);
@@ -261,6 +259,6 @@ bamboo.createNode('Path', {
 bamboo.addNodeProperty('Path', 'loop', 'boolean');
 bamboo.addNodeProperty('Path', 'spline', 'boolean');
 
-bamboo.nodes.Path.props.points = new bamboo.Property(false, '', '', bamboo.Property.TYPE.ARRAY, [], new bamboo.Property(false, '','', bamboo.Property.TYPE.VECTOR));
+bamboo.nodes.Path.props.points = new bamboo.Property(false, '', '', bamboo.Property.TYPE.ARRAY, [], new bamboo.Property(false, '', '', bamboo.Property.TYPE.VECTOR));
 
 });

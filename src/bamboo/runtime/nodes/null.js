@@ -6,6 +6,6 @@ game.module(
 )
 .body(function() {
     
-bamboo.nodes.Null = bamboo.Node.extend();
+bamboo.createNode('Null');
 
 });

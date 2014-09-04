@@ -165,8 +165,8 @@ bamboo.Controller = game.Class.extend({
     setActiveLayer: function(layer) {
         this.editor.activeLayer = layer;
         this.editor.propertyPanel.activeLayerChanged(layer);
-        this.deselectAllNodes();
-        this.setActiveNode(layer);
+        // this.deselectAllNodes();
+        // this.setActiveNode(layer);
     },
 
     moveNodeUp: function(node) {
@@ -229,13 +229,6 @@ bamboo.Controller = game.Class.extend({
         this.editor.layers.splice(idx, 1);
         this.editor.layers.splice(idx+1, 0, layer);
         this.editor.propertyPanel.updateLayerList();
-    },
-
-    moveCameraTo: function(pos) {
-        self = this.editor;
-        var nHalfScreen = new game.Vec2(-this.editor.world.screenSize.width/2, -this.editor.world.screenSize.height/2);
-        var tgtCamPos = this.editor.worldTargetPos.subtractc(nHalfScreen.add(pos).multiply(this.editor.zoom));
-        this.editor.zoomPosTween = new game.Tween(self.cameraWorldPosition).to({x: tgtCamPos.x, y: tgtCamPos.y}, 250).easing(game.Tween.Easing.Quadratic.Out).onUpdate(function() {self.cameraWorldPosition = this;}).onComplete(function() {self.zoomPosTween = null;}).start();
     },
 
     enableEditMode: function(node, enabled) {

@@ -9,6 +9,7 @@ game.module(
 
 bamboo.nodes.Layer.editor = bamboo.Node.editor.extend({
     visible: true,
+    locked: false,
 
     propertyChanged: function(key, value, oldValue) {
         if (key === 'size') {
@@ -22,6 +23,13 @@ bamboo.nodes.Layer.editor = bamboo.Node.editor.extend({
 
     setVisibility: function(value) {
         this.visible = this.node.displayObject.visible = value;
+    },
+
+    setLocked: function(value) {
+        this.locked = value;
+        if (this.editor.activeNode && this.editor.activeNode._editorNode.layer._editorNode === this) {
+            this.editor.controller.deselectNode(this.editor.activeNode);
+        }
     }
 });
 

@@ -93,7 +93,7 @@ bamboo.Property.toJSON = function(obj, name, desc) {
             return obj[name];
 
         case bamboo.Property.TYPE.VECTOR:
-            return {x: obj[name].x, y: obj[name].y};
+            return { x: obj[name].x, y: obj[name].y };
 
         case bamboo.Property.TYPE.NODE:
             return obj[name].name;
@@ -103,7 +103,7 @@ bamboo.Property.toJSON = function(obj, name, desc) {
 
         case bamboo.Property.TYPE.ARRAY:
             var a = [];
-            for (var i=0; i<obj[name].length; i++) {
+            for (var i = 0; i < obj[name].length; i++) {
                 a.push(bamboo.Property.toJSON(obj[name], i, desc.options));
             }
             return a;

@@ -76,7 +76,7 @@ bamboo.Node = game.Class.extend({
             var p = {};
             properties.splice(0, 0, p);
             for (var key in proto.constructor.props) {
-               p[key] = proto.constructor.props[key];
+                p[key] = proto.constructor.props[key];
             }
             proto = Object.getPrototypeOf(proto);
             if (proto === game.Class.prototype) break;

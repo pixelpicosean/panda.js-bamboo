@@ -133,6 +133,13 @@ bamboo.UiWindow = game.Class.extend({
         return this;
     },
 
+    addImage: function(url) {
+        var img = new Image();
+        img.src = 'src/bamboo/editor/media/' + url;
+        this.contentDiv.appendChild(img);
+        return this;
+    },
+
     addImageButton: function(url, callback) {
         var img = new Image();
         img.src = game.Editor.mediaFolder + url;

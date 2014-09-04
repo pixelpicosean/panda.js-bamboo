@@ -121,7 +121,7 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             return;
         }
         if (key === 'S') {
-            this.editor.save();
+            this.editor.saveAsModule();
             return;
         }
         // if (key === 'NUM_PLUS') return this.editor.onmousewheel(0.5);

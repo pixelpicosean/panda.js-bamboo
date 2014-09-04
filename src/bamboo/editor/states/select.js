@@ -45,7 +45,10 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
         }
 
         if (!node) {
-            node = this.mode.editor.getNodeAt(mousePos, this.mode.editor.activeLayer);
+            node = this.mode.editor.getNodeAt(mousePos, true);
+            if (node) {
+                this.mode.editor.controller.setActiveLayer(node._editorNode.layer);
+            }
         }
 
         if (!node) {

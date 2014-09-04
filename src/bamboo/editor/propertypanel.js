@@ -5,7 +5,7 @@ game.module(
 
 bamboo.PropertyPanel = game.Class.extend({
     width: 200,
-    layerWindowHeight: 340,
+    layerWindowHeight: 368,
 
     init: function(editor) {
         this.editor = editor;
@@ -130,6 +130,10 @@ bamboo.PropertyPanel = game.Class.extend({
         else
             this.layerWindow.setInputSelectValue('activeNode', this.editor.activeNode.name);
 
+        this.layerWindow.addInputCheckbox('locked', layer._editorNode.locked, 'Locked', '', function() {
+            layer._editorNode.setLocked(this.inputs['locked'].checked);
+            self.focusOnCanvas();
+        });
         this.layerWindow.addInputCheckbox('visible', layer._editorNode.visible, 'Visible', 'Is layer visible in editor', function() {
             layer._editorNode.setVisibility(this.inputs['visible'].checked);
             self.focusOnCanvas();

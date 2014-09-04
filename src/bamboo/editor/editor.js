@@ -225,13 +225,13 @@ bamboo.Editor = game.Class.extend({
         this.propertyPanel.showSettings();
     },
 
-    getNodeAt: function(point, layer) {
+    getNodeAt: function(point, ignoreLockedLayers) {
         var pos = this.toWorldSpace(point);
 
         for (var i = this.nodes.length - 1; i >= 0; i--) {
             var _editorNode = this.nodes[i];
             
-            if (layer && _editorNode.layer !== layer) continue;
+            if (ignoreLockedLayers && _editorNode.layer._editorNode.locked) continue;
 
             var node = _editorNode.node;
             var loc = node.getWorldPosition();
