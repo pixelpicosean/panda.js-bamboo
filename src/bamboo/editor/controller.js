@@ -14,7 +14,7 @@ bamboo.Controller = game.Class.extend({
         bamboo.nodes[className].prototype.ready = function() {};
         var node = new bamboo.nodes[className](this.editor.world, properties);
         
-        if (!node.displayObject) node.displayObject = new game.Container();
+        // if (!node.displayObject) node.displayObject = new game.Container();
 
         if (!bamboo.nodes[className].editor) {
             var proto = bamboo.nodes[className].prototype;
@@ -34,7 +34,7 @@ bamboo.Controller = game.Class.extend({
 
         if (typeof editorNode.update === 'function') this.editor.world.updateableNodes.push(editorNode);
 
-        node.displayObject.addChild(editorNode.displayObject);
+        // node.displayObject.addChild(editorNode.displayObject);
         
         switch (this.editor.editorNodeVisibility) {
             case 0:
@@ -235,9 +235,8 @@ bamboo.Controller = game.Class.extend({
     },
 
     enableEditMode: function(node, enabled) {
-        node._editorNode.enableEditMode(enabled);
-        node._editorNode.editableRect.visible = enabled;
-        node._editorNode.selectionAxis.visible = enabled;
+        node.enableEditMode(enabled);
+        node.editableRect.visible = enabled;
     }
 });
 

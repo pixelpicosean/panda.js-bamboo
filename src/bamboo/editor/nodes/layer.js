@@ -14,6 +14,7 @@ bamboo.nodes.Layer.editor = bamboo.Node.editor.extend({
     ready: function() {
         this.displayObject.removeChild(this.nameText);
         this.displayObject.removeChild(this.parentSelectionRect);
+        this.editor.nodeLayer.addChild(this.displayObject);
     },
 
     propertyChanged: function(key, value, oldValue) {

@@ -41,6 +41,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
     },
 
     ready: function() {
+        this._super();
         this.redrawPath();
     },
 
@@ -84,8 +85,8 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
         this.lineNode.clear();
         if (this.node.points.length === 0) return;
 
-        var sx = this.node.scale.x;
-        var sy = this.node.scale.y;
+        var sx = 1;
+        var sy = 1;
 
         this.lineNode.lineStyle(1, this.color);
         

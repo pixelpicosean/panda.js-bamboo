@@ -11,7 +11,7 @@ game.addAsset('../src/bamboo/editor/media/axis_hover.png');
 
 bamboo.Node.editor = game.Class.extend({
     helpText: '',
-    editEnabled: false,
+    editMode: false,
     propertyChangeListeners: [],
     properties: {
         selectable: true,
@@ -24,6 +24,7 @@ bamboo.Node.editor = game.Class.extend({
         this.node._editorNode = this;
 
         this.displayObject = new game.Container();
+        // this.editor.nodeLayer.addChild(this.displayObject);
 
         this.debugDisplayObject = new game.Container();
         this.displayObject.addChild(this.debugDisplayObject);
@@ -67,6 +68,8 @@ bamboo.Node.editor = game.Class.extend({
     },
 
     ready: function() {
+        this.node.parent._editorNode.displayObject.addChild(this.displayObject);
+        this.displayObject.position.set(this.node.position.x, this.node.position.y);
     },
 
     layerChanged: function() {
@@ -93,28 +96,18 @@ bamboo.Node.editor = game.Class.extend({
             this.connectedToLine.lineStyle(1, 0xffffff, 0.5);
             this.connectedToLine.moveTo(0,0);
             var point = this.node.toLocalSpace(this.node.parent.getWorldPosition());
-            this.connectedToLine.lineTo(point.x * this.node.scale.x, point.y * this.node.scale.y);
+            this.connectedToLine.lineTo(point.x, point.y);
         }
     },
 
     updateRect: function() {
-        if (this._cachedScale === this.node.scale && this._cachedSize === this.node.size) {
-            return;
-        }
-        
         var size = this.node.size.clone();
-
-        this._cachedScale = this.node.scale.clone();
-        this._cachedSize = this.node.size.clone();
-        
-        this.displayObject.scale.x = this.node.scale.x;
-        this.displayObject.scale.y = this.node.scale.y;
 
         this.debugDisplayObject.position.x = -this.node.size.x * this.node.anchor.x;
         this.debugDisplayObject.position.y = -this.node.size.y * this.node.anchor.y;
 
-        size.x *= this.node.scale.x;
-        size.y *= this.node.scale.y;
+        // size.x *= this.node.scale.x;
+        // size.y *= this.node.scale.y;
 
         this.nameText.setText(this.node.name);
         this.nameText.position.x = -this.node.size.x * this.node.anchor.x;
@@ -145,11 +138,11 @@ bamboo.Node.editor = game.Class.extend({
     },
 
     enableEditMode: function(enabled) {
+        this.editMode = enabled;
     },
 
     setProperty: function(property, value) {
         var oldValue = this.node[property];
-        // this.node[property] = value;
         this.node.setProperty(property, value);
         this.propertyChanged(property, value, oldValue);
     },
@@ -158,13 +151,17 @@ bamboo.Node.editor = game.Class.extend({
         if (property === 'scale' || property === 'size' || property === 'anchor' || property === 'name') {
             this.sizeChanged();
         }
-        else if (property === 'connectedTo') {
-            var wp = oldValue.toWorldSpace(this.node.position);
-            this.layerChanged();
-            this.setProperty('position', value.toLocalSpace(wp));
+        else if (property === 'parent') {
+            console.log('pareeent');
+            // var wp = oldValue.toWorldSpace(this.node.position);
+            // this.layerChanged();
+            // this.setProperty('position', value.toLocalSpace(wp));
+            
         }
         else if (property === 'position') {
-            if (this.node.displayObject) this.node.displayObject.position.set(value.x, value.y);
+            var pos = this.node.getWorldPosition();
+            this.displayObject.position.set(pos.x, pos.y);
+            // if (this.node.displayObject) this.node.displayObject.position.set(value.x, value.y);
             this.redrawConnectedToLine();
         }
         else if (property === 'rotation') {
@@ -259,6 +256,15 @@ bamboo.Node.editor = game.Class.extend({
         for (var name in bamboo.nodes) {
             if (this.node instanceof bamboo.nodes[name]) return name;
         }
+    },
+
+    mousedown: function() {
+    },
+
+    mouseup: function() {
+    },
+
+    keyup: function() {
     },
 
     toJSON: function() {

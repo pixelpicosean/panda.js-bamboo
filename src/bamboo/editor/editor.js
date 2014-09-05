@@ -35,6 +35,9 @@ bamboo.Editor = game.Class.extend({
         this.overlay = new game.Container();
         this.displayObject.addChild(this.overlay);
 
+        this.nodeLayer = new game.Container();
+        this.displayObject.addChild(this.nodeLayer);
+
         this.targetCameraWorldPosition = this.worldTargetPos.clone();
         
         this.boundaryLayer = new bamboo.BoundaryLayer(this);
@@ -506,6 +509,10 @@ Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
         this.camera.position.x = tgtCamPos.x;
         this.camera.position.y = tgtCamPos.y;
         this.boundaryLayer.updateBoundary();
+        var left = game.system.width / 2 - game.System.width / 2;
+        var top = game.system.height / 2 - game.System.height / 2;
+        this.nodeLayer.position.x = left - this.camera.position.x;
+        this.nodeLayer.position.y = top - this.camera.position.y;
         this.updateLayers();
     }
 });

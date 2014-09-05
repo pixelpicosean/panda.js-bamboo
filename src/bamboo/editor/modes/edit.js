@@ -10,29 +10,42 @@ bamboo.editor.ModeEdit = bamboo.editor.Mode.extend({
     helpText: 'Edit mode: MOUSE confirm, ESC cancel',
 
     enter: function() {
-        this.editor.controller.enableEditMode(this.editor.activeNode, true);
+        this.state = this.editor.activeNode._editorNode;
+        this.editor.controller.enableEditMode(this.state, true);
     },
     
     exit: function() {
-        this.editor.controller.enableEditMode(this.editor.activeNode, false);
+        this.editor.controller.enableEditMode(this.state, false);
     },
 
     click: function(event) {
         var pos = new game.Point(event.global.x, event.global.y);
         pos = this.editor.toWorldSpace(pos);
-        this.editor.activeNode._editorNode.click(pos);
+        this.state.click(pos);
+    },
+
+    mousedown: function(event) {
+        var pos = new game.Point(event.global.x, event.global.y);
+        pos = this.editor.toWorldSpace(pos);
+        this.state.mousedown(pos);
     },
 
     mousemove: function(event) {
         var pos = new game.Point(event.global.x, event.global.y);
         pos = this.editor.toWorldSpace(pos);
-        this.editor.activeNode._editorNode.mousemove(pos);
+        this.state.mousemove(pos);
+    },
+
+    mouseup: function(event) {
+        var pos = new game.Point(event.global.x, event.global.y);
+        pos = this.editor.toWorldSpace(pos);
+        this.state.mouseup(pos);
     },
 
     keydown: function(key) {
         if (key === 'ESC') return this.editor.changeMode('Main');
         
-        this.editor.activeNode._editorNode.keydown(key);
+        this.state.keydown(key);
     }
 });
 

@@ -129,8 +129,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             this.editor.cameraOffset = null;
             return;
         }
-
-        this._super(key);
     },
 
     filedrop: function(event) {

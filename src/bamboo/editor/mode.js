@@ -34,8 +34,7 @@ bamboo.editor.Mode = game.Class.extend({
         this.state.keydown(key);
     },
 
-    keyup: function(key) {
-        this.state.keyup(key);
+    keyup: function() {
     }
 });
 
