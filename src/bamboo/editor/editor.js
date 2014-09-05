@@ -5,9 +5,7 @@ game.module(
 
 bamboo.Editor = game.Class.extend({
     nodes: [],
-    editorNodeVisibility: 2, // 0=hidden, 1=partly visible, 2=fully visible
     _zoom: 1,
-    targetZoom: 1,
     layers: [],
     selectedNodes: [],
     images: [],
@@ -38,7 +36,7 @@ bamboo.Editor = game.Class.extend({
         this.displayObject.addChild(this.overlay);
 
         this.targetCameraWorldPosition = this.worldTargetPos.clone();
-        // this.cameraPosition = new game.Point(this.world.camera.position.x, this.world.camera.position.y);
+        
         this.boundaryLayer = new bamboo.BoundaryLayer(this);
         this.overlay.addChild(this.boundaryLayer.displayObject);
 
@@ -66,6 +64,7 @@ bamboo.Editor = game.Class.extend({
         }
 
         this.updateLayers();
+        this.showSettings();
     },
 
     initNodes: function() {
@@ -113,7 +112,6 @@ bamboo.Editor = game.Class.extend({
     updateLayers: function() {
         var layer;
         for (var i = 0; i < this.layers.length; i++) {
-            // this.layers[i].update();
             layer = this.layers[i];
             layer.displayObject.position.set(
                 layer.position.x + this.camera.position.x * -layer.speedFactor,
@@ -130,7 +128,9 @@ bamboo.Editor = game.Class.extend({
     },
 
     changeState: function(state, param) {
+        if (this.mode.state) this.mode.state.exit();
         this.mode.state = new bamboo.editor['State' + state.ucfirst()](this.mode, param);
+        this.mode.state.enter();
         this.updateStatus();
     },
 
@@ -156,9 +156,9 @@ bamboo.Editor = game.Class.extend({
                 name = name.slice(0, name.length - 5);
         }
 
-        var i = 1;
+        var i = 2;
         while (true) {
-            var newName = name + ('000' + i).slice(-4);
+            var newName = name + i;
             if (!this.world.findNode(newName)) return newName;
             i++;
         }
@@ -169,17 +169,21 @@ bamboo.Editor = game.Class.extend({
         for (var i = 0; i < this.nodes.length; i++) {
             var n = this.nodes[i];
             if (n.layer !== layer || n.node instanceof bamboo.nodes.Layer) continue;
+            n = n.node;
 
-            var r = n._cachedRect;
             var a = [];
-            a.push(n.node.toWorldSpace(new game.Point(r.x, r.y)));
-            a.push(n.node.toWorldSpace(new game.Point(r.x, r.y+r.height)));
-            a.push(n.node.toWorldSpace(new game.Point(r.x+r.width, r.y)));
-            a.push(n.node.toWorldSpace(new game.Point(r.x+r.width, r.y+r.height)));
-            for(var j=0; j < 4; j++) {
+            var pos = n.getWorldPosition();
+            pos.x -= n.anchor.x * n.size.x;
+            pos.y -= n.anchor.y * n.size.y;
+            a.push(new game.Point(pos.x, pos.y));
+            a.push(new game.Point(pos.x, pos.y + n.size.y));
+            a.push(new game.Point(pos.x + n.size.x, pos.y));
+            a.push(new game.Point(pos.x + n.size.x, pos.y + n.size.y));
+            
+            for (var j = 0; j < 4; j++) {
                 if (a[j].x >= rect.tl.x && a[j].x <= rect.br.x &&
-                   a[j].y >= rect.tl.y && a[j].y <= rect.br.y) {
-                    nodes.push(n.node);
+                    a[j].y >= rect.tl.y && a[j].y <= rect.br.y) {
+                    nodes.push(n);
                     break;
                 }
             }
@@ -213,6 +217,12 @@ bamboo.Editor = game.Class.extend({
         }
     },
 
+    nodeSelected: function(node) {
+    },
+
+    nodeDeselected: function(node) {
+    },
+
     layerAdded: function(layer) {
         this.activeLayer = layer;
         this.propertyPanel.updateLayerList();
@@ -226,14 +236,7 @@ bamboo.Editor = game.Class.extend({
         if (this.images.indexOf(name) !== -1) return;
         this.images.push(name);
         this.images.sort();
-        
         if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
-    },
-
-    nodeSelected: function(node) {
-    },
-
-    nodeDeselected: function(node) {
     },
 
     activeNodeChanged: function(node) {
@@ -301,19 +304,6 @@ bamboo.Editor = game.Class.extend({
         }
     },
 
-    isNodeAt: function(p, n) {
-        return false;
-
-        var l = n.node.toLocalSpace(p);
-        var r = n._cachedRect;
-        var sx = 6/n.node.scale.x;
-        var sy = 6/n.node.scale.y;
-        if (l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
-           l.y >= r.y-sy && l.y <= r.y+r.height+sy)
-            return true;
-        return false;
-    },
-
     buildNodeDropdown: function(window, key, node) {
         var self = this;
         var addNodeInputOption = function(window, key, node, prefix) {
@@ -340,28 +330,25 @@ bamboo.Editor = game.Class.extend({
         }
     },
 
+    toWorldSpace: function(point) {
+        var x = point.x - this.world.position.x + this.camera.position.x - this.worldTargetPos.x;
+        var y = point.y - this.world.position.y + this.camera.position.y - this.worldTargetPos.y;
+        return new game.Point(x, y);
+    },
+
     click: function(event) {
         this.mode.click(event);
     },
 
     mousedown: function(event) {
+        this.prevMousePos.x = event.global.x;
+        this.prevMousePos.y = event.global.y;
         this.mode.mousedown(event);
-    },
-
-    toWorldSpace: function(point) {
-        var x = point.x - this.world.position.x + this.camera.position.x - this.worldTargetPos.x;
-        var y = point.y - this.world.position.y + this.camera.position.y - this.worldTargetPos.y;
-
-        return new game.Point(x, y);
     },
 
     mousemove: function(event) {
         this.prevMousePos.x = event.global.x;
         this.prevMousePos.y = event.global.y;
-
-        if (this.mode instanceof bamboo.editor.ModeGame) {
-            return this.mode.mousemove(event);
-        }
 
         if (this.cameraOffset) {
             this.targetCameraWorldPosition.x = event.global.x - this.cameraOffset.x;
@@ -373,15 +360,10 @@ bamboo.Editor = game.Class.extend({
     },
 
     mouseup: function(event) {
-        if (this.mode instanceof bamboo.editor.ModeGame) {
-            return this.mode.mouseup(event);
-        }
+        this.mode.mouseup(event);
     },
 
     mouseout: function() {
-        if (this.mode instanceof bamboo.editor.ModeGame) {
-            return this.mode.mouseout();
-        }
     },
 
     keydown: function(key) {
@@ -390,73 +372,6 @@ bamboo.Editor = game.Class.extend({
 
     keyup: function(key) {
         this.mode.keyup(key);
-    },
-
-    onmousewheel: function(delta) {
-        if (this.mode instanceof bamboo.editor.ModeGame) return false;// in game, do nothing
-
-        delta = Math.max(-1, Math.min(1, delta));
-
-        var zoom = this.targetZoom * Math.pow(1.5, delta);
-        if (zoom < 0.05 || zoom > 6) return;
-
-        var offset = this.prevMousePos.subtractc(this.targetCameraWorldPosition);
-        this.targetCameraWorldPosition = this.prevMousePos.subtractc(offset.multiply(Math.pow(1.5, delta)));
-
-        if (this.zoomTween) this.zoomTween.stop();
-        if (this.zoomPosTween) this.zoomPosTween.stop();
-
-        if (this.mode instanceof bamboo.editor.NodeMode) this.mode.zoomChanged(zoom);
-
-        var self = this;
-        this.zoomPosTween = new game.Tween(this.cameraWorldPosition).to({x: this.targetCameraWorldPosition.x,y:this.targetCameraWorldPosition.y}, 250).easing(game.Tween.Easing.Quadratic.Out).onUpdate(function() {self.cameraWorldPosition = this;}).onComplete(function() {self.zoomPosTween = null;}).start();
-        this.zoomTween = new game.Tween(this).to({zoom: zoom}, 250).easing(game.Tween.Easing.Quadratic.Out).onComplete(function() {self.zoomTween = null;}).start();
-
-        this.targetZoom = zoom;
-        return true;
-    },
-    
-    onkeyup: function(keycode) {
-        if (this.mode instanceof bamboo.editor.ModeGame) {
-            return this.mode.onkeyup(keycode, this.prevMousePos.clone());
-        }
-
-        // overrides from editor
-        switch (keycode) {
-            case 67:// C
-                this.cameraOffset = null;
-                return true;
-            case 72:// H - boundaries
-                
-                return true;
-            case 84:// T - properties
-                this.propertyPanel.visible = !this.propertyPanel.visible;
-                return true;
-            case 86:// V - editor node visibility
-                this.editorNodeVisibility = (this.editorNodeVisibility+1)%3;
-                switch (this.editorNodeVisibility) {
-                    case 0:
-                        for (var i=0; i<this.nodes.length; i++) {
-                            this.nodes[i].debugDisplayObject.visible = false;
-                        } break;
-                    case 1:
-                        for (var i=0; i<this.nodes.length; i++) {
-                            this.nodes[i].debugDisplayObject.visible = true;
-                            this.nodes[i].debugDisplayObject.alpha = 0.25;
-                        } break;
-                    case 2:
-                        for (var i=0; i<this.nodes.length; i++) {
-                            this.nodes[i].debugDisplayObject.alpha = 1.0;
-                        } break;
-                }
-                return true;
-            case 90:// Z - boundary dim
-                
-                return true;
-        }
-
-        // if not overridden, pass to mode
-        return this.mode.onkeyup(keycode, this.prevMousePos.clone());
     },
 
     filedrop: function(event) {
@@ -583,7 +498,6 @@ Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
             this.camera.position.y * -this.zoom + this.worldTargetPos.y
         );
         return point;
-        // return this.world.camera.position.multiplyc(-this.zoom).add(this.worldTargetPos);
     },
     set: function(value) {
         var tgtCamPos = value.subtract(this.worldTargetPos);

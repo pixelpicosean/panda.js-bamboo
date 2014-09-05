@@ -7,9 +7,7 @@ game.module(
 .body(function() {
 
 bamboo.editor.StateSelect = bamboo.editor.State.extend({
-    init: function(mode) {
-        this._super(mode);
-        
+    enter: function() {        
         if (this.mode.editor.activeNode) {
             this.helpText = 'Select state: (D)uplicate, (E)dit, BACKSPACE remove';
         }
@@ -21,28 +19,46 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
 
     cancel: function() {
         this.mode.editor.controller.deselectAllNodes();
+        this.mode.editor.controller.setActiveNode();
     },
 
     mousedown: function(event) {
         var mousePos = new game.Point(event.global.x, event.global.y);
 
-        if (this.mode.editor.activeNode) {
-            var node = this.mode.editor.getNodeAt(mousePos, this.mode.editor.activeLayer);
+        if (this.mode.editor.selectedNodes.length > 0) {
+            var node = this.mode.editor.getNodeAt(mousePos, true);
 
             if (this.mode.editor.activeNode === node) {
+                var resizeArea = 10;
+                var pos = node.getWorldPosition();
+                mousePos = this.mode.editor.toWorldSpace(mousePos);
+                var bottomRightX = (pos.x - node.anchor.x * node.size.x) + node.size.x - resizeArea;
+                var bottomRightY = (pos.y - node.anchor.y * node.size.y) + node.size.y - resizeArea;
+                if (mousePos.x >= bottomRightX && mousePos.y >= bottomRightY) {
+                    this.mode.editor.changeState('Resize');
+                    return;
+                }
+            }
+
+            if (this.mode.editor.selectedNodes.indexOf(node) !== -1) {
                 this.mode.editor.changeState('Move');
             }
         }
+
+        this._mousedown = true;
     },
 
-    apply: function(event) {
+    mousemove: function(event) {
+        if (this._mousedown) this.mode.editor.changeState('BoxSelect');
+    },
+
+    mouseup: function(event) {
+        this._mousedown = false;
+    },
+
+    click: function(event) {
         var mousePos = new game.Point(event.global.x, event.global.y);
         var node;
-
-        // if we have selected node, and its under the cursor, try to find next node
-        if (this.mode.editor.activeNode && this.mode.editor.isNodeAt(mousePos, this.mode.editor.activeNode._editorNode)) {
-            node = this.mode.editor.getNextNodeAt(mousePos, this.mode.editor.activeLayer, this.mode.editor.activeNode._editorNode);
-        }
 
         if (!node) {
             node = this.mode.editor.getNodeAt(mousePos, true);
@@ -53,6 +69,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
 
         if (!node) {
             this.mode.editor.controller.deselectAllNodes();
+            this.mode.editor.controller.setActiveNode();
             this.mode.editor.changeState('Select');
             return;
         }
@@ -146,155 +163,6 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             }
             return true;
         }
-    },
-
-    onkeyup: function(keycode, p) {
-        switch(keycode) {
-            case 33:// Page Up - sink node
-                if (this.mode.editor.activeNode) {
-                    this.mode.editor.controller.moveNodeUp(this.mode.editor.activeNode);
-                }
-                return true;
-            case 34:// Page Down - lift node
-                if (this.mode.editor.activeNode) {
-                    this.mode.editor.controller.moveNodeDown(this.mode.editor.activeNode);
-                }
-                return true;
-            case 35:// End - lift to top most
-                if (this.mode.editor.activeNode) {
-                    this.mode.editor.controller.moveNodeTopMost(this.mode.editor.activeNode);
-                }
-                return true;
-            case 36:// Home - sink to bottom most
-                if (this.mode.editor.activeNode) {
-                    this.mode.editor.controller.moveNodeBottomMost(this.mode.editor.activeNode);
-                }
-                return true;
-            case 46:// DEL - delete
-            case 48:// 0
-            case 49:// 1
-            case 50:// 2
-            case 51:// 3
-            case 52:// 4
-            case 53:// 5
-            case 54:// 6
-            case 55:// 7
-            case 56:// 8
-            case 57:// 9
-                var number = keycode - 48;
-                if (this.mode.ctrlDown) {
-                    this.assignGroup(number);
-                } else {
-                    this.selectGroup(number);
-                }
-                return true;
-            case 65:// A - select all / add
-                if (this.mode.shiftDown) {
-                    this.mode.changeState(new bamboo.editor.CreateNodeState(this.mode));
-                } else {
-                    if (this.mode.editor.selectedNodes.length !== 0)
-                        this.mode.editor.controller.deselectAllNodes();
-                    else
-                        this.mode.editor.controller.selectAllNodes();
-                }
-                return true;
-            case 66:// B - box select
-                this.mode.changeState(new bamboo.editor.BoxSelectState(this.mode, p));
-                return true;
-            case 68:// D - duplicate
-                if (this.mode.editor.selectedNodes.length !== 0) {
-
-                    // dublicate all selected nodes
-                    var nodes = [];
-                    for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
-                        var n = this.mode.editor.selectedNodes[i];
-                        var json = n.toJSON();
-                        var node = this.mode.editor.controller.createNode(json.class, json.properties, n._editorNode.properties);
-                        nodes.push(node);
-                    }
-
-                    var active = null;
-                    // fix connections
-                    for(var i=0; i<nodes.length; i++) {
-                        var idx = this.mode.editor.selectedNodes.indexOf(nodes[i].connectedTo);
-                        if (idx !== -1) {
-                            nodes[i].connectedTo = nodes[idx];
-                        }
-                        if (this.mode.editor.selectedNodes[i] === this.mode.editor.activeNode)
-                            active = nodes[i];
-                    }
-                    this.mode.editor.controller.deselectAllNodes();
-                    this.mode.editor.controller.setActiveNode(active);
-                    this.mode.changeState(new bamboo.editor.NewNodeState(this.mode, p, nodes));
-                }
-                return true;
-            case 70:// F - find node (move camera there)
-                if (this.mode.editor.selectedNodes.length !== 0) {
-                    var pivot;
-                    if (this.mode.editor.activeNode) {
-                        pivot = this.mode.editor.activeNode._editorNode.layer.toLocalSpace(this.mode.editor.activeNode.getWorldPosition());
-                    } else {
-                        pivot = new game.Point();
-                        for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
-                            var n = this.mode.editor.selectedNodes[i];
-                            pivot.add(n._editorNode.layer.toLocalSpace(n.getWorldPosition()));
-                        }
-                        pivot.x /= this.mode.editor.selectedNodes.length;
-                        pivot.y /= this.mode.editor.selectedNodes.length;
-                    }
-                    
-                    this.mode.editor.controller.moveCameraTo(pivot);
-                }
-                return true;
-            case 80:// P - parent to / unparent
-                if (this.mode.shiftDown) {
-                    for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
-                        var n = this.mode.editor.selectedNodes[i];
-                        n._editorNode.setProperty('connectedTo', n._editorNode.layer);
-                    }
-                } else {
-                    if (this.mode.editor.selectedNodes.length > 1 && this.mode.editor.activeNode) {
-                        for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
-                            var n = this.mode.editor.selectedNodes[i];
-                            if (n === this.mode.editor.activeNode)
-                                continue;
-                            n._editorNode.setProperty('connectedTo', this.mode.editor.activeNode);
-                        }
-                    }
-                }
-                return true;
-            case 82:// R - rotate
-                if (this.mode.editor.selectedNodes.length !== 0) {
-                    var pivot;
-                    if (this.mode.editor.activeNode) {
-                        pivot = this.mode.editor.activeNode.getWorldPosition();
-                    } else {
-                        pivot = new game.Point();
-                        for(var i=0; i<this.mode.editor.selectedNodes.length; i++)
-                            pivot.add(this.mode.editor.selectedNodes[i].getWorldPosition());
-                        pivot.x /= this.mode.editor.selectedNodes.length;
-                        pivot.y /= this.mode.editor.selectedNodes.length;
-                    }
-                    this.mode.changeState(new bamboo.editor.RotateNodeState(this.mode, p, this.mode.editor.selectedNodes, pivot));
-                }
-                return true;
-            case 83:// S - scale
-                if (this.mode.editor.selectedNodes.length !== 0) {
-                    var pivot;
-                    if (this.mode.editor.activeNode) {
-                        pivot = this.mode.editor.activeNode.getWorldPosition();
-                    } else {
-                        pivot = new game.Point();
-                        for(var i=0; i<this.mode.editor.selectedNodes.length; i++)
-                            pivot.add(this.mode.editor.selectedNodes[i].getWorldPosition());
-                        pivot.x /= this.mode.editor.selectedNodes.length;
-                        pivot.y /= this.mode.editor.selectedNodes.length;
-                    }
-                    this.mode.changeState(new bamboo.editor.ScaleNodeState(this.mode, p, this.mode.editor.selectedNodes, pivot));
-                }
-                return true;
-        }
-        return false;
     },
 
     filedrop: function(event) {

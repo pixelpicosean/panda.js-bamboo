@@ -13,28 +13,8 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
     altDown: false,
     ctrlDown: false,
 
-    init: function(editor) {
-        this._super(editor);
-
-        this.state = new bamboo.editor.StateSelect(this);
-
-        // this.timeDisplay = new game.BitmapText('', { font: 'Buu' });
-        // this.timeDisplay.position.set(20, 20);
-        // this.timeDisplay.visible = false;
-        // this.editor.overlay.addChild(this.timeDisplay);
-
-        // this.zoomDisplay = new game.BitmapText('', { font: 'Buu' });
-        // this.zoomDisplay.position.set(20, 50);
-        // this.zoomDisplay.visible = false;
-        // this.editor.overlay.addChild(this.zoomDisplay);
-    },
-
-    exit: function() {
-        // if (this.animationRunning) this.stopAnimation();
-
-        // this.editor.overlay.removeChild(this.timeDisplay);
-        // this.editor.overlay.removeChild(this.zoomDisplay);
-        // this.state.cancel();
+    enter: function() {
+        this.editor.changeState('Select');
     },
 
     zoomChanged: function(newZoom) {
@@ -67,18 +47,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             this.editor.world.updateableNodes[i].node.stop();
         }
         // this.timeDisplay.visible = false;
-    },
-
-    click: function(event) {
-        this.state.apply(event);
-    },
-
-    mousedown: function(event) {
-        if (this.state.mousedown) this.state.mousedown(event);
-    },
-
-    mousemove: function(event) {
-        this.state.mousemove(event);
     },
 
     keydown: function(key) {
@@ -149,7 +117,7 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             return;
         }
 
-        this.state.keydown(key);
+        this._super(key);
     },
 
     keyup: function(key) {
@@ -162,7 +130,7 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             return;
         }
 
-        this.state.keyup(key);
+        this._super(key);
     },
 
     filedrop: function(event) {

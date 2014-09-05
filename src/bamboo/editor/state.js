@@ -10,11 +10,16 @@ bamboo.editor.State = game.Class.extend({
         this.mode = mode;
     },
 
-    apply: function() {},
+    enter: function() {},
+    exit: function() {},
     cancel: function() {},
+
+    click: function() {},
+    mousedown: function() {},
+    mousemove: function() {},
+    mouseup: function() {},
     keydown: function() {},
-    keyup: function() {},
-    mousemove: function() {}
+    keyup: function() {}
 });
 
 });

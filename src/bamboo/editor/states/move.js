@@ -11,9 +11,7 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
     nodes: [],
     startValues: [],
 
-    init: function(mode) {
-        this._super(mode);
-
+    enter: function() {
         for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
             var node = this.mode.editor.selectedNodes[i];
             this.nodes.push(node);
@@ -27,16 +25,29 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
         document.body.style.cursor = 'move';
     },
 
-    apply: function(event) {
+    exit: function() {
         document.body.style.cursor = 'default';
-        this.mode.editor.changeState('Select');
     },
 
     cancel: function() {
-        document.body.style.cursor = 'default';
         for (var i = 0; i < this.nodes.length; i++) {
             var node = this.nodes[i];
             node._editorNode.setProperty('position', this.startValues[i]);
+        }
+    },
+
+    click: function(event) {
+        this.mode.editor.changeState('Select');
+    },
+
+    keydown: function(key) {
+        if (key === 'X') {
+            if (this.lockToAxis === 'X') this.lockToAxis = null;
+            else this.lockToAxis = 'X';
+        }
+        else if (key === 'Y') {
+            if (this.lockToAxis === 'Y') this.lockToAxis = null;
+            else this.lockToAxis = 'Y';
         }
     },
 
@@ -63,17 +74,6 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
             }
 
             node._editorNode.setProperty('position', newPos);
-        }
-    },
-
-    keydown: function(key) {
-        if (key === 'X') {
-            if (this.lockToAxis === 'X') this.lockToAxis = null;
-            else this.lockToAxis = 'X';
-        }
-        else if (key === 'Y') {
-            if (this.lockToAxis === 'Y') this.lockToAxis = null;
-            else this.lockToAxis = 'Y';
         }
     }
 });

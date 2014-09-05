@@ -28,23 +28,9 @@ bamboo.Node.editor = game.Class.extend({
         this.debugDisplayObject = new game.Container();
         this.displayObject.addChild(this.debugDisplayObject);
 
-        this.parentSelectionRect = new game.Graphics();
-        this.parentSelectionRect.visible = false;
-        this.displayObject.addChild(this.parentSelectionRect);
-                
-        this.selectionAxis = new game.Sprite('../src/bamboo/editor/media/axis.png');
-        this.selectionAxis.anchor = { x: 0.305, y: 0.305 };
-        this.selectionAxis.visible = false;
-        this.displayObject.addChild(this.selectionAxis);
-
         this.selectionRect = new game.Graphics();
         this.selectionRect.visible = false;
         this.displayObject.addChild(this.selectionRect);
-
-        this.activeAxis = new game.Sprite('../src/bamboo/editor/media/axis_hover.png');
-        this.activeAxis.anchor = { x: 0.305, y: 0.305 };
-        this.activeAxis.visible = false;
-        this.displayObject.addChild(this.activeAxis);
 
         this.activeRect = new game.Graphics();
         this.activeRect.visible = false;
@@ -62,6 +48,20 @@ bamboo.Node.editor = game.Class.extend({
         this.editableRect = new game.Graphics();
         this.editableRect.visible = false;
         this.displayObject.addChild(this.editableRect);
+
+        this.parentSelectionRect = new game.Graphics();
+        this.parentSelectionRect.visible = false;
+        this.displayObject.addChild(this.parentSelectionRect);
+
+        this.selectionAxis = new game.Sprite('../src/bamboo/editor/media/axis.png');
+        this.selectionAxis.anchor = { x: 0.305, y: 0.305 };
+        this.selectionAxis.visible = false;
+        this.displayObject.addChild(this.selectionAxis);
+
+        this.activeAxis = new game.Sprite('../src/bamboo/editor/media/axis_hover.png');
+        this.activeAxis.anchor = { x: 0.305, y: 0.305 };
+        this.activeAxis.visible = false;
+        this.displayObject.addChild(this.activeAxis);
 
         this.redrawConnectedToLine();
     },
@@ -121,22 +121,22 @@ bamboo.Node.editor = game.Class.extend({
         this.nameText.position.y = -this.node.size.y * this.node.anchor.y - 18;
 
         this.parentSelectionRect.clear();
-        this.parentSelectionRect.lineStyle(1, 0xff00aa, 0.5);
+        this.parentSelectionRect.lineStyle(1, 0xffffff, 0.5);
         this.parentSelectionRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
 
         this.activeRect.clear();
         this.activeRect.beginFill(0xffaa00, 0.3);
         this.activeRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
         this.activeRect.endFill();
-        this.activeRect.lineStyle(1, 0xffaa00, 0.5);
-        this.activeRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
+        // this.activeRect.lineStyle(1, 0xffaa00, 0.5);
+        // this.activeRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
 
         this.selectionRect.clear();
-        this.selectionRect.beginFill(0x00ff66, 0.3);
+        this.selectionRect.beginFill(0x00ff66, 0.2);
         this.selectionRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
         this.selectionRect.endFill();
-        this.selectionRect.lineStyle(1, 0x00ff66, 0.5);
-        this.selectionRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
+        // this.selectionRect.lineStyle(1, 0x00ff66, 0.5);
+        // this.selectionRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
 
         this.editableRect.clear();
         this.editableRect.lineStyle(1, 0x0066ff);

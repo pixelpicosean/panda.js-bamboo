@@ -115,7 +115,7 @@ bamboo.Controller = game.Class.extend({
         node._editorNode.selectionRect.visible = false;
         this.editor.nodeDeselected(node);
 
-        if (this.editor.activeNode === node) this.setActiveNode();
+        // if (this.editor.activeNode === node) this.setActiveNode();
 
         var unmarkChildren = function(c, selectedNodes) {
             for (var i=0; i<c.length; i++) {
@@ -142,9 +142,13 @@ bamboo.Controller = game.Class.extend({
         }
 
         this.editor.activeNode = node;
-
-        if (this.editor.activeNode) {
-            this.selectNode(this.editor.activeNode);
+        
+        if (node) {
+            this.deselectAllNodes();
+            this.selectNode(node);
+            // this.editor.activeNode = node;
+            this.editor.activeNode._editorNode.selectionAxis.visible = false;
+            this.editor.activeNode._editorNode.selectionRect.visible = false;
             this.editor.activeNode._editorNode.activeAxis.visible = true;
             this.editor.activeNode._editorNode.activeRect.visible = true;
         }
@@ -164,6 +168,8 @@ bamboo.Controller = game.Class.extend({
                 this.editor.nodes[i].displayObject.visible = false;
             }
         }
+
+        this.deselectAllNodes();
     },
 
     moveNodeUp: function(node) {

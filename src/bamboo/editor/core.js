@@ -38,8 +38,9 @@ game.module(
     'bamboo.editor.states.boxselect',
     'bamboo.editor.states.add',
     'bamboo.editor.states.move',
-    'bamboo.editor.states.rotate',
-    'bamboo.editor.states.scale',
+    'bamboo.editor.states.resize',
+    // 'bamboo.editor.states.rotate',
+    // 'bamboo.editor.states.scale',
     'bamboo.editor.states.select'
 )
 .body(function() {

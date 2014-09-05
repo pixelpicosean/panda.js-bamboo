@@ -13,12 +13,30 @@ bamboo.editor.Mode = game.Class.extend({
     enter: function() {},
     exit: function() {},
     update: function() {},
-    click: function() {},
-    mousedown: function() {},
-    mousemove: function() {},
-    mouseup: function() {},
-    keydown: function() {},
-    keyup: function() {}
+
+    click: function(event) {
+        this.state.click(event);
+    },
+
+    mousedown: function(event) {
+        this.state.mousedown(event);
+    },
+
+    mousemove: function(event) {
+        this.state.mousemove(event);
+    },
+
+    mouseup: function(event) {
+        this.state.mouseup(event);
+    },
+
+    keydown: function(key) {
+        this.state.keydown(key);
+    },
+
+    keyup: function(key) {
+        this.state.keyup(key);
+    }
 });
 
 });
