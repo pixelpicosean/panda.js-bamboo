@@ -28,7 +28,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
         if (this.mode.editor.selectedNodes.length > 0) {
             var node = this.mode.editor.getNodeAt(mousePos, true);
 
-            if (this.mode.editor.activeNode === node) {
+            if (node && this.mode.editor.activeNode === node) {
                 var resizeArea = 10;
                 var pos = node.getWorldPosition();
                 mousePos = this.mode.editor.toWorldSpace(mousePos);
@@ -132,11 +132,48 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             return;
         }
         if (key === 'D') {
+            var newNodes = [];
+            for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
+                var node = this.mode.editor.selectedNodes[i];
+                var json = node._editorNode.toJSON();
+                json.properties.name = json.class;
+                var newNode = this.mode.editor.controller.createNode(json.class, json.properties);
+                newNode.initProperties();
+                newNode._editorNode.layerChanged();
+                newNode._editorNode.ready();
+
+                newNode._editorNode.setProperty('size', newNode.size);
+
+                newNodes.push(newNode);
+                // if (!this.mode.editor.activeNode) this.mode.editor.controller.setActiveNode(newNode);
+                // this.mode.editor.controller.selectNode(newNode);
+                
+                // var parentPos = node.getWorldPosition();
+                // var pos = this.mode.editor.toWorldSpace(this.mode.editor.prevMousePos);
+                // this.mode.state.offset.x -= pos.x - parentPos.x;
+                // this.mode.state.offset.y -= pos.y - parentPos.y;
+                // this.mode.state.update(this.mode.editor.prevMousePos.x, this.mode.editor.prevMousePos.y);
+            }
+            this.mode.editor.controller.deselectAllNodes();
+            this.mode.editor.controller.setActiveNode();
+            for (var i = 0; i < newNodes.length; i++) {
+                this.mode.editor.controller.selectNode(newNodes[i]);
+            }
+            // this.mode.editor.controller.setActiveNode(newNodes[0]);
+            
+            this.mode.editor.changeState('Move');
+            return;
             if (this.mode.editor.activeNode) {
                 var node = this.mode.editor.activeNode;
                 var json = node._editorNode.toJSON();
                 json.properties.name = json.class;
                 var newNode = this.mode.editor.controller.createNode(json.class, json.properties);
+                newNode.initProperties();
+                newNode._editorNode.layerChanged();
+                newNode._editorNode.ready();
+
+                newNode._editorNode.setProperty('size', newNode.size);
+
                 this.mode.editor.controller.deselectAllNodes();
                 this.mode.editor.controller.setActiveNode(newNode);
                 this.mode.editor.changeState('Move');
@@ -171,27 +208,28 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             var parts = file.name.split('.');
             var suffix = parts[parts.length - 1];
 
-            if (suffix !== 'png') {
+            if (suffix !== 'png' && suffix !== 'jpg') {
                 return this.mode.editor.showError('Only png images are supported!');
             }
 
             var reader = new FileReader();
-            var editor = this.mode.editor;
-            var filename = file.name;
-            reader.onload = function(e) {
-                var imgData = e.target.result;
-                var texture = game.Texture.fromImage(imgData, true);
-
-                if (game.TextureCache[filename]) throw 'Image ' + filename + ' already found.';
-
-                game.TextureCache[filename] = texture;
-
-                editor.addImage(filename);
-            };
+            reader.onload = this.fileloaded.bind(this, file.name);
             reader.readAsDataURL(file);
         }
 
         return false;
+    },
+
+    fileloaded: function(filename, event) {
+        if (game.TextureCache[filename]) {
+            return this.mode.editor.showError('Image ' + filename + ' already found.');
+        }
+
+        var imgData = event.target.result;
+        var texture = game.Texture.fromImage(imgData, true);
+        game.TextureCache[filename] = texture;
+
+        this.mode.editor.addImage(filename);
     }
 });
 

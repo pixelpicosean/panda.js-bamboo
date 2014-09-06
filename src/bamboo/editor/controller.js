@@ -213,24 +213,54 @@ bamboo.Controller = game.Class.extend({
     },
 
     moveLayerUp: function(layer) {
+        var prevLayerIndex;
+        for (var i = 0; i < this.editor.world.nodes.length; i++) {
+            if (this.editor.layers.indexOf(this.editor.world.nodes[i]) !== -1) {
+                // Layer found
+                if (this.editor.world.nodes[i] === layer) break;
+                prevLayerIndex = i;
+            }
+        }
+        if (typeof prevLayerIndex !== 'number') return;
+
+        var layerIndex = this.editor.world.nodes.indexOf(layer);
+        var prevLayer = this.editor.world.nodes[prevLayerIndex];
+        // Swap layers
+        this.editor.world.nodes[prevLayerIndex] = layer;
+        this.editor.world.nodes[layerIndex] = prevLayer;
+
         var idx = layer.displayObject.parent.children.indexOf(layer.displayObject);
-        if (idx === 0)
-            return;// already behind everything
-        layer.displayObject.parent.addChildAt(layer.displayObject, idx-1);
+        if (idx === 0) return;
+        layer.displayObject.parent.addChildAt(layer.displayObject, idx - 1);
         idx = this.editor.layers.indexOf(layer);
         this.editor.layers.splice(idx, 1);
-        this.editor.layers.splice(idx-1, 0, layer);
+        this.editor.layers.splice(idx - 1, 0, layer);
         this.editor.propertyPanel.updateLayerList();
     },
     
     moveLayerDown: function(layer) {
+        var nextLayerIndex;
+        for (var i = this.editor.world.nodes.length - 1; i >= 0; i--) {
+            if (this.editor.layers.indexOf(this.editor.world.nodes[i]) !== -1) {
+                // Layer found
+                if (this.editor.world.nodes[i] === layer) break;
+                nextLayerIndex = i;
+            }
+        }
+        if (typeof nextLayerIndex !== 'number') return;
+
+        var layerIndex = this.editor.world.nodes.indexOf(layer);
+        var nextLayer = this.editor.world.nodes[nextLayerIndex];
+        // Swap layers
+        this.editor.world.nodes[nextLayerIndex] = layer;
+        this.editor.world.nodes[layerIndex] = nextLayer;
+
         var idx = layer.displayObject.parent.children.indexOf(layer.displayObject);
-        if (idx === layer.displayObject.parent.children.length-1)
-            return;// already on front of everything
-        layer.displayObject.parent.addChildAt(layer.displayObject, idx+1);
+        if (idx === layer.displayObject.parent.children.length - 1) return;
+        layer.displayObject.parent.addChildAt(layer.displayObject, idx + 1);
         idx = this.editor.layers.indexOf(layer);
         this.editor.layers.splice(idx, 1);
-        this.editor.layers.splice(idx+1, 0, layer);
+        this.editor.layers.splice(idx + 1, 0, layer);
         this.editor.propertyPanel.updateLayerList();
     },
 

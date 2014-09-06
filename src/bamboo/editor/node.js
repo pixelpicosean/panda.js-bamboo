@@ -133,8 +133,8 @@ bamboo.Node.editor = game.Class.extend({
 
         this.editableRect.clear();
         this.editableRect.lineStyle(1, 0x0066ff);
-        this.editableRect.beginFill(0x0066ff, 0.2);
-        this.editableRect.drawRect(-6, -6, size.x + 12, size.y + 12);
+        // this.editableRect.beginFill(0x0066ff, 0.2);
+        this.editableRect.drawRect(-this.node.size.x * this.node.anchor.x - 6, -this.node.size.y * this.node.anchor.y - 6, size.x + 12, size.y + 12);
     },
 
     enableEditMode: function(enabled) {

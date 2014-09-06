@@ -24,7 +24,6 @@ bamboo.nodes.Layer.editor = bamboo.Node.editor.extend({
             }
         }
         this._super(key, value, oldValue);
-        this.node.update();
     },
 
     setVisibility: function(value) {

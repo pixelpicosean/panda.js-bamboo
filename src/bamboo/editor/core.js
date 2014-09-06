@@ -21,6 +21,12 @@ game.module(
     'bamboo.editor.modes.game',
     'bamboo.editor.modes.main',
 
+    'bamboo.editor.states.boxselect',
+    'bamboo.editor.states.add',
+    'bamboo.editor.states.move',
+    'bamboo.editor.states.resize',
+    'bamboo.editor.states.select',
+
     'bamboo.editor.nodes.null',
     'bamboo.editor.nodes.image',
     'bamboo.editor.nodes.layer',
@@ -29,19 +35,7 @@ game.module(
     'bamboo.editor.nodes.rotator',
     'bamboo.editor.nodes.emitter',
     'bamboo.editor.nodes.trigger',
-    // 'bamboo.editor.nodes.manualtrigger',
-    // 'bamboo.editor.nodes.movingimage',
-    
-    // 'bamboo.editor.nodes.triggerbox',
-    // 'bamboo.editor.nodes.triggercircle',
-    
-    'bamboo.editor.states.boxselect',
-    'bamboo.editor.states.add',
-    'bamboo.editor.states.move',
-    'bamboo.editor.states.resize',
-    // 'bamboo.editor.states.rotate',
-    // 'bamboo.editor.states.scale',
-    'bamboo.editor.states.select'
+    'bamboo.editor.nodes.tile'
 )
 .body(function() {
 

@@ -20,7 +20,7 @@ bamboo.createNode('Image', {
 });
 
 bamboo.addNodeProperty('Image', 'image', 'image');
-bamboo.addNodeProperty('Image', 'alpha', 'number', 1);
+// bamboo.addNodeProperty('Image', 'alpha', 'number', 1);
 bamboo.addNodeProperty('Image', 'anchor', 'vector');
 
 });
