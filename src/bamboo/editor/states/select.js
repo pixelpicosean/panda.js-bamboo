@@ -155,7 +155,8 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
                 // this.mode.state.update(this.mode.editor.prevMousePos.x, this.mode.editor.prevMousePos.y);
             }
             this.mode.editor.controller.deselectAllNodes();
-            this.mode.editor.controller.setActiveNode();
+            if (newNodes.length === 1) this.mode.editor.controller.setActiveNode(newNodes[0]);
+            else this.mode.editor.controller.setActiveNode();
             for (var i = 0; i < newNodes.length; i++) {
                 this.mode.editor.controller.selectNode(newNodes[i]);
             }

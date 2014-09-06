@@ -15,17 +15,16 @@ bamboo.createNode('Tile', {
         this._super(name, value);
         if (name === 'tile' && this.tileset) {
             // Find tile from tileset
-            var tile, i = 0;
+            var i = 0;
             for (var key in game.TextureCache) {
                 if (game.TextureCache[key].baseTexture.imageUrl.indexOf(this.tileset) !== -1) {
                     if (i === value) {
-                        tile = game.TextureCache[key];
+                        this.displayObject.setTexture(game.TextureCache[key]);
                         break;
                     }
                     i++;
                 }
             }
-            if (tile) this.displayObject.setTexture(tile);
         }
     }
 });
