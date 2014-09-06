@@ -7,8 +7,15 @@ game.module(
 .body(function() {
 'use strict';
 
-bamboo.createNode('Layer');
+bamboo.createNode('Layer', {
+    ready: function() {
+        if (this.cacheAsBitmap) {
+            this.displayObject.cacheAsBitmap = true;
+        }
+    }
+});
 
 bamboo.addNodeProperty('Layer', 'speedFactor', 'number', 1);
+bamboo.addNodeProperty('Layer', 'cacheAsBitmap', 'boolean');
 
 });

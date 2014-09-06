@@ -60,7 +60,10 @@ bamboo.editor.StateBoxSelect = bamboo.editor.State.extend({
         }
         else {
             var node = this.mode.editor.getNodeAt(this.mode.editor.prevMousePos, true);
-            if (node) this.mode.editor.controller.setActiveNode(node);
+            if (node) {
+                this.mode.editor.controller.setActiveNode(node);
+                this.mode.editor.controller.setActiveLayer(node._editorNode.layer);
+            }
             else {
                 this.mode.editor.controller.deselectAllNodes();
                 this.mode.editor.controller.setActiveNode();

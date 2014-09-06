@@ -29,7 +29,7 @@ bamboo.Editor = game.Class.extend({
         this.prevMousePos = new game.Point(game.system.width / 2, game.system.height / 2);
         
         this.worldTargetPos = new game.Point(game.system.width / 2 - game.System.width / 2, game.system.height / 2 - game.System.height / 2);
-        this.world.displayObject.position.set(this.worldTargetPos.x, this.worldTargetPos.y);
+        this.world.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);
         this.displayObject.addChild(this.world.displayObject);
         
         this.overlay = new game.Container();

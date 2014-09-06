@@ -86,9 +86,7 @@ bamboo.PropertyPanel = game.Class.extend({
         this.settingsWindow.addInputText('height', this.editor.world.height, 'Height', '', this.settingsChanged.bind(this, 'height'));
         this.settingsWindow.addInputColor('bgcolor', '#' + this.editor.world.bgcolor.toString(16), 'Background color', '', this.settingsChanged.bind(this, 'bgcolor'));
 
-        // this.settingsWindow.addInputSelect('cameraTarget', 'Camera target', '', this.settingsChanged.bind(this, 'cameraTarget'));
-        // this.editor.buildNodeDropdown(this.settingsWindow, 'cameraTarget', this.editor.world);
-        // this.settingsWindow.setInputSelectValue('cameraTarget', this.editor.world.cameraTarget);
+        this.updateLayerList();
     },
 
     settingsChanged: function(key) {

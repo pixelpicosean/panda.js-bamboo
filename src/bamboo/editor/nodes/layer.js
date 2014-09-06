@@ -34,6 +34,7 @@ bamboo.nodes.Layer.editor = bamboo.Node.editor.extend({
         this.locked = value;
         if (this.locked) {
             this.editor.controller.deselectAllNodes(this.node);
+            this.editor.controller.setActiveNode();
         }
     }
 });
