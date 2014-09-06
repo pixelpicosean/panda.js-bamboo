@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 
 game.addAsset('../src/bamboo/editor/media/axis.png');
-game.addAsset('../src/bamboo/editor/media/axis_hover.png');
+game.addAsset('../src/bamboo/editor/media/axis_active.png');
 
 bamboo.Node.editor = game.Class.extend({
     helpText: '',
@@ -59,7 +59,7 @@ bamboo.Node.editor = game.Class.extend({
         this.selectionAxis.visible = false;
         this.displayObject.addChild(this.selectionAxis);
 
-        this.activeAxis = new game.Sprite('../src/bamboo/editor/media/axis_hover.png');
+        this.activeAxis = new game.Sprite('../src/bamboo/editor/media/axis_active.png');
         this.activeAxis.anchor = { x: 0.305, y: 0.305 };
         this.activeAxis.visible = false;
         this.displayObject.addChild(this.activeAxis);
@@ -181,36 +181,6 @@ bamboo.Node.editor = game.Class.extend({
     removePropertyChangeListener: function(listener) {
         var idx = this.propertyChangeListeners.indexOf(listener);
         this.propertyChangeListeners.splice(idx, 1);
-    },
-
-    setOrigin: function() {},
-
-    getOrigin: function() {
-        return new game.Point();
-    },
-
-    onkeyup: function(keycode,p) {
-        switch(keycode) {
-            case 27:// ESC - exit origin set
-                if (this.movingOriginOffset) {
-                    this.setProperty('position', this.node.connectedTo.toLocalSpace(this.startPos));
-                    this.setOrigin(this.startOrigin);
-                    this.startOrigin = null;
-                    this.startPos = null;
-                    this.startMatrix = null;
-                    this.movingOriginOffset = null;
-                    return true;
-                }
-                return false;
-            case 79:// O - set origin
-                this.startOrigin = this.getOrigin();
-                this.startPos = this.node.getWorldPosition();
-                this.startMatrix = new PIXI.Matrix();
-                this.startMatrix.fromArray(this.node.displayObject.worldTransform.toArray());
-                this.movingOriginOffset = p;
-                return true;
-        }
-        return false;
     },
 
     keydown: function(key) {  

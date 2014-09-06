@@ -17,26 +17,12 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         this.editor.changeState('Select');
     },
 
-    zoomChanged: function(newZoom) {
-        this.zoomDisplay.visible = true;
-        this.zoomDisplay.alpha = 1.0;
-        this.zoomDisplay.setText((newZoom*100.0).toFixed(2)+'%');
-        if (this.zoomTween) this.zoomTween.stop();
-        this.zoomTween = new game.Tween(this.zoomDisplay).to({alpha:0.0}, 300).easing(game.Tween.Easing.Quadratic.In);
-        var self = this;
-        this.zoomTween.onComplete(function() {
-            self.zoomTween = null;
-        });
-        this.zoomTween.start();
-    },
-
     startAnimation: function() {
         this.animationRunning = true;
         this.editor.world.time = 0;
         for (var i = 0; i < this.editor.world.updateableNodes.length; i++) {
             this.editor.world.updateableNodes[i].node.start();
         }
-        // this.timeDisplay.visible = true;
     },
     
     stopAnimation: function() {
@@ -46,7 +32,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         for (var i = 0; i < this.editor.world.updateableNodes.length; i++) {
             this.editor.world.updateableNodes[i].node.stop();
         }
-        // this.timeDisplay.visible = false;
     },
 
     keydown: function(key) {
@@ -87,8 +72,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             this.editor.saveAsModule();
             return;
         }
-        // if (key === 'NUM_PLUS') return this.editor.onmousewheel(0.5);
-        // if (key === 'NUM_MINUS') return this.editor.onmousewheel(-0.5);
         if (key === 'W') {
             this.editor.windowsHidden = !this.editor.windowsHidden;
             if (this.editor.windowsHidden) bamboo.ui.hideAll();
@@ -135,15 +118,8 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         if (this.state.filedrop) this.state.filedrop(event);
     },
 
-    changeState: function(newState) {
-        this.state = newState;
-    },
-
     update: function() {
-        if (this.animationRunning) {
-            this.editor.world.update();
-            // this.timeDisplay.setText(this.editor.world.time.toFixed(1) + 's');
-        }
+        if (this.animationRunning) this.editor.world.update();
     }
 });
 

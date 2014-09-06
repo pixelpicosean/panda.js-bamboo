@@ -52,9 +52,7 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
     },
 
     mousemove: function(event) {
-        var x = event.global.x;
-        var y = event.global.y;
-        this.update(x, y);
+        this.update(event.global.x, event.global.y);
     },
 
     update: function(x, y) {

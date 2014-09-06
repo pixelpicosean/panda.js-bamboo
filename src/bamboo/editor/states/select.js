@@ -91,37 +91,6 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
         this.mode.editor.changeState('Select');
     },
 
-    assignGroup: function(number) {
-        if (!bamboo.editor.SelectionGroups) {
-            bamboo.editor.SelectionGroups = [];
-            for(var i=0;i<10;i++) bamboo.editor.SelectionGroups.push([]);
-        }
-
-        // clear previous
-        bamboo.editor.SelectionGroups[number].length = 0;
-        for(var i=0; i<this.mode.editor.selectedNodes.length; i++) {
-            bamboo.editor.SelectionGroups[number].push(this.mode.editor.selectedNodes[i]);
-        }
-    },
-
-    selectGroup: function(number) {
-        if (!this.mode.shiftDown && !this.mode.altDown)
-            this.mode.editor.controller.deselectAllNodes();
-
-        if (!bamboo.editor.SelectionGroups)
-            return;
-
-        if (this.mode.altDown) {
-            for(var i=0; i<bamboo.editor.SelectionGroups[number].length; i++) {
-                this.mode.editor.controller.deselectNode(bamboo.editor.SelectionGroups[number][i]);
-            }
-        } else {
-            for(var i=0; i<bamboo.editor.SelectionGroups[number].length; i++) {
-                this.mode.editor.controller.selectNode(bamboo.editor.SelectionGroups[number][i]);
-            }
-        }
-    },
-
     keydown: function(key) {
         if (key === 'M') {
             if (this.mode.editor.activeNode) {
@@ -145,14 +114,6 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
                 newNode._editorNode.setProperty('size', newNode.size);
 
                 newNodes.push(newNode);
-                // if (!this.mode.editor.activeNode) this.mode.editor.controller.setActiveNode(newNode);
-                // this.mode.editor.controller.selectNode(newNode);
-                
-                // var parentPos = node.getWorldPosition();
-                // var pos = this.mode.editor.toWorldSpace(this.mode.editor.prevMousePos);
-                // this.mode.state.offset.x -= pos.x - parentPos.x;
-                // this.mode.state.offset.y -= pos.y - parentPos.y;
-                // this.mode.state.update(this.mode.editor.prevMousePos.x, this.mode.editor.prevMousePos.y);
             }
             this.mode.editor.controller.deselectAllNodes();
             if (newNodes.length === 1) this.mode.editor.controller.setActiveNode(newNodes[0]);
@@ -160,7 +121,6 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             for (var i = 0; i < newNodes.length; i++) {
                 this.mode.editor.controller.selectNode(newNodes[i]);
             }
-            // this.mode.editor.controller.setActiveNode(newNodes[0]);
             
             this.mode.editor.changeState('Move');
             return;
