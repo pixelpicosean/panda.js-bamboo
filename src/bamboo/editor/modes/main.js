@@ -21,7 +21,7 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         this.animationRunning = true;
         this.editor.world.time = 0;
         for (var i = 0; i < this.editor.world.updateableNodes.length; i++) {
-            this.editor.world.updateableNodes[i].node.start();
+            this.editor.world.updateableNodes[i].start();
         }
     },
     
@@ -30,7 +30,7 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         this.editor.world.time = 0;
         this.editor.world.update();
         for (var i = 0; i < this.editor.world.updateableNodes.length; i++) {
-            this.editor.world.updateableNodes[i].node.stop();
+            this.editor.world.updateableNodes[i].stop();
         }
     },
 
@@ -89,7 +89,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             return this.editor.boundaryLayer.boundaries.visible = !this.editor.boundaryLayer.boundaries.visible;
         }
         if (key === 'ESC') {
-            if (this.animationRunning) this.stopAnimation();
             this.state.cancel();
             this.editor.changeState('Select');
             return;
@@ -110,6 +109,8 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         
         if (key === 'SPACE') {
             this.editor.cameraOffset = null;
+            game.storage.set('lastCameraPosX', this.editor.cameraWorldPosition.x);
+            game.storage.set('lastCameraPosY', this.editor.cameraWorldPosition.y);
             return;
         }
     },

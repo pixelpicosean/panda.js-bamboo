@@ -19,6 +19,11 @@ bamboo.createNode('Rotator', {
         if (this.triggered) this.active = false;
     },
 
+    setProperty: function(name, value) {
+        this._super(name, value);
+        if (name === 'rotation') this.displayObject.rotation = value * (Math.PI / 180);
+    },
+
     update: function() {
         if (!this.active) return;
 
@@ -28,21 +33,22 @@ bamboo.createNode('Rotator', {
             elapsed = 1;
         }
 
-        // if (this.mode === 'backAndForth') {
-        //     var rounds = Math.floor((this.world.time+this.duration*0.5) / this.duration);
-        //     if (rounds % 2 !== 0) f = 1 - f;
-        // }
+        if (this.yoyo) {
+            var rounds = Math.floor((this.world.time - this.offset) / this.duration);
+            if (rounds % 2 === 1) elapsed = 1.0 - elapsed;
+        }
 
         var radians = this.degrees * (Math.PI / 180);
-        
-        this.displayObject.rotation = this.rotation + radians * this.easing(elapsed);
+        this.displayObject.rotation = (this.rotation * (Math.PI / 180)) + radians * this.easing(elapsed);
     }
 });
 
+bamboo.addNodeProperty('Rotator', 'rotation', 'number', 0);
 bamboo.addNodeProperty('Rotator', 'duration', 'number', 3);
 bamboo.addNodeProperty('Rotator', 'degrees', 'number', 360);
 bamboo.addNodeProperty('Rotator', 'easing', 'easing');
 bamboo.addNodeProperty('Rotator', 'loop', 'boolean');
+bamboo.addNodeProperty('Rotator', 'yoyo', 'boolean');
 bamboo.addNodeProperty('Rotator', 'triggered', 'boolean');
 
 });

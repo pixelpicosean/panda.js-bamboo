@@ -19,6 +19,14 @@ bamboo.Editor = game.Class.extend({
             data.width = game.System.width;
             data.height = game.System.height;
         }
+        else {
+            var lastProject = game.storage.get('lastProject');
+            if (lastProject === data.name + document.location.pathname) {
+                var lastCameraPosX = game.storage.get('lastCameraPosX');
+                var lastCameraPosY = game.storage.get('lastCameraPosY');
+            }
+        }
+        game.storage.set('lastProject', data.name + document.location.pathname);
         this.world = new bamboo.World(data);
 
         this.gridSize = game.storage.get('gridSize', 16);
@@ -49,8 +57,8 @@ bamboo.Editor = game.Class.extend({
 
         this.changeMode('Main');
         this.cameraWorldPosition = new game.Point(
-            this.worldTargetPos.x - this.camera.position.x,
-            this.worldTargetPos.y - this.camera.position.y
+            lastCameraPosX || this.worldTargetPos.x - this.camera.position.x,
+            lastCameraPosY || this.worldTargetPos.y - this.camera.position.y
         );
 
         this.errorWindow = new bamboo.UiWindow('center', 'center', 400, 124);
@@ -250,14 +258,14 @@ bamboo.Editor = game.Class.extend({
         this.propertyPanel.showSettings();
     },
 
-    getNodeAt: function(point, ignoreLockedLayers) {
+    getNodeAt: function(point, layer) {
         var pos = this.toWorldSpace(point);
 
         for (var i = this.nodes.length - 1; i >= 0; i--) {
             var _editorNode = this.nodes[i];
             
             if (!_editorNode.layer) continue;
-            if (ignoreLockedLayers && _editorNode.layer._editorNode.locked) continue;
+            if (layer && _editorNode.layer !== layer) continue;
 
             var node = _editorNode.node;
             if (node instanceof bamboo.nodes.Layer) continue;

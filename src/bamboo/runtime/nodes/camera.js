@@ -15,10 +15,9 @@ bamboo.createNode('Camera', {
         this.camera.maxY = this.world.height - game.system.height;
         this.camera.offset.x += this.offset.x;
         this.camera.offset.y += this.offset.y;
-        this.camera.setPosition(this.position.x, this.position.y);
-        if (this.target) {
-            this.camera.follow(this.target.displayObject);
-        }
+        if (this.target) this.camera.follow(this.target.displayObject);
+        if (this.target && this.startFromTarget) this.camera.setPosition(this.target.displayObject.position.x, this.target.displayObject.position.y);
+        else this.camera.setPosition(this.position.x, this.position.y);
         this.update();
     },
 
@@ -36,5 +35,6 @@ bamboo.createNode('Camera', {
 
 bamboo.addNodeProperty('Camera', 'target', 'node');
 bamboo.addNodeProperty('Camera', 'offset', 'vector');
+bamboo.addNodeProperty('Camera', 'startFromTarget', 'boolean');
 
 });

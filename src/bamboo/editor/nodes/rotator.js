@@ -19,6 +19,7 @@ bamboo.nodes.Rotator.editor = bamboo.Node.editor.extend({
 
     update: function() {
         this.node.update();
+        // this.displayObject.rotation = this.node.displayObject.rotation;
     }
 });
 

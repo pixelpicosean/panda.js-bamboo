@@ -96,6 +96,7 @@ bamboo.Property.toJSON = function(obj, name, desc) {
             return { x: obj[name].x, y: obj[name].y };
 
         case bamboo.Property.TYPE.NODE:
+            if (!obj[name]) return '';
             return obj[name].name;
 
         case bamboo.Property.TYPE.EASING:

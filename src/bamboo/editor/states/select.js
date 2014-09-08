@@ -26,7 +26,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
         var mousePos = new game.Point(event.global.x, event.global.y);
 
         if (this.mode.editor.selectedNodes.length > 0) {
-            var node = this.mode.editor.getNodeAt(mousePos, true);
+            var node = this.mode.editor.getNodeAt(mousePos, this.mode.editor.activeLayer);
 
             if (node && this.mode.editor.activeNode === node) {
                 var resizeArea = 10;
@@ -61,7 +61,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
         var node;
 
         if (!node) {
-            node = this.mode.editor.getNodeAt(mousePos, true);
+            node = this.mode.editor.getNodeAt(mousePos, this.mode.editor.activeLayer);
             if (node) {
                 this.mode.editor.controller.setActiveLayer(node._editorNode.layer);
             }

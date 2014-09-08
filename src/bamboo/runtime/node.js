@@ -41,8 +41,7 @@ bamboo.Node = game.Class.extend({
     setProperty: function(name, value) {
         this[name] = value;
         
-        if (name === 'rotation') this.displayObject.rotation = value;
-        else if (name === 'position') this.displayObject.position.set(value.x, value.y);
+        if (name === 'position') this.displayObject.position.set(value.x, value.y);
         else if (name === 'scale') this.displayObject.scale.set(value.x, value.y);
         else if (name === 'anchor') {
             if (this.displayObject.anchor) this.displayObject.anchor.set(value.x, value.y);

@@ -152,11 +152,6 @@ bamboo.Node.editor = game.Class.extend({
             this.sizeChanged();
         }
         else if (property === 'parent') {
-            console.log('pareeent');
-            // var wp = oldValue.toWorldSpace(this.node.position);
-            // this.layerChanged();
-            // this.setProperty('position', value.toLocalSpace(wp));
-            
         }
         else if (property === 'position') {
             var pos = this.node.getWorldPosition();
@@ -235,6 +230,12 @@ bamboo.Node.editor = game.Class.extend({
     },
 
     keyup: function() {
+    },
+
+    start: function() {
+    },
+
+    stop: function() {
     },
 
     toJSON: function() {
