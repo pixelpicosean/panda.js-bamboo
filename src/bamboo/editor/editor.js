@@ -130,12 +130,12 @@ bamboo.Editor = game.Class.extend({
                 continue;
             }
             layer.displayObject.position.set(
-                layer.position.x + this.camera.position.x * -layer.speedFactor,
-                layer.position.y + this.camera.position.y * -layer.speedFactor
+                layer.position.x + this.camera.position.x * -layer.speedFactor.x,
+                layer.position.y + this.camera.position.y * -layer.speedFactor.y
             );
             layer._editorNode.displayObject.position.set(
-                layer.position.x + this.camera.position.x * -layer.speedFactor,
-                layer.position.y + this.camera.position.y * -layer.speedFactor
+                layer.position.x + this.camera.position.x * -layer.speedFactor.x,
+                layer.position.y + this.camera.position.y * -layer.speedFactor.y
             );
         }
     },
@@ -504,6 +504,12 @@ bamboo.Editor = game.Class.extend({
             if (request.responseText === 'success') console.log('Scene saved to file');
             else this.showError('Error saving to file');
         }
+    },
+
+    onResize: function() {
+        this.boundaryLayer.resetGraphics();
+        this.worldTargetPos.set(game.system.width / 2 - game.System.width / 2, game.system.height / 2 - game.System.height / 2);
+        this.world.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);
     }
 });
 

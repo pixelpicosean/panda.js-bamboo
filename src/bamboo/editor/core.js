@@ -156,12 +156,9 @@ game.start = function() {
 };
 
 window.addEventListener('resize', function() {
-    // if (game.system) game.system.resize(window.innerWidth, window.innerHeight);
+    if (game.system) game.system.resize(window.innerWidth, window.innerHeight);
     if (game.scene && game.scene.editor) game.scene.editor.propertyPanel.updateWindows();
-    // if (bamboo.ui) bamboo.ui.update();
-    // if (game.scene && game.scene.editor) {
-    //     game.scene.editor.boundaryLayer.resetGraphics();
-    // }
+    if (game.scene && game.scene.editor) game.scene.editor.onResize();
 });
 
 });

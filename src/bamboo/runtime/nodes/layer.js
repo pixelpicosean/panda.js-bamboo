@@ -15,7 +15,8 @@ bamboo.createNode('Layer', {
     }
 });
 
-bamboo.addNodeProperty('Layer', 'speedFactor', 'number', 1);
+// TODO change speedFactor to vector
+bamboo.addNodeProperty('Layer', 'speedFactor', 'vector', [1, 1]);
 bamboo.addNodeProperty('Layer', 'cacheAsBitmap', 'boolean');
 bamboo.addNodeProperty('Layer', 'fixed', 'boolean');
 
