@@ -429,6 +429,13 @@ game.Emitter = game.Class.extend({
         @method update
     **/
     update: function() {
+        if (this._remove) {
+            for (var i = this.particles.length - 1; i >= 0; i--) {
+                this.removeParticle(this.particles[i]);
+            }
+            return;
+        }
+
         this.durationTimer += game.system.delta;
         if (this.duration > 0) this.active = this.durationTimer < this.duration;
 
