@@ -28,6 +28,7 @@ game.module(
     'bamboo.editor.states.select',
 
     'bamboo.editor.nodes.null',
+    'bamboo.editor.nodes.camera',
     'bamboo.editor.nodes.image',
     'bamboo.editor.nodes.layer',
     'bamboo.editor.nodes.path',
