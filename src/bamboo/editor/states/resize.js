@@ -11,11 +11,16 @@ bamboo.editor.StateResize = bamboo.editor.State.extend({
 
     enter: function() {
         this.node = this.mode.editor.activeNode;
+        this.startSize = this.node.size.clone();
         document.body.style.cursor = 'nwse-resize';
     },
 
     exit: function() {
         document.body.style.cursor = 'default';
+    },
+
+    cancel: function() {
+        this.node._editorNode.setProperty('size', this.startSize);
     },
 
     mousemove: function(event) {
