@@ -155,8 +155,18 @@ bamboo.Node.editor = game.Class.extend({
         }
         else if (property === 'position') {
             var pos = this.node.getWorldPosition();
+            
+            // var parent = this.node.parent;
+            // while (parent) {
+            //     if (parent.speedFactor) {
+            //         pos.x += this.editor.camera.position.x + parent.displayObject.position.x;
+            //         pos.y += this.editor.camera.position.y + parent.displayObject.position.y;
+            //     }
+            //     parent = parent.parent;
+            // }
+
             this.displayObject.position.set(pos.x, pos.y);
-            // if (this.node.displayObject) this.node.displayObject.position.set(value.x, value.y);
+            
             this.redrawConnectedToLine();
         }
         else if (property === 'rotation') {

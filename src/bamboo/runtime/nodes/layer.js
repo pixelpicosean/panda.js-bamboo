@@ -17,5 +17,6 @@ bamboo.createNode('Layer', {
 
 bamboo.addNodeProperty('Layer', 'speedFactor', 'number', 1);
 bamboo.addNodeProperty('Layer', 'cacheAsBitmap', 'boolean');
+bamboo.addNodeProperty('Layer', 'fixed', 'boolean');
 
 });

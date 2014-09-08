@@ -51,7 +51,9 @@ bamboo.editor.StateBoxSelect = bamboo.editor.State.extend({
             else {
                 if (!this.mode.shiftDown) this.mode.editor.controller.deselectAllNodes();
                 for (var i = 0; i < nodes.length; i++) {
-                    this.mode.editor.controller.selectNode(nodes[i]);
+                    if (nodes[i] !== this.mode.editor.activeNode) {
+                        this.mode.editor.controller.selectNode(nodes[i]);
+                    }
                 }
             }
         }

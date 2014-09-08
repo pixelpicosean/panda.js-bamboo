@@ -128,14 +128,22 @@ bamboo.PropertyPanel = game.Class.extend({
         else
             this.layerWindow.setInputSelectValue('activeNode', this.editor.activeNode.name);
 
-        this.layerWindow.addInputCheckbox('locked', layer._editorNode.locked, 'Locked', '', function() {
-            layer._editorNode.setLocked(this.inputs['locked'].checked);
-            self.focusOnCanvas();
-        });
         this.layerWindow.addInputCheckbox('visible', layer._editorNode.visible, 'Visible', 'Is layer visible in editor', function() {
             layer._editorNode.setVisibility(this.inputs['visible'].checked);
             self.focusOnCanvas();
         });
+
+        this.layerWindow.addInputCheckbox('fixed', layer.fixed, 'Fixed position', '', function() {
+            layer.fixed = this.inputs['fixed'].checked;
+            self.editor.updateLayers();
+            self.focusOnCanvas();
+        });
+
+        // this.layerWindow.addInputCheckbox('cacheAsBitmap', layer.cacheAsBitmap, 'Cache as bitmap', '', function() {
+        //     layer.cacheAsBitmap = this.inputs['cacheAsBitmap'].checked;
+        //     self.focusOnCanvas();
+        // });
+        
         this.layerWindow.addInputText('name', layer.name, 'Name', 'Name of the layer', function() {layer._editorNode.setProperty('name', this.inputs['name'].value); self.updateLayerList();});
         this.layerWindow.addInputText('speedFactor', layer.speedFactor.toFixed(2), 'Speed', 'Speed relative to camera', function() {layer._editorNode.setProperty('speedFactor', parseFloat(this.inputs['speedFactor'].value));});
     },

@@ -124,7 +124,16 @@ bamboo.Editor = game.Class.extend({
         var layer;
         for (var i = 0; i < this.layers.length; i++) {
             layer = this.layers[i];
+            if (layer.fixed) {
+                layer.displayObject.position.set(layer.position.x, layer.position.y);
+                layer._editorNode.displayObject.position.set(layer.position.x, layer.position.y);
+                continue;
+            }
             layer.displayObject.position.set(
+                layer.position.x + this.camera.position.x * -layer.speedFactor,
+                layer.position.y + this.camera.position.y * -layer.speedFactor
+            );
+            layer._editorNode.displayObject.position.set(
                 layer.position.x + this.camera.position.x * -layer.speedFactor,
                 layer.position.y + this.camera.position.y * -layer.speedFactor
             );
@@ -273,6 +282,15 @@ bamboo.Editor = game.Class.extend({
             var loc = node.getWorldPosition();
             loc.x -= node.size.x * node.anchor.x;
             loc.y -= node.size.y * node.anchor.y;
+
+            var parent = node.parent;
+            while (parent) {
+                if (parent.speedFactor) {
+                    loc.x += this.camera.position.x + parent.displayObject.position.x;
+                    loc.y += this.camera.position.y + parent.displayObject.position.y;
+                }
+                parent = parent.parent;
+            }
         
             if (pos.x >= loc.x && pos.x <= loc.x + node.size.x &&
                pos.y >= loc.y && pos.y <= loc.y + node.size.y) {
@@ -519,8 +537,8 @@ Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
         this.boundaryLayer.updateBoundary();
         var left = game.system.width / 2 - game.System.width / 2;
         var top = game.system.height / 2 - game.System.height / 2;
-        this.nodeLayer.position.x = left - this.camera.position.x;
-        this.nodeLayer.position.y = top - this.camera.position.y;
+        this.nodeLayer.position.x = left;
+        this.nodeLayer.position.y = top;
         this.updateLayers();
     }
 });
