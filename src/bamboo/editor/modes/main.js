@@ -18,17 +18,23 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
     },
 
     startAnimation: function() {
+        this.editor.setTempMessage('Playing');
+
         this.animationRunning = true;
         this.editor.world.time = 0;
+        
         for (var i = 0; i < this.editor.world.updateableNodes.length; i++) {
             this.editor.world.updateableNodes[i].start();
         }
     },
     
     stopAnimation: function() {
+        this.editor.setTempMessage('Stopped');
+
         this.animationRunning = false;
         this.editor.world.time = 0;
         this.editor.world.update();
+
         for (var i = 0; i < this.editor.world.updateableNodes.length; i++) {
             this.editor.world.updateableNodes[i].stop();
         }
@@ -61,6 +67,9 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             }
             game.storage.set('gridSize', this.editor.gridSize);
 
+            if (this.editor.gridSize > 0) this.editor.setTempMessage('Grid ' + this.editor.gridSize + ' x ' + this.editor.gridSize);
+            else this.editor.setTempMessage('Grid disabled');
+
             this.editor.boundaryLayer.resetGraphics();
             return;
         }
@@ -83,10 +92,13 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             return;
         }
         if (key === 'L') {
-            return this.editor.boundaryLayer.screenDim.visible = !this.editor.boundaryLayer.screenDim.visible;
+            this.editor.boundaryLayer.toggleScreenDim();
+            return;
         }
         if (key === 'B') {
-            return this.editor.boundaryLayer.boundaries.visible = !this.editor.boundaryLayer.boundaries.visible;
+            this.editor.boundaryLayer.boundaries.visible = !this.editor.boundaryLayer.boundaries.visible;
+            this.editor.setTempMessage('Boundaries ' + (this.editor.boundaryLayer.boundaries.visible ? 'on' : 'off'));
+            return;
         }
         if (key === 'ESC') {
             this.state.cancel();

@@ -63,13 +63,12 @@ bamboo.Node.editor = game.Class.extend({
         this.activeAxis.anchor = { x: 0.305, y: 0.305 };
         this.activeAxis.visible = false;
         this.displayObject.addChild(this.activeAxis);
-
-        this.redrawConnectedToLine();
     },
 
     ready: function() {
         this.node.parent._editorNode.displayObject.addChild(this.displayObject);
         this.displayObject.position.set(this.node.position.x, this.node.position.y);
+        this.redrawConnectedToLine();
     },
 
     layerChanged: function() {
@@ -152,20 +151,18 @@ bamboo.Node.editor = game.Class.extend({
             this.sizeChanged();
         }
         else if (property === 'parent') {
+            oldValue._editorNode.displayObject.removeChild(this.displayObject);
+            value._editorNode.displayObject.addChild(this.displayObject);
+
+            var newPos = value.toLocalSpace(this.node.position);
+            this.setProperty('position', newPos);
+
+            this.displayObject.position.set(this.node.position.x, this.node.position.y);
         }
         else if (property === 'position') {
-            var pos = this.node.getWorldPosition();
+            // var pos = this.node.getWorldPosition();
             
-            // var parent = this.node.parent;
-            // while (parent) {
-            //     if (parent.speedFactor) {
-            //         pos.x += this.editor.camera.position.x + parent.displayObject.position.x;
-            //         pos.y += this.editor.camera.position.y + parent.displayObject.position.y;
-            //     }
-            //     parent = parent.parent;
-            // }
-
-            this.displayObject.position.set(pos.x, pos.y);
+            this.displayObject.position.set(this.node.position.x, this.node.position.y);
             
             this.redrawConnectedToLine();
         }

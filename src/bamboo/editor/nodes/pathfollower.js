@@ -17,8 +17,18 @@ bamboo.nodes.PathFollower.editor = bamboo.Node.editor.extend({
         this.debugDisplayObject.addChild(this.icon);
     },
 
+    start: function() {
+        this.node.origPosition = game.Point.from(this.node.position);
+    },
+
+    stop: function() {
+        this.setProperty('position', this.node.origPosition);
+    },
+
     update: function() {
         this.node.update();
+        this.displayObject.position.set(this.node.displayObject.position.x, this.node.displayObject.position.y);
+        this.redrawConnectedToLine();
     }
 });
 

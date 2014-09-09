@@ -55,6 +55,10 @@ bamboo.Editor = game.Class.extend({
         this.toolBar = new bamboo.ToolBar(this);
         this.propertyPanel = new bamboo.PropertyPanel(this);
 
+        this.tempMessage = new game.Text('', { font: '16px Arial', fill: 'white' });
+        this.tempMessage.position.set(10, this.toolBar.height + 10);
+        this.displayObject.addChild(this.tempMessage);
+
         this.changeMode('Main');
         this.cameraWorldPosition = new game.Point(
             lastCameraPosX || this.worldTargetPos.x - this.camera.position.x,
@@ -76,6 +80,18 @@ bamboo.Editor = game.Class.extend({
 
         this.updateLayers();
         this.showSettings();
+    },
+
+    setTempMessage: function(text) {
+        if (this.tempMessageTween) this.tempMessageTween.stop();
+
+        this.tempMessage.alpha = 1;
+        this.tempMessage.setText(text);
+        this.tempMessageTween = game.scene.addTween(this.tempMessage, {
+            alpha: 0
+        }, 2000, {
+            delay: 0
+        }).start();
     },
 
     initNodes: function() {
@@ -102,6 +118,7 @@ bamboo.Editor = game.Class.extend({
 
     toggleViewNodes: function() {
         this.viewNodes = !this.viewNodes;
+        this.setTempMessage('Nodes ' + (this.viewNodes ? 'visible' : 'hidden'));
         for (var i = 0; i < this.nodes.length; i++) {
             this.nodes[i].parentSelectionRect.visible = this.viewNodes;
             this.nodes[i].connectedToLine.visible = this.viewNodes;
@@ -267,6 +284,14 @@ bamboo.Editor = game.Class.extend({
         this.propertyPanel.showSettings();
     },
 
+    getNodesInLayer: function(layer) {
+        var nodes = [];
+        for (var i = 0; i < this.nodes.length; i++) {
+            if (this.nodes[i].layer === layer) nodes.push(this.nodes[i]);
+        }
+        return nodes;
+    },
+
     getNodeAt: function(point, layer) {
         var pos = this.toWorldSpace(point);
 
@@ -412,6 +437,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     downloadAsJSON: function() {
+        if (this.mode.animationRunning) this.mode.stopAnimation();
         var json = this.world.toJSON();
         var filename = json.name.toLowerCase() + '.json';
         var data = JSON.stringify(json, null, '    ');
@@ -421,6 +447,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     saveAsJSON: function() {
+        if (this.mode.animationRunning) this.mode.stopAnimation();
         var json = this.world.toJSON();
         var filename = json.name.toLowerCase() + '.json';
         var content = JSON.stringify(json, null, '    ');
@@ -429,6 +456,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     downloadAsModule: function() {
+        if (this.mode.animationRunning) this.mode.stopAnimation();
         var json = this.world.toJSON();
         var name = json.name.toLowerCase();
         var filename = json.name.toLowerCase() + '.js';
@@ -439,6 +467,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     saveAsModule: function() {
+        if (this.mode.animationRunning) this.mode.stopAnimation();
         var json = this.world.toJSON();
         var name = json.name.toLowerCase();
         var content = this.buildModuleFromJSON(json);
@@ -501,7 +530,9 @@ bamboo.Editor = game.Class.extend({
 
     saveToFileComplete: function(request) {
         if (request.readyState === 4) {
-            if (request.responseText === 'success') console.log('Scene saved to file');
+            if (request.responseText === 'success') {
+                this.setTempMessage('Saved');
+            }
             else this.showError('Error saving to file');
         }
     },

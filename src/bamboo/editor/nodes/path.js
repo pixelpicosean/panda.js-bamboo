@@ -42,6 +42,7 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
 
     ready: function() {
         this._super();
+        this.node.calculateLength();
         this.redrawPath();
     },
 

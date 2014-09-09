@@ -61,6 +61,7 @@ bamboo.Controller = game.Class.extend({
         this.editor.nodes.splice(this.editor.nodes.indexOf(node._editorNode), 1);
         this.editor.world.nodes.splice(this.editor.world.nodes.indexOf(node), 1);
         node.parent.displayObject.removeChild(node.displayObject);
+        node._editorNode.displayObject.parent.removeChild(node._editorNode.displayObject);
         this.editor.nodeRemoved(node);
     },
 
@@ -157,6 +158,7 @@ bamboo.Controller = game.Class.extend({
     },
 
     setActiveLayer: function(layer) {
+        if (this.editor.activeLayer === layer) return;
         this.editor.activeLayer = layer;
         this.editor.propertyPanel.activeLayerChanged(layer);
 
@@ -172,22 +174,41 @@ bamboo.Controller = game.Class.extend({
         this.deselectAllNodes();
     },
 
-    moveNodeUp: function(node) {
-        var idx = node.displayObject.parent.children.indexOf(node.displayObject);
-        if (idx === 0)
-            return;// already behind everything
+    moveNodeDown: function(node) {
+        var nodes = this.editor.getNodesInLayer(node._editorNode.layer);
+        var index = nodes.indexOf(node._editorNode);
+        if (index === 0) return;
+        
+        var prevNode = nodes[index - 1];
 
-        node.displayObject.parent.addChildAt(node.displayObject, idx-1);
-        this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
-        this.editor.propertyPanel.activeNodeChanged(node);
+        // Swap editor nodes
+        var prevNodeIndex = this.editor.nodes.indexOf(prevNode);
+        var thisNodeIndex = this.editor.nodes.indexOf(node._editorNode);
+        this.editor.nodes[prevNodeIndex] = node._editorNode;
+        this.editor.nodes[thisNodeIndex] = prevNode;
+
+        // Swap nodes
+        var prevNodeIndex = this.editor.world.nodes.indexOf(prevNode.node);
+        var thisNodeIndex = this.editor.world.nodes.indexOf(node);
+        this.editor.world.nodes[prevNodeIndex] = node;
+        this.editor.world.nodes[thisNodeIndex] = prevNode.node;
+
+        // Reset displayObjects
+        var nodes = this.editor.getNodesInLayer(node._editorNode.layer);
+        for (var i = 0; i < nodes.length; i++) {
+            nodes[i].node.parent.displayObject.removeChild(nodes[i].node.displayObject);
+        }
+        for (var i = 0; i < nodes.length; i++) {
+            nodes[i].node.parent.displayObject.addChild(nodes[i].node.displayObject);
+        }
     },
 
-    moveNodeDown: function(node) {
+    moveNodeUp: function(node) {
+        return;
         var idx = node.displayObject.parent.children.indexOf(node.displayObject);
-        if (idx === node.displayObject.parent.children.length-1)
-            return;// already in front of everything
+        if (idx === node.displayObject.parent.children.length - 1) return;
 
-        node.displayObject.parent.addChildAt(node.displayObject, idx+1);
+        node.displayObject.parent.addChildAt(node.displayObject, idx + 1);
         this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
         this.editor.propertyPanel.activeNodeChanged(node);
     },

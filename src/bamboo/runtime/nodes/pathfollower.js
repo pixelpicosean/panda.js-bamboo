@@ -2,39 +2,23 @@ game.module(
     'bamboo.runtime.nodes.pathfollower'
 )
 .require(
+    'bamboo.core',
     'bamboo.runtime.node'
 )
 .body(function() {
 
 bamboo.createNode('PathFollower', {
+    active: true,
     offset: 0,
-    active: false,
 
-    init: function() {
-        this.displayObject = new game.Container();
-        this.origPosition = new game.Point();
+    trigger: function() {
+        this.offset = this.world.time;
+        this.active = true;
     },
 
     ready: function() {
-        if (!this.triggered) this.start();
-    },
-
-    trigger: function() {
-        if (!this.triggered) return;
-        this.stop();
-        this.start();
-    },
-
-    start: function() {
-        this.active = true;
-        this.offset = this.world.time;
-        this.origPosition.copy(this.position);
-    },
-
-    stop: function() {
-        this.active = false;
-        this.position.copy(this.origPosition);
-        this.setProperty('position', this.position);
+        this.origPosition = game.Point.from(this.position);
+        if (this.triggered) this.active = false;
     },
 
     update: function() {
@@ -52,6 +36,8 @@ bamboo.createNode('PathFollower', {
 
         var curDistance = this.parent.length * this.easing(elapsed);
         var newPos = this.parent.getPositionAtDistance(curDistance);
+        newPos.x -= this.parent.points[0].x;
+        newPos.y -= this.parent.points[0].y;
         this.position.x = this.origPosition.x + newPos.x;
         this.position.y = this.origPosition.y + newPos.y;
         this.setProperty('position', this.position);

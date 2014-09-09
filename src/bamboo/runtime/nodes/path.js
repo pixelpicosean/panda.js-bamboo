@@ -2,6 +2,7 @@ game.module(
     'bamboo.runtime.nodes.path'
 )
 .require(
+    'bamboo.core',
     'bamboo.runtime.node'
 )
 .body(function() {

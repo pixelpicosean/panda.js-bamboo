@@ -4,10 +4,20 @@ game.module(
 .body(function() {
 
 bamboo.BoundaryLayer = game.Class.extend({
+    dimAmount: 0.5,
+
     init: function(editor) {
         this.editor = editor;
         this.displayObject = new game.Container();
         this.createGraphics();
+        this.updateBoundary();
+    },
+
+    toggleScreenDim: function() {
+        this.dimAmount += 0.25;
+        if (this.dimAmount > 1) this.dimAmount = 0;
+
+        this.editor.setTempMessage('Dim ' + (this.dimAmount * 100) + '%');
         this.updateBoundary();
     },
 
@@ -30,7 +40,7 @@ bamboo.BoundaryLayer = game.Class.extend({
         this.screenRect.position.y = top;
         
         this.screenDim.clear();
-        this.screenDim.beginFill(0, 0.5);
+        this.screenDim.beginFill(0, this.dimAmount);
 
         var miny = 0;
         var maxy = game.system.height;

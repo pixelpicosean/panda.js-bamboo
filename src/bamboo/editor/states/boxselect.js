@@ -49,7 +49,10 @@ bamboo.editor.StateBoxSelect = bamboo.editor.State.extend({
                 }
             }
             else {
-                if (!this.mode.shiftDown) this.mode.editor.controller.deselectAllNodes();
+                if (!this.mode.shiftDown) {
+                    this.mode.editor.controller.deselectAllNodes();
+                    this.mode.editor.controller.setActiveNode();
+                }
                 for (var i = 0; i < nodes.length; i++) {
                     if (nodes[i] !== this.mode.editor.activeNode) {
                         this.mode.editor.controller.selectNode(nodes[i]);
@@ -58,10 +61,10 @@ bamboo.editor.StateBoxSelect = bamboo.editor.State.extend({
             }
         }
         else {
-            var node = this.mode.editor.getNodeAt(this.mode.editor.prevMousePos, true);
+            var node = this.mode.editor.getNodeAt(this.mode.editor.prevMousePos, this.mode.editor.activeLayer);
             if (node) {
-                this.mode.editor.controller.setActiveNode(node);
                 this.mode.editor.controller.setActiveLayer(node._editorNode.layer);
+                this.mode.editor.controller.setActiveNode(node);
             }
             else {
                 this.mode.editor.controller.deselectAllNodes();
