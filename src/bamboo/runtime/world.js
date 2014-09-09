@@ -8,6 +8,7 @@ game.module(
 'use strict';
 
 bamboo.World = game.Class.extend({
+    assets: [],
     nodes: [],
     layers: [],
     updateableNodes: [],

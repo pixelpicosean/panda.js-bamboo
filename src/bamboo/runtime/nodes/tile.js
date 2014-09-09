@@ -30,7 +30,7 @@ bamboo.createNode('Tile', {
     }
 });
 
-bamboo.addNodeProperty('Tile', 'tileset', 'string');
+bamboo.addNodeProperty('Tile', 'tileset', 'json');
 bamboo.addNodeProperty('Tile', 'tile', 'number', 0);
 
 });

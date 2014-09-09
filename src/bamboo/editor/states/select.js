@@ -184,36 +184,6 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             }
             return true;
         }
-    },
-
-    filedrop: function(event) {
-        for (var i = 0; i < event.dataTransfer.files.length; i++) {
-            var file = event.dataTransfer.files[i];
-            var parts = file.name.split('.');
-            var suffix = parts[parts.length - 1];
-
-            if (suffix !== 'png' && suffix !== 'jpg') {
-                return this.mode.editor.showError('Only png images are supported!');
-            }
-
-            var reader = new FileReader();
-            reader.onload = this.fileloaded.bind(this, file.name);
-            reader.readAsDataURL(file);
-        }
-
-        return false;
-    },
-
-    fileloaded: function(filename, event) {
-        if (game.TextureCache[filename]) {
-            return this.mode.editor.showError('Image ' + filename + ' already found.');
-        }
-
-        var imgData = event.target.result;
-        var texture = game.Texture.fromImage(imgData, true);
-        game.TextureCache[filename] = texture;
-
-        this.mode.editor.addImage(filename);
     }
 });
 

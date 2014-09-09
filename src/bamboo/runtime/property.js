@@ -36,7 +36,8 @@ bamboo.Property.TYPE = {
     ENUM: 8,
     IMAGE: 9,
     TRIGGER: 10,
-    COLOR: 11
+    COLOR: 11,
+    JSON: 12
 };
 
 bamboo.Property.parse = function(world, obj, name, prop) {
@@ -45,6 +46,7 @@ bamboo.Property.parse = function(world, obj, name, prop) {
         case bamboo.Property.TYPE.ANGLE:
         case bamboo.Property.TYPE.STRING:
         case bamboo.Property.TYPE.IMAGE:
+        case bamboo.Property.TYPE.JSON:
         case bamboo.Property.TYPE.BOOLEAN:
         case bamboo.Property.TYPE.ENUM:
         case bamboo.Property.TYPE.TRIGGER:
@@ -56,7 +58,6 @@ bamboo.Property.parse = function(world, obj, name, prop) {
             return typeof obj[name] !== 'undefined' ? new game.Point(obj[name].x, obj[name].y) : prop.defaultValue ? new game.Point(prop.defaultValue[0], prop.defaultValue[1]) : new game.Point();
 
         case bamboo.Property.TYPE.NODE:
-            // if (!obj[name]) return world;
             return world.findNode(obj[name]);
 
         case bamboo.Property.TYPE.EASING:

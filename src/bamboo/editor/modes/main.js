@@ -127,10 +127,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         }
     },
 
-    filedrop: function(event) {
-        if (this.state.filedrop) this.state.filedrop(event);
-    },
-
     update: function() {
         if (this.animationRunning) this.editor.world.update();
     }

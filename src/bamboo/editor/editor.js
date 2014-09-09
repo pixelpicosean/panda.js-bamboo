@@ -82,6 +82,46 @@ bamboo.Editor = game.Class.extend({
         this.showSettings();
     },
 
+    showAssets: function() {
+        var assetsWindow = new bamboo.UiWindow('center', 'center', 400, 303);
+        assetsWindow.setTitle('Assets');
+
+        // assetsWindow.addText('Count: ' + this.world.assets.length);
+
+        var assetsList = document.createElement('select');
+        assetsList.className = 'assetsList';
+        assetsWindow.contentDiv.appendChild(assetsList);
+
+        assetsWindow.addButton('Remove', this.removeAsset.bind(this, assetsList));
+        assetsWindow.addButton('Close', function() {
+            assetsWindow.hide();
+        });
+
+        this.updateAssetsList(assetsList);
+        assetsWindow.show();
+    },
+
+    removeAsset: function(assetsList) {
+        if (assetsList.value && confirm('Are you sure?')) {
+            var index = this.world.assets.indexOf(assetsList.value);
+            if (index !== -1) {
+                this.world.assets.splice(index, 1);
+                this.updateAssetsList(assetsList);
+            }
+        }
+    },
+
+    updateAssetsList: function(assetsList) {
+        assetsList.innerHTML = '';
+        assetsList.size = 2;
+        for (var i = 0; i < this.world.assets.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = this.world.assets[i];
+            opt.innerHTML = this.world.assets[i];
+            assetsList.appendChild(opt);
+        }
+    },
+
     setTempMessage: function(text) {
         if (this.tempMessageTween) this.tempMessageTween.stop();
 
@@ -429,7 +469,33 @@ bamboo.Editor = game.Class.extend({
     },
 
     filedrop: function(event) {
-        if (this.mode.filedrop) this.mode.filedrop(event);
+        var assets = [];
+        for (var i = 0; i < event.dataTransfer.files.length; i++) {
+            var file = event.dataTransfer.files[i];
+            assets.push(game.config.mediaFolder + file.name);
+        }
+
+        var loader = new game.AssetLoader(assets);
+        loader.onComplete = this.assetsLoaded.bind(this, loader);
+        loader.load();
+
+        return false;
+    },
+
+    assetsLoaded: function(loader) {
+        var filename;
+        var count = 0;
+        for (var i = 0; i < loader.assetURLs.length; i++) {
+            filename = loader.assetURLs[i].replace(game.config.mediaFolder, '');
+            if (this.world.assets.indexOf(filename) === -1) {
+                this.world.assets.push(filename);
+                count++;
+            }
+        }
+        this.world.assets.sort();
+        var word = count === 1 ? 'asset' : 'assets';
+        this.setTempMessage(count + ' ' + word + ' added');
+        if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
     },
 
     update: function() {
@@ -487,15 +553,6 @@ bamboo.Editor = game.Class.extend({
             }
         }
 
-        var images = [];
-        for (var i = 0; i < json.nodes.length; i++) {
-            for (var key in json.nodes[i].properties) {
-                if (key === 'image' && images.indexOf(json.nodes[i].properties[key]) === -1) {
-                    images.push(json.nodes[i].properties[key]);
-                }
-            }
-        } 
-
         var content = 'game.module(\n    \'game.scenes.' + name + '\'\n)\n';
         content += '.require(\n';
         content += '    \'bamboo.core\',\n';
@@ -505,10 +562,10 @@ bamboo.Editor = game.Class.extend({
         }
         content += '\n)\n';
         content += '.body(function() {\n\n';
-        for (var i = 0; i < images.length; i++) {
-            content += 'game.addAsset(\'' + images[i] + '\');\n';
+        for (var i = 0; i < this.world.assets.length; i++) {
+            content += 'game.addAsset(\'' + this.world.assets[i] + '\');\n';
         }
-        if (images.length > 0) content += '\n';
+        if (this.world.assets.length > 0) content += '\n';
         content += 'game.json[\'game.scenes.' + name + '\'] = ' + JSON.stringify(json, null, '    ');
         content += '\n\n});\n';
 

@@ -256,6 +256,13 @@ select.layerList {
     margin-top: 5px;
     height: 85px;
 }
+select.assetsList {
+    overflow: hidden;
+    background: #686868;
+    border-radius: 5px;
+    margin-top: 5px;
+    height: 200px;
+}
 .window .button.confirm {
     width: 50px;
     text-align: center;

@@ -5,6 +5,21 @@ game.module(
 
 bamboo.Ui = game.Class.extend({
     windows: [],
+    activeWindow: null,
+
+    init: function() {
+        // window.addEventListener('mousemove', this.mousemove.bind(this), false);
+        // window.addEventListener('mouseup', this.mouseup.bind(this), false);
+    },
+
+    mousemove: function(event) {
+        // if (this.activeWindow) this.activeWindow.mousemove(event);
+    },
+
+    mouseup: function() {
+        // document.body.style.cursor = 'default';
+        // this.activeWindow = null;
+    },
     
     addWindow: function(x, y, width, height, align) {
         var w = new bamboo.UiWindow(x, y, width, height, align);
@@ -50,7 +65,7 @@ bamboo.UiWindow = game.Class.extend({
     visible: false,
     align: 'left',
 
-    init: function(x, y, width, height, align, dynamic) {
+    init: function(x, y, width, height, align) {
         this.align = align || this.align;
         if (typeof(x) !== 'undefined') this.x = x;
         if (typeof(y) !== 'undefined') this.y = y;
@@ -61,7 +76,11 @@ bamboo.UiWindow = game.Class.extend({
         this.windowDiv.className = 'window';
 
         this.titleDiv = document.createElement('div');
+        this.titleDiv.addEventListener('mousedown', this.mousedown.bind(this), false);
         this.titleDiv.className = 'title';
+
+        this.mouseStartPos = new game.Point();
+        this.origPosition = new game.Point();
 
         this.contentDiv = document.createElement('div');
         this.contentDiv.className = 'content';
@@ -71,6 +90,19 @@ bamboo.UiWindow = game.Class.extend({
 
         window.addEventListener('resize', this.update.bind(this), false);
         this.update();
+    },
+
+    mousedown: function() {
+        // document.body.style.cursor = 'move';
+        // this.ui.activeWindow = this;
+        // this.mouseStartPos.set(event.clientX, event.clientY);
+        // this.origPosition.set(this.x, this.y);
+    },
+
+    mousemove: function(event) {
+        // this.x = this.origPosition.x + event.clientX - this.mouseStartPos.x;
+        // this.y = this.origPosition.y + event.clientY - this.mouseStartPos.y;
+        // this.update();
     },
 
     update: function() {

@@ -170,7 +170,6 @@ bamboo.PropertyPanel = game.Class.extend({
         });
         node.initProperties();
         this.editor.nodeAdded(node);
-        // this.updateLayerList();
         this.layerSelectionChanged();
     },
 
@@ -263,10 +262,23 @@ bamboo.PropertyPanel = game.Class.extend({
                     break;
                 case bamboo.Property.TYPE.IMAGE:
                     this.settingsWindow.addInputSelect(key, props[key].name, props[key].description, this.imagePropertyChanged.bind(this));
-                    var images = this.editor.images;
+                    var images = this.editor.world.assets;
                     for (var i = 0; i < images.length; i++) {
                         var name = images[i];
-                        this.settingsWindow.addInputSelectOption(key, name, name);
+                        if (name.indexOf('png') !== -1 || name.indexOf('jpg') !== -1) {
+                            this.settingsWindow.addInputSelectOption(key, name, name);
+                        }
+                    }
+                    this.settingsWindow.setInputSelectValue(key, node[key]);
+                    break;
+                case bamboo.Property.TYPE.JSON:
+                    this.settingsWindow.addInputSelect(key, props[key].name, props[key].description, this.imagePropertyChanged.bind(this));
+                    var images = this.editor.world.assets;
+                    for (var i = 0; i < images.length; i++) {
+                        var name = images[i];
+                        if (name.indexOf('json') !== -1) {
+                            this.settingsWindow.addInputSelectOption(key, name, name);
+                        }
                     }
                     this.settingsWindow.setInputSelectValue(key, node[key]);
                     break;

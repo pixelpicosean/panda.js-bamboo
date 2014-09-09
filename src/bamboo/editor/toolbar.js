@@ -13,6 +13,8 @@ bamboo.ToolBar = game.Class.extend({
 
         this.windowElem.addButton('Add node', this.editor.addNode.bind(this.editor));
 
+        this.windowElem.addButton('Assets', this.editor.showAssets.bind(this.editor));
+
         this.windowElem.addButton('Save JSON', this.editor.saveAsJSON.bind(this.editor));
         this.windowElem.addButton('Save module', this.editor.saveAsModule.bind(this.editor));
         

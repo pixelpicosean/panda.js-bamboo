@@ -39,7 +39,7 @@ bamboo.World.inject({
             width: this.width,
             height: this.height,
             bgcolor: this.bgcolor,
-            camera: this.camera,
+            assets: this.assets,
             nodes: []
         };
         this.addJSONConnections(this, jsonObj.nodes);

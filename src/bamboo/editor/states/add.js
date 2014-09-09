@@ -11,7 +11,7 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
     nameHasChanged: false,
 
     enter: function() {
-        this.addWindow = bamboo.ui.addWindow('center', 'center', 400, 214);
+        this.addWindow = bamboo.ui.addWindow('center', 'center', 400, 220);
         this.addWindow.setTitle('Add Node');
         this.addWindow.addInputSelect('type', 'Node Type', 'Type of the node', this.nodeTypeChanged.bind(this));
 
