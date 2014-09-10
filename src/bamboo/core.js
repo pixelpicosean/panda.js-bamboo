@@ -1,5 +1,5 @@
 var bamboo = {
-    version: '1.0.0',
+    version: '0.1.0',
     scenes: [],
     nodes: {}
 };

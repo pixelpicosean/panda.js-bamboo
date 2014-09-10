@@ -3,21 +3,19 @@ game.module(
 )
 .require(
     'bamboo.core',
-    'bamboo.runtime.nodes.layer'
+    'bamboo.runtime.nodes.layer',
+    'bamboo.runtime.nodes.image'
 )
 .body(function() {
 
-game.json['game.scenes.main'] = {
+var json = {
     "name": "Main",
     "width": 1024,
     "height": 768,
-    "bgcolor": "0x000000",
-    "camera": {
-        "position": {
-            "x": 0,
-            "y": 0
-        }
-    },
+    "bgcolor": "0xb7bdc5",
+    "assets": [
+        "panda.png"
+    ],
     "nodes": [
         {
             "class": "Layer",
@@ -29,22 +27,45 @@ game.json['game.scenes.main'] = {
                     "y": 0
                 },
                 "size": {
-                    "x": 64,
-                    "y": 64
-                },
-                "rotation": 0,
-                "scale": {
-                    "x": 1,
-                    "y": 1
+                    "x": 0,
+                    "y": 0
                 },
                 "anchor": {
                     "x": 0,
                     "y": 0
                 },
-                "speedFactor": 1
+                "speedFactor": {
+                    "x": 1,
+                    "y": 1
+                }
+            }
+        },
+        {
+            "class": "Image",
+            "properties": {
+                "parent": "main",
+                "name": "Image",
+                "position": {
+                    "x": 512,
+                    "y": 384
+                },
+                "size": {
+                    "x": 286,
+                    "y": 99
+                },
+                "anchor": {
+                    "x": 0.5,
+                    "y": 0.5
+                },
+                "image": "panda.png"
             }
         }
     ]
+};
+
+bamboo.scenes.push(json);
+for (var i = 0; i < json.assets.length; i++) {
+    game.addAsset(json.assets[i]);
 }
 
 });

@@ -8,8 +8,39 @@ bamboo.Ui = game.Class.extend({
     activeWindow: null,
 
     init: function() {
+        this.overlay = document.createElement('div');
+        this.overlay.style.position = 'absolute';
+        this.overlay.style.left = '0px';
+        this.overlay.style.top = '0px';
+        this.overlay.style.width = '100%';
+        this.overlay.style.height = '100%';
+        this.overlay.style.backgroundColor = 'rgba(0,0,0,0.7)';
+        this.overlay.style.zIndex = 10;
+        this.overlay.style.textAlign = 'center';
+        this.overlay.style.lineHeight = window.innerHeight + 'px';
+        this.overlay.style.display = 'none';
+        this.overlay.style.pointerEvents = 'none';
+        document.body.appendChild(this.overlay);
+
         // window.addEventListener('mousemove', this.mousemove.bind(this), false);
         // window.addEventListener('mouseup', this.mouseup.bind(this), false);
+    },
+
+    onResize: function() {
+        this.overlay.style.lineHeight = window.innerHeight + 'px';
+    },
+
+    showOverlay: function() {
+        this.overlay.style.display = 'block';
+    },
+
+    hideOverlay: function() {
+        this.overlay.style.display = 'none';
+    },
+
+    setOverlay: function(text) {
+        this.overlay.innerHTML = text;
+        return this;
     },
 
     mousemove: function(event) {
@@ -32,6 +63,7 @@ bamboo.Ui = game.Class.extend({
             if (this.windows[i] === elem) {
                 elem.hide();
                 this.windows.splice(i, 1);
+                break;
             }
         }
     },
@@ -176,10 +208,24 @@ bamboo.UiWindow = game.Class.extend({
 
     addImageButton: function(url, callback) {
         var img = new Image();
-        img.src = game.Editor.mediaFolder + url;
+        img.src = 'src/bamboo/editor/media/' + url;
         var buttonDiv = document.createElement('div');
         buttonDiv.appendChild(img);
         buttonDiv.className = 'imageButton';
+        if (callback) buttonDiv.addEventListener('click', callback.bind(this), false);
+        this.contentDiv.appendChild(buttonDiv);
+        return this;
+    },
+
+    addImageTextButton: function(text, imageUrl, callback) {
+        var buttonDiv = document.createElement('div');
+        buttonDiv.className = 'button';
+        var img = new Image();
+        img.src = 'src/bamboo/editor/media/' + imageUrl;
+        buttonDiv.appendChild(img);
+        var title = document.createElement('div');
+        title.innerHTML = text;
+        buttonDiv.appendChild(title);
         if (callback) buttonDiv.addEventListener('click', callback.bind(this), false);
         this.contentDiv.appendChild(buttonDiv);
         return this;

@@ -581,17 +581,17 @@ bamboo.Editor = game.Class.extend({
 
         var request = new XMLHttpRequest();
         request.open('POST', 'src/bamboo/editor/save.php');
-        request.onreadystatechange = this.saveToFileComplete.bind(this, request);
+        request.onreadystatechange = this.saveToFileComplete.bind(this, request, filename);
         request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         request.send(query.join('&'));
     },
 
-    saveToFileComplete: function(request) {
+    saveToFileComplete: function(request, filename) {
         if (request.readyState === 4) {
             if (request.responseText === 'success') {
-                this.setTempMessage('Saved');
+                this.setTempMessage('File saved');
             }
-            else this.showError('Error saving to file');
+            else this.showError('Failed to write file ' + filename);
         }
     },
 

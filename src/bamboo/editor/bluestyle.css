@@ -1,3 +1,11 @@
+/*
+Color theme:
+#b9bec7
+#848e9d
+#4f5d73
+#343e4c
+*/
+
 body {
     background: black;
     font-family: Arial;
@@ -18,12 +26,13 @@ body.notready div {
 
 .window {
     /*pointer-events: auto;*/
-    background: #393939;
+    background: #343e4c;
     z-index: 9999;
     position: absolute;
-    border: 1px solid #202020;
+    /*border: 1px solid #202020;*/
     /*box-shadow: 0px 2px 0px rgba(0,0,0,0.2);*/
     overflow: auto;
+    border-radius: 5px;
 }
 .window .title .input {
     margin-bottom: 10px;
@@ -59,13 +68,13 @@ body.notready div {
 }
 .window .content .button {
     color: #eee;
-    background: #6b6b6b;
-    border: 1px solid #282828;
+    background: #848e9d;
+    border: 1px solid #4f5d73;
     border-radius: 5px;
     padding: 5px 10px;
     margin-left: 5px;
     margin-right: 5px;
-    box-shadow: 0px 2px 0px #282828;
+    box-shadow: 0px 2px 0px #4f5d73;
     cursor: pointer;
     float: left;
     -webkit-touch-callout: none;
@@ -177,15 +186,15 @@ body.notready div {
     float: left;
 }
 .window .title {
-    background: #4a4a4a;
+    background: #4f5d73;
     padding: 10px;
-    border-bottom: 1px solid #282828;
+    /*border-bottom: 1px solid #282828;*/
     display: none;
     /*border-top-left-radius: 5px;*/
     /*border-top-right-radius: 5px;*/
 }
 .window .content {
-    border-top: 1px solid #4a4a4a;
+    /*border-top: 1px solid #4a4a4a;*/
     /*padding: 20px;*/
     /*padding-top: 10px;*/
 }

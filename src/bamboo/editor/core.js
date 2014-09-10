@@ -40,24 +40,20 @@ game.module(
 )
 .body(function() {
 
+game.addAsset('../src/bamboo/editor/media/hourglass.png');
+
 bamboo.EditorScene = game.Scene.extend({
-    init: function() {
+    init: function() {        
         var canvas = game.system.canvas;
-        canvas.ondragover = function() { return false; };
-        canvas.ondragend = function() { return false; };
+        canvas.ondragover = this.dragover.bind(this);
+        canvas.ondragleave = this.dragleave.bind(this);
         canvas.ondrop = this.filedrop.bind(this);
 
-        this.scenesWindow = bamboo.ui.addWindow('center', 'center', 400, 150);
-        this.scenesWindow.setTitle('Bamboo scene editor ' + bamboo.version);
-        this.scenesWindow.addButton('New scene', this.loadEditor.bind(this, null));
-
-        if (bamboo.scenes.length > 0) {
-            bamboo.scenes.sort();
-            this.scenesWindow.addText('<br><br>Load scene:<br>');
-            for (var i = 0; i < bamboo.scenes.length; i++) {
-                this.scenesWindow.addButton(bamboo.scenes[i].name, this.loadEditor.bind(this, bamboo.scenes[i]));
-            }
-        }
+        this.scenesWindow = bamboo.ui.addWindow('center', 'center', 310, 155);
+        this.scenesWindow.setTitle('Welcome to Bamboo scene editor ' + bamboo.version);
+        this.scenesWindow.addImageTextButton('New scene', 'polaroid.png', this.loadEditor.bind(this, null));
+        this.scenesWindow.addImageTextButton('Load scene', 'stack.png', this.loadEditor.bind(this, bamboo.scenes[0]));
+        this.scenesWindow.addImageTextButton('Settings', 'tools.png');
 
         bamboo.nodes = game.ksort(bamboo.nodes);
 
@@ -73,6 +69,15 @@ bamboo.EditorScene = game.Scene.extend({
             this.removeObject(this.editor);
         }
 
+        this.loader = new game.Sprite('../src/bamboo/editor/media/hourglass.png');
+        this.loader.center();
+        this.loader.addTo(this.stage);
+
+        this.addTimer(50, this.startLoading.bind(this, data));
+    },
+
+    startLoading: function(data) {
+        this.loader.remove();
         this.editor = new bamboo.Editor(data);
         this.stage.addChild(this.editor.displayObject);
         this.addObject(this.editor);
@@ -118,7 +123,23 @@ bamboo.EditorScene = game.Scene.extend({
 
     filedrop: function(event) {
         event.preventDefault();
-        if (this.editor) this.editor.filedrop(event);
+        if (this.editor) {
+            bamboo.ui.hideOverlay();
+            this.editor.filedrop(event);
+        }
+    },
+
+    dragover: function() {
+        if (this.editor) {
+            bamboo.ui.setOverlay('Drop here to add asset');
+            bamboo.ui.showOverlay();
+        }
+        return false;
+    },
+
+    dragleave: function() {
+        if (this.editor) bamboo.ui.hideOverlay();
+        return false;
     }
 });
 
@@ -155,6 +176,7 @@ window.addEventListener('resize', function() {
     if (game.system) game.system.resize(window.innerWidth, window.innerHeight);
     if (game.scene && game.scene.editor) game.scene.editor.propertyPanel.updateWindows();
     if (game.scene && game.scene.editor) game.scene.editor.onResize();
+    if (bamboo.ui) bamboo.ui.onResize();
 });
 
 });
