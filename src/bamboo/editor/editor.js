@@ -478,9 +478,14 @@ bamboo.Editor = game.Class.extend({
 
         var loader = new game.AssetLoader(assets);
         loader.onComplete = this.assetsLoaded.bind(this, loader);
+        loader.onProgress = this.assetsProgress.bind(this);
         loader.load();
 
         return false;
+    },
+
+    assetsProgress: function(loader) {
+        if (loader.json) game.json[loader.url] = loader.json;
     },
 
     assetsLoaded: function(loader) {

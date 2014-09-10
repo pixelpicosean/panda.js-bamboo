@@ -11,15 +11,37 @@ bamboo.createNode('Animation', {
         this.displayObject = new game.Animation([new game.Texture(new game.BaseTexture())]);
     },
 
+    ready: function() {
+        if (!this.triggered) this.displayObject.play();
+    },
+
+    trigger: function() {
+        this.displayObject.play();
+    },
+
     setProperty: function(name, value) {
         this._super(name, value);
-        if (name === 'spritesheet') {
-            console.log(value);
-            // this.displayObject.setTexture(game.config.mediaFolder + this.image);
+        if (name === 'spritesheet' && value) {
+            var textures = [];
+            var json = game.json[game.config.mediaFolder + value];
+            var frame = 0;
+            for (var key in json.frames) {
+                if (frame >= this.startFrame) textures.push(game.TextureCache[key]);
+                frame++;
+                if (this.frameCount > 0 && frame === this.frameCount) break;
+            }
+            this.displayObject.textures = textures;
         }
+        if (name === 'speed') this.displayObject.animationSpeed = value;
+        if (name === 'loop') this.displayObject.loop = value;
     }
 });
 
+bamboo.addNodeProperty('Animation', 'startFrame', 'number', 0);
+bamboo.addNodeProperty('Animation', 'frameCount', 'number', 0);
 bamboo.addNodeProperty('Animation', 'spritesheet', 'json');
+bamboo.addNodeProperty('Animation', 'speed', 'number', 1);
+bamboo.addNodeProperty('Animation', 'loop', 'boolean', true);
+bamboo.addNodeProperty('Animation', 'triggered', 'boolean');
 
 });

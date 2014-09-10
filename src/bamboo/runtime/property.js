@@ -87,6 +87,7 @@ bamboo.Property.toJSON = function(obj, name, desc) {
         case bamboo.Property.TYPE.ANGLE:
         case bamboo.Property.TYPE.STRING:
         case bamboo.Property.TYPE.IMAGE:
+        case bamboo.Property.TYPE.JSON:
         case bamboo.Property.TYPE.BOOLEAN:
         case bamboo.Property.TYPE.ENUM:
         case bamboo.Property.TYPE.TRIGGER:

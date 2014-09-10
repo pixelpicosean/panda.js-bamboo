@@ -23,8 +23,8 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         this.animationRunning = true;
         this.editor.world.time = 0;
         
-        for (var i = 0; i < this.editor.world.updateableNodes.length; i++) {
-            this.editor.world.updateableNodes[i].start();
+        for (var i = 0; i < this.editor.nodes.length; i++) {
+            if (typeof this.editor.nodes[i].start === 'function') this.editor.nodes[i].start();
         }
     },
     
@@ -35,8 +35,8 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         this.editor.world.time = 0;
         this.editor.world.update();
 
-        for (var i = 0; i < this.editor.world.updateableNodes.length; i++) {
-            this.editor.world.updateableNodes[i].stop();
+        for (var i = 0; i < this.editor.nodes.length; i++) {
+            if (typeof this.editor.nodes[i].stop === 'function') this.editor.nodes[i].stop();
         }
     },
 
