@@ -526,6 +526,7 @@ bamboo.Editor = game.Class.extend({
         if (this.mode.animationRunning) this.mode.stopAnimation();
         var json = this.world.toJSON();
         var name = json.name.toLowerCase();
+        if (!name) return this.showError('Scene must have name');
         var filename = json.name.toLowerCase() + '.js';
         var data = this.buildModuleFromJSON(json);
 
@@ -537,6 +538,7 @@ bamboo.Editor = game.Class.extend({
         if (this.mode.animationRunning) this.mode.stopAnimation();
         var json = this.world.toJSON();
         var name = json.name.toLowerCase();
+        if (!name) return this.showError('Scene must have name');
         var content = this.buildModuleFromJSON(json);
 
         this.saveToFile('../../game/scenes/', name + '.js', content);

@@ -27,6 +27,7 @@ game.module(
     'bamboo.editor.states.resize',
     'bamboo.editor.states.select',
 
+    'bamboo.editor.nodes.animation',
     'bamboo.editor.nodes.null',
     'bamboo.editor.nodes.camera',
     'bamboo.editor.nodes.image',

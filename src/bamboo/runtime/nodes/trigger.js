@@ -24,7 +24,7 @@ bamboo.createNode('Trigger', {
                 targetPos.y <= thisPos.y + this.size.y) {
                 if (typeof this.target.trigger === 'function') {
                     this.target.trigger(this);
-                    this.target = null;
+                    if (this.onetime) this.target = null;
                 }
             }
 
@@ -36,5 +36,6 @@ bamboo.createNode('Trigger', {
 
 bamboo.addNodeProperty('Trigger', 'activator', 'node');
 bamboo.addNodeProperty('Trigger', 'target', 'node');
+bamboo.addNodeProperty('Trigger', 'onetime', 'boolean');
 
 });
