@@ -84,7 +84,7 @@ bamboo.PropertyPanel = game.Class.extend({
         this.settingsWindow.addInputText('name', this.editor.world.name, 'Name', '', this.settingsChanged.bind(this, 'name'));
         this.settingsWindow.addInputText('width', this.editor.world.width, 'Width', '', this.settingsChanged.bind(this, 'width'));
         this.settingsWindow.addInputText('height', this.editor.world.height, 'Height', '', this.settingsChanged.bind(this, 'height'));
-        this.settingsWindow.addInputColor('bgcolor', '#' + this.editor.world.bgcolor.toString(16), 'Background color', '', this.settingsChanged.bind(this, 'bgcolor'));
+        this.settingsWindow.addInputColor('bgcolor', '#' + this.editor.world.bgcolor.replace('0x', ''), 'Background color', '', this.settingsChanged.bind(this, 'bgcolor'));
 
         this.updateLayerList();
     },
@@ -110,6 +110,7 @@ bamboo.PropertyPanel = game.Class.extend({
             game.system.stage.setBackgroundColor(color);
             this.editor.world.bgcolor = value.replace('#', '0x');
         }
+        this.focusOnCanvas();
     },
 
     activeLayerChanged: function(layer) {

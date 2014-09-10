@@ -51,15 +51,11 @@ bamboo.EditorScene = game.Scene.extend({
         this.scenesWindow.setTitle('Bamboo scene editor ' + bamboo.version);
         this.scenesWindow.addButton('New scene', this.loadEditor.bind(this, null));
 
-        var scenes = [];
-        for (key in game.json) {
-            if (game.json[key].name) scenes.push(game.json[key]);
-        }
-        if (scenes.length > 0) {
-            scenes.sort();
+        if (bamboo.scenes.length > 0) {
+            bamboo.scenes.sort();
             this.scenesWindow.addText('<br><br>Load scene:<br>');
-            for (var i = 0; i < scenes.length; i++) {
-                this.scenesWindow.addButton(scenes[i].name, this.loadEditor.bind(this, scenes[i]));
+            for (var i = 0; i < bamboo.scenes.length; i++) {
+                this.scenesWindow.addButton(bamboo.scenes[i].name, this.loadEditor.bind(this, bamboo.scenes[i]));
             }
         }
 

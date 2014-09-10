@@ -28,6 +28,7 @@ bamboo.Editor = game.Class.extend({
         }
         game.storage.set('lastProject', data.name + document.location.pathname);
         this.world = new bamboo.World(data);
+        game.system.stage.setBackgroundColor(parseInt(this.world.bgcolor));
 
         this.gridSize = game.storage.get('gridSize', 16);
 
@@ -102,7 +103,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     removeAsset: function(assetsList) {
-        if (assetsList.value && confirm('Are you sure?')) {
+        if (assetsList.value && confirm('Remove ' + assetsList.value + '?')) {
             var index = this.world.assets.indexOf(assetsList.value);
             if (index !== -1) {
                 this.world.assets.splice(index, 1);
@@ -562,12 +563,12 @@ bamboo.Editor = game.Class.extend({
         }
         content += '\n)\n';
         content += '.body(function() {\n\n';
-        for (var i = 0; i < this.world.assets.length; i++) {
-            content += 'game.addAsset(\'' + this.world.assets[i] + '\');\n';
-        }
-        if (this.world.assets.length > 0) content += '\n';
-        content += 'game.json[\'game.scenes.' + name + '\'] = ' + JSON.stringify(json, null, '    ');
-        content += '\n\n});\n';
+        content += 'var json = ' + JSON.stringify(json, null, '    ');
+        content += ';\n\nbamboo.scenes.push(json);\n';
+        content += 'for (var i = 0; i < json.assets.length; i++) {\n';
+        content += '    game.addAsset(json.assets[i]);\n';
+        content += '}\n';
+        content += '\n});\n';
 
         return content;
     },

@@ -14,7 +14,7 @@ bamboo.createNode('Image', {
 
     setProperty: function(name, value) {
         this._super(name, value);
-        if (name === 'image' && this.image) this.displayObject.setTexture(this.image);
+        if (name === 'image' && this.image) this.displayObject.setTexture(game.config.mediaFolder + this.image);
         else if (name === 'alpha') this.displayObject.alpha = this.alpha;
         else if (name === 'flipX') this.displayObject.scale.x = value ? -1 : 1;
         else if (name === 'anchor') this.displayObject.anchor.set(value.x, value.y);

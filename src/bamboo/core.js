@@ -43,15 +43,17 @@ game.module(
 
 bamboo.Scene = game.Scene.extend({
     staticInit: function() {
-        this._super();
-
         var data;
-        for (var key in game.json) {
-            if (game.json[key].name === this.name) {
-                data = game.json[key];
+        for (var i = 0; i < bamboo.scenes.length; i++) {
+            if (bamboo.scenes[i].name === this.name) {
+                data = bamboo.scenes[i];
+                break;
             }
         }
         if (!data) throw 'Bamboo scene \'' + this.name + '\' not found';
+
+        this.backgroundColor = parseInt(data.bgcolor);
+        this._super();
 
         this.world = new bamboo.World(data);
         this.stage.addChild(this.world.displayObject);
