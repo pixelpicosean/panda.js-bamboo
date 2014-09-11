@@ -14,22 +14,10 @@ bamboo.createNode('Tile', {
 
     setProperty: function(name, value) {
         this._super(name, value);
-        if (name === 'tile' && this.tileset) {
-            var i = 0;
-            var json = game.json[game.config.mediaFolder + this.tileset];
-
-            for (var key in json.frames) {
-                if (i === value) {
-                    this.displayObject.setTexture(game.TextureCache[key]);
-                    break;
-                }
-                i++;
-            }
-        }
+        if (name === 'frame' && value) this.displayObject.setTexture(game.TextureCache[value]);
     }
 });
 
-bamboo.addNodeProperty('Tile', 'tileset', 'json');
-bamboo.addNodeProperty('Tile', 'tile', 'number', 0);
+bamboo.addNodeProperty('Tile', 'frame', 'string', '', true);
 
 });

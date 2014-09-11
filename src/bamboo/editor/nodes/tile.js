@@ -9,34 +9,52 @@ game.module(
 
 bamboo.nodes.Tile.editor = bamboo.Node.editor.extend({
     helpText: 'LEFT prev tile, RIGHT next tile',
+    frames: [],
+    currentFrame: 0,
 
-    enableEditMode: function(enabled) {
-        this.editMode = enabled;
-        if (enabled) {
-            // this.tileset = new game.Sprite(game.config.mediaFolder + this.node.tileset);
-            // this.debugDisplayObject.addChild(this.tileset);
-            // this.node.displayObject.visible = false;
-        }
-        else {
-            // this.node.displayObject.visible = true;
-            // this.debugDisplayObject.removeChild(this.tileset);
+    ready: function() {
+        this._super();
+        if (this.node.tileset) {
+            this.getFrames();
+            for (var i = 0; i < this.frames.length; i++) {
+                if (this.frames[i] === this.node.frame) this.currentFrame = i;
+            }
         }
     },
 
-    mousemove: function(pos) {
-        pos = this.node.toLocalSpace(pos);
-        pos.x += this.node.anchor.x * this.node.size.x;
-        pos.y += this.node.anchor.y * this.node.size.y;
+    getFrames: function() {
+        var json = game.json[game.config.mediaFolder + this.node.tileset];
+        for (var name in json.frames) {
+            this.frames.push(name);
+        }
+    },
+
+    propertyChanged: function(key, value, oldValue) {
+        if (key === 'tileset') {
+            this.getFrames();
+            this.setProperty('frame', this.frames[this.currentFrame]);
+        }
+        if (key === 'frame') return;
+        
+        this._super(key, value, oldValue);
     },
 
     keydown: function(key) {
         if (key === 'RIGHT') {
-            this.setProperty('tile', this.node.tile + 1);
+            if (this.currentFrame < this.frames.length - 1) {
+                this.currentFrame++;
+                this.setProperty('frame', this.frames[this.currentFrame]);
+            }
         }
         if (key === 'LEFT') {
-            this.setProperty('tile', this.node.tile - 1);
+            if (this.currentFrame > 0) {
+                this.currentFrame--;
+                this.setProperty('frame', this.frames[this.currentFrame]);
+            }
         }
     }
 });
+
+bamboo.addNodeProperty('Tile', 'tileset', 'json');
 
 });
