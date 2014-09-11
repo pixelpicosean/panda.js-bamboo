@@ -9,7 +9,7 @@ game.module(
 bamboo.editor.StateSelect = bamboo.editor.State.extend({
     enter: function() {        
         if (this.mode.editor.activeNode) {
-            this.helpText = 'Select state: (D)uplicate, (E)dit, Set pare(n)t, BACKSPACE remove';
+            this.helpText = 'Select state: (D)uplicate, (E)dit, Set pare(n)t, (M)atch world size, BACKSPACE remove';
         }
         else {
             this.helpText = 'Select state: MOUSE select';
