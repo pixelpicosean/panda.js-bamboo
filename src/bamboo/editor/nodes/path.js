@@ -48,6 +48,9 @@ bamboo.nodes.Path.editor = bamboo.Node.editor.extend({
 
     enableEditMode: function(enabled) {
         if (enabled === this.editEnabled) return;
+
+        if (enabled) this.debugDisplayObject.visible = enabled;
+        else this.debugDisplayObject.visible = this.editor.viewNodes;
         
         this._super(enabled);
         this.editEnabled = enabled;
