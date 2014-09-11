@@ -164,6 +164,7 @@ bamboo.Editor = game.Class.extend({
             this.nodes[i].parentSelectionRect.visible = this.viewNodes;
             this.nodes[i].connectedToLine.visible = this.viewNodes;
             this.nodes[i].nameText.visible = this.viewNodes;
+            this.nodes[i].debugDisplayObject.visible = this.viewNodes;
         }
     },
 

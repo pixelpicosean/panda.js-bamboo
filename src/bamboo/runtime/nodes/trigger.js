@@ -8,6 +8,8 @@ game.module(
 .body(function() {
 
 bamboo.createNode('Trigger', {
+    activated: false,
+
     update: function() {
         if (this.activator && this.target) {
             var targetPos = this.activator.getWorldPosition();
@@ -22,10 +24,16 @@ bamboo.createNode('Trigger', {
                 targetPos.x <= thisPos.x + this.size.x &&
                 targetPos.y + this.activator.size.y >= thisPos.y &&
                 targetPos.y <= thisPos.y + this.size.y) {
-                if (typeof this.target.trigger === 'function') {
-                    this.target.trigger(this);
-                    if (this.onetime) this.target = null;
+                if (!this.activated) {
+                    if (typeof this.target.trigger === 'function') {
+                        this.target.trigger(this);
+                        if (this.onetime) this.target = null;
+                    }
                 }
+                this.activated = true;
+            }
+            else {
+                this.activated = false;
             }
 
             bamboo.pool.put(targetPos);

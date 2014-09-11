@@ -225,8 +225,10 @@ bamboo.Node.editor = game.Class.extend({
     },
 
     getClassName: function() {
+        var proto;
         for (var name in bamboo.nodes) {
-            if (this.node instanceof bamboo.nodes[name]) return name;
+            proto = Object.getPrototypeOf(this.node);
+            if (proto === bamboo.nodes[name].prototype) return name;
         }
     },
 

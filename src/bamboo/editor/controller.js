@@ -31,6 +31,7 @@ bamboo.Controller = game.Class.extend({
         editorNode.connectedToLine.visible = this.editor.viewNodes;
         editorNode.parentSelectionRect.visible = this.editor.viewNodes;
         editorNode.nameText.visible = this.editor.viewNodes;
+        editorNode.debugDisplayObject.visible = this.editor.viewNodes;
 
         if (typeof editorNode.update === 'function') this.editor.world.updateableNodes.push(editorNode);
 

@@ -13,10 +13,11 @@ bamboo.createNode('Animation', {
 
     ready: function() {
         if (!this.triggered) this.displayObject.play();
+        else this.displayObject.gotoAndStop(0);
     },
 
     trigger: function() {
-        this.displayObject.play();
+        this.displayObject.gotoAndPlay(0);
     },
 
     setProperty: function(name, value) {

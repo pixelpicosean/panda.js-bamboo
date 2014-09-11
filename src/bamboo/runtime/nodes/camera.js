@@ -28,8 +28,8 @@ bamboo.createNode('Camera', {
             layer = this.world.layers[i];
             if (layer.fixed) continue;
             layer.displayObject.position.set(
-                layer.position.x + this.camera.position.x * -layer.speedFactor.x,
-                layer.position.y + this.camera.position.y * -layer.speedFactor.y
+                ~~(layer.position.x + this.camera.position.x * -layer.speedFactor.x),
+                ~~(layer.position.y + this.camera.position.y * -layer.speedFactor.y)
             );
         }
     }
