@@ -135,6 +135,31 @@ bamboo.Controller = game.Class.extend({
         unmarkChildren(node.world.getConnectedNodes(node), this.editor.selectedNodes);
     },
 
+    duplicateNodes: function() {
+        var newNodes = [];
+        for (var i = 0; i < this.editor.selectedNodes.length; i++) {
+            var node = this.editor.selectedNodes[i];
+            var json = node._editorNode.toJSON();
+            json.properties.name = json.class;
+            var newNode = this.createNode(json.class, json.properties);
+            newNode.initProperties();
+            newNode._editorNode.layerChanged();
+            newNode._editorNode.ready();
+
+            newNode._editorNode.setProperty('size', newNode.size);
+
+            newNodes.push(newNode);
+        }
+        this.editor.controller.deselectAllNodes();
+        if (newNodes.length === 1) this.setActiveNode(newNodes[0]);
+        else this.setActiveNode();
+        for (var i = 0; i < newNodes.length; i++) {
+            this.selectNode(newNodes[i]);
+        }
+        
+        this.editor.changeState('Move');
+    },
+
     setActiveNode: function(node) {
         if (this.editor.activeNode === node) return;
 

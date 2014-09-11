@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 
 bamboo.editor.StateMove = bamboo.editor.State.extend({
-    helpText: 'Move state: X/Y lock axis, MOUSE apply',
+    helpText: 'Move state: X/Y lock axis, (D)uplicate, MOUSE apply',
     nodes: [],
     startValues: [],
 
@@ -41,7 +41,11 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
     },
 
     keydown: function(key) {
-        if (key === 'X') {
+        if (key === 'D') {
+            this.click();
+            this.mode.editor.controller.duplicateNodes();
+        }
+        else if (key === 'X') {
             if (this.lockToAxis === 'X') this.lockToAxis = null;
             else this.lockToAxis = 'X';
         }
@@ -62,6 +66,8 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
 
             newPos.x += this.mode.editor.camera.position.x;
             newPos.y += this.mode.editor.camera.position.y;
+            newPos.x = newPos.x.round();
+            newPos.y = newPos.y.round();
 
             if (this.lockToAxis === 'X') newPos.y = this.startValues[i].y;
             else if (this.lockToAxis === 'Y') newPos.x = this.startValues[i].x;

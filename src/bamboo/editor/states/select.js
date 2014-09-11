@@ -9,7 +9,7 @@ game.module(
 bamboo.editor.StateSelect = bamboo.editor.State.extend({
     enter: function() {        
         if (this.mode.editor.activeNode) {
-            this.helpText = 'Select state: (D)uplicate, (E)dit, Set pare(n)t, (M)atch world size, BACKSPACE remove';
+            this.helpText = 'Select state: (D)uplicate, (E)dit, Set pare(n)t, (M)atch world size, BACKSPACE remove, ARROWS move';
         }
         else {
             this.helpText = 'Select state: MOUSE select';
@@ -92,6 +92,38 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
     },
 
     keydown: function(key) {
+        if (key === 'RIGHT') {
+            var node;
+            for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
+                node = this.mode.editor.selectedNodes[i];
+                var newPos = this.mode.shiftDown ? node.size.x : this.mode.editor.gridSize || 1;
+                node._editorNode.setProperty('position', new game.Point(node.position.x + newPos, node.position.y));
+            }
+        }
+        if (key === 'LEFT') {
+            var node;
+            for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
+                node = this.mode.editor.selectedNodes[i];
+                var newPos = this.mode.shiftDown ? node.size.x : this.mode.editor.gridSize || 1;
+                node._editorNode.setProperty('position', new game.Point(node.position.x - newPos, node.position.y));
+            }
+        }
+        if (key === 'UP') {
+            var node;
+            for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
+                node = this.mode.editor.selectedNodes[i];
+                var newPos = this.mode.shiftDown ? node.size.y : this.mode.editor.gridSize || 1;
+                node._editorNode.setProperty('position', new game.Point(node.position.x, node.position.y - newPos));
+            }
+        }
+        if (key === 'DOWN') {
+            var node;
+            for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
+                node = this.mode.editor.selectedNodes[i];
+                var newPos = this.mode.shiftDown ? node.size.y : this.mode.editor.gridSize || 1;
+                node._editorNode.setProperty('position', new game.Point(node.position.x, node.position.y + newPos));
+            }
+        }
         if (key === 'N') {
             if (this.mode.editor.selectedNodes.length > 1 && this.mode.editor.activeNode) {
                 var parent = this.mode.editor.activeNode;
@@ -124,52 +156,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             return;
         }
         if (key === 'D') {
-            var newNodes = [];
-            for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
-                var node = this.mode.editor.selectedNodes[i];
-                var json = node._editorNode.toJSON();
-                json.properties.name = json.class;
-                var newNode = this.mode.editor.controller.createNode(json.class, json.properties);
-                newNode.initProperties();
-                newNode._editorNode.layerChanged();
-                newNode._editorNode.ready();
-
-                newNode._editorNode.setProperty('size', newNode.size);
-
-                newNodes.push(newNode);
-            }
-            this.mode.editor.controller.deselectAllNodes();
-            if (newNodes.length === 1) this.mode.editor.controller.setActiveNode(newNodes[0]);
-            else this.mode.editor.controller.setActiveNode();
-            for (var i = 0; i < newNodes.length; i++) {
-                this.mode.editor.controller.selectNode(newNodes[i]);
-            }
-            
-            this.mode.editor.changeState('Move');
-            return;
-            if (this.mode.editor.activeNode) {
-                var node = this.mode.editor.activeNode;
-                var json = node._editorNode.toJSON();
-                json.properties.name = json.class;
-                var newNode = this.mode.editor.controller.createNode(json.class, json.properties);
-                newNode.initProperties();
-                newNode._editorNode.layerChanged();
-                newNode._editorNode.ready();
-
-                newNode._editorNode.setProperty('size', newNode.size);
-
-                this.mode.editor.controller.deselectAllNodes();
-                this.mode.editor.controller.setActiveNode(newNode);
-                this.mode.editor.changeState('Move');
-
-                var parentPos = node.getWorldPosition();
-                var pos = this.mode.editor.toWorldSpace(this.mode.editor.prevMousePos);
-                this.mode.state.offset.x -= pos.x - parentPos.x;
-                this.mode.state.offset.y -= pos.y - parentPos.y;
-                this.mode.state.update(this.mode.editor.prevMousePos.x, this.mode.editor.prevMousePos.y);
-
-                return;
-            }
+            this.mode.editor.controller.duplicateNodes();
         }
         if (key === 'E') {
             if (this.mode.editor.activeNode) return this.mode.editor.changeMode('Edit');

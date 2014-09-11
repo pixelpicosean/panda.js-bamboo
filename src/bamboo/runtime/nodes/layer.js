@@ -11,7 +11,7 @@ game.module(
 bamboo.createNode('Layer', {
     ready: function() {
         if (this.cacheAsBitmap) {
-            var size = 2048;
+            var size = game.config.bamboo.textureSize || 2048;
             if (this.displayObject.width > size || this.displayObject.height > size) {
                 var tx = Math.ceil(this.displayObject.width / size);
                 var ty = Math.ceil(this.displayObject.height / size);
