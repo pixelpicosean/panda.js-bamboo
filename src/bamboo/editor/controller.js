@@ -198,6 +198,7 @@ bamboo.Controller = game.Class.extend({
         }
 
         this.deselectAllNodes();
+        this.setActiveNode();
     },
 
     moveNodeDown: function(node) {

@@ -77,6 +77,7 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
         }
 
         this.mode.editor.controller.setActiveNode(node);
+        this.mode.editor.propertyPanel.updateLayerList();
         this.mode.editor.changeState('Move');
 
         var parentPos = node.parent.getWorldPosition();

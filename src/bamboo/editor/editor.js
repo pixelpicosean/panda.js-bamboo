@@ -5,7 +5,6 @@ game.module(
 
 bamboo.Editor = game.Class.extend({
     nodes: [],
-    _zoom: 1,
     layers: [],
     selectedNodes: [],
     images: [],
@@ -294,7 +293,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     layerAdded: function(layer) {
-        this.activeLayer = layer;
+        this.controller.setActiveLayer(layer);
         this.propertyPanel.updateLayerList();
     },
 
@@ -598,41 +597,29 @@ bamboo.Editor = game.Class.extend({
         this.boundaryLayer.resetGraphics();
         this.worldTargetPos.set(game.system.width / 2 - game.System.width / 2, game.system.height / 2 - game.System.height / 2);
         this.world.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);
-    }
-});
-
-Object.defineProperty(bamboo.Editor.prototype, 'zoom', {
-    get: function() {
-        return this._zoom;
-    },
-    set: function(value) {
-        this._zoom = value;
-        this.world.displayObject.scale.x = value;
-        this.world.displayObject.scale.y = value;
-        this.worldTargetPos.x = game.system.width/2 - value*game.System.width/2;
-        this.worldTargetPos.y = game.system.height/2 - value*game.System.height/2;
+        this.nodeLayer.position.x = game.system.width / 2 - game.System.width / 2;
+        this.nodeLayer.position.y = game.system.height / 2 - game.System.height / 2;
     }
 });
 
 Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
     get: function() {
         var point = new game.Point(
-            this.camera.position.x * -this.zoom + this.worldTargetPos.x,
-            this.camera.position.y * -this.zoom + this.worldTargetPos.y
+            this.camera.position.x * -1 + this.worldTargetPos.x,
+            this.camera.position.y * -1 + this.worldTargetPos.y
         );
         return point;
     },
     set: function(value) {
         var tgtCamPos = value.subtract(this.worldTargetPos);
 
-        tgtCamPos.multiply(-1 / this.zoom);
+        tgtCamPos.multiply(-1);
         this.camera.position.x = tgtCamPos.x;
         this.camera.position.y = tgtCamPos.y;
         this.boundaryLayer.updateBoundary();
-        var left = game.system.width / 2 - game.System.width / 2;
-        var top = game.system.height / 2 - game.System.height / 2;
-        this.nodeLayer.position.x = left;
-        this.nodeLayer.position.y = top;
+
+        this.nodeLayer.position.x = game.system.width / 2 - game.System.width / 2;
+        this.nodeLayer.position.y = game.system.height / 2 - game.System.height / 2;
         this.updateLayers();
     }
 });

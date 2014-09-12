@@ -105,9 +105,6 @@ bamboo.Node.editor = game.Class.extend({
         this.debugDisplayObject.position.x = -this.node.size.x * this.node.anchor.x;
         this.debugDisplayObject.position.y = -this.node.size.y * this.node.anchor.y;
 
-        // size.x *= this.node.scale.x;
-        // size.y *= this.node.scale.y;
-
         this.nameText.setText(this.node.name);
         this.nameText.position.x = -this.node.size.x * this.node.anchor.x;
         this.nameText.position.y = -this.node.size.y * this.node.anchor.y - 18;
@@ -120,19 +117,14 @@ bamboo.Node.editor = game.Class.extend({
         this.activeRect.beginFill(0xffaa00, 0.3);
         this.activeRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
         this.activeRect.endFill();
-        // this.activeRect.lineStyle(1, 0xffaa00, 0.5);
-        // this.activeRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
 
         this.selectionRect.clear();
         this.selectionRect.beginFill(0x00ff66, 0.2);
         this.selectionRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
         this.selectionRect.endFill();
-        // this.selectionRect.lineStyle(1, 0x00ff66, 0.5);
-        // this.selectionRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
 
         this.editableRect.clear();
         this.editableRect.lineStyle(1, 0x0066ff);
-        // this.editableRect.beginFill(0x0066ff, 0.2);
         this.editableRect.drawRect(-this.node.size.x * this.node.anchor.x - 6, -this.node.size.y * this.node.anchor.y - 6, size.x + 12, size.y + 12);
     },
 
@@ -158,10 +150,14 @@ bamboo.Node.editor = game.Class.extend({
             this.setProperty('position', newPos);
 
             this.displayObject.position.set(this.node.position.x, this.node.position.y);
+
+            if (value instanceof bamboo.nodes.Layer) {
+                this.layerChanged();
+                this.editor.controller.setActiveLayer(value);
+                this.editor.controller.setActiveNode(this.node);
+            }
         }
-        else if (property === 'position') {
-            // var pos = this.node.getWorldPosition();
-            
+        else if (property === 'position') {            
             this.displayObject.position.set(this.node.position.x, this.node.position.y);
             
             this.redrawConnectedToLine();

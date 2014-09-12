@@ -157,6 +157,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
     layerSelectionChanged: function() {
         this.editor.controller.setActiveLayer(this.editor.findNode(this.layerList.value));
+        this.editor.controller.setActiveNode();
         this.focusOnCanvas();
     },
 
@@ -171,7 +172,8 @@ bamboo.PropertyPanel = game.Class.extend({
         });
         node.initProperties();
         this.editor.nodeAdded(node);
-        this.layerSelectionChanged();
+        this.editor.controller.setActiveNode();
+        this.focusOnCanvas();
     },
 
     moveLayerUpClicked: function() {
