@@ -73,7 +73,7 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
             node._editorNode.setProperty('size', new game.Point(node.displayObject.width, node.displayObject.height));
         }
         if (node.size.x === 0 && node.size.y === 0) {
-            node._editorNode.setProperty('size', new game.Point(64, 64));
+            node._editorNode.setProperty('size', new game.Point(32, 32));
         }
 
         this.mode.editor.controller.setActiveNode(node);

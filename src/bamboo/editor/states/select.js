@@ -156,7 +156,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             return;
         }
         if (key === 'D') {
-            this.mode.editor.controller.duplicateNodes();
+            this.mode.editor.controller.duplicateSelectedNodes();
         }
         if (key === 'E') {
             if (this.mode.editor.activeNode) return this.mode.editor.changeMode('Edit');

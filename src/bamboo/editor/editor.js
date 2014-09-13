@@ -9,7 +9,7 @@ bamboo.Editor = game.Class.extend({
     selectedNodes: [],
     images: [],
     windowsHidden: false,
-    viewNodes: false,
+    viewNodes: true,
     camera: {},
 
     init: function(data) {
@@ -66,6 +66,7 @@ bamboo.Editor = game.Class.extend({
 
         for (var i = 0; i < this.layers.length; i++) {
             if (this.layers[i].name === 'main') {
+                this.activeLayer = null;
                 this.controller.setActiveLayer(this.layers[i]);
                 break;
             }

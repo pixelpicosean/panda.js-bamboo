@@ -43,7 +43,7 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
     keydown: function(key) {
         if (key === 'D') {
             this.click();
-            this.mode.editor.controller.duplicateNodes();
+            this.mode.editor.controller.duplicateSelectedNodes();
         }
         else if (key === 'X') {
             if (this.lockToAxis === 'X') this.lockToAxis = null;

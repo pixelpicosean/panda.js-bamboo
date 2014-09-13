@@ -53,7 +53,6 @@ bamboo.Controller = game.Class.extend({
         
         this.editor.world.nodes.push(node);
         this.editor.nodes.push(editorNode);
-        // this.editor.nodeAdded(node);
         return node;
     },
 
@@ -64,6 +63,10 @@ bamboo.Controller = game.Class.extend({
         node.parent.displayObject.removeChild(node.displayObject);
         node._editorNode.displayObject.parent.removeChild(node._editorNode.displayObject);
         this.editor.nodeRemoved(node);
+
+        for (var i = 0; i < node.children.length; i++) {
+            this.deleteNode(node.children[i]);
+        }
     },
 
     selectAllNodes: function() {
@@ -135,24 +138,38 @@ bamboo.Controller = game.Class.extend({
         unmarkChildren(node.world.getConnectedNodes(node), this.editor.selectedNodes);
     },
 
-    duplicateNodes: function() {
+    duplicateNode: function(node, parent) {
+        var json = node._editorNode.toJSON();
+        json.properties.name = json.class;
+        if (parent) json.properties.parent = parent.name;
+
+        var newNode = this.createNode(json.class, json.properties);
+        newNode.initProperties();
+        newNode._editorNode.layerChanged();
+        newNode._editorNode.ready();
+        newNode._editorNode.setProperty('size', newNode.size);
+
+        for (var i = 0; i < node.children.length; i++) {
+            this.duplicateNode(node.children[i], newNode);
+        }
+
+        return newNode;
+    },
+
+    duplicateSelectedNodes: function() {
         var newNodes = [];
+        
         for (var i = 0; i < this.editor.selectedNodes.length; i++) {
             var node = this.editor.selectedNodes[i];
-            var json = node._editorNode.toJSON();
-            json.properties.name = json.class;
-            var newNode = this.createNode(json.class, json.properties);
-            newNode.initProperties();
-            newNode._editorNode.layerChanged();
-            newNode._editorNode.ready();
-
-            newNode._editorNode.setProperty('size', newNode.size);
-
+            var newNode = this.duplicateNode(node);
             newNodes.push(newNode);
         }
+
         this.editor.controller.deselectAllNodes();
+        
         if (newNodes.length === 1) this.setActiveNode(newNodes[0]);
         else this.setActiveNode();
+        
         for (var i = 0; i < newNodes.length; i++) {
             this.selectNode(newNodes[i]);
         }
