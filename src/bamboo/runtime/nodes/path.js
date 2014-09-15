@@ -156,7 +156,7 @@ bamboo.createNode('Path', {
                 p2 = points[0];
                 p3 = p2;
                 if (points.length > 1) p3 = points[1];
-                splineDistances.length = 0;
+                var splineDistances = [];
                 for (var t = 1; t < 21; t++) {
                     var f = t * 1.0 / 20.0;
                     var p = this.catmullRomEvaluate(p0, p1, p2, p3, f);

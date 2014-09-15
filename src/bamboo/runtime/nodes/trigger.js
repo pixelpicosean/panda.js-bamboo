@@ -10,8 +10,9 @@ game.module(
 bamboo.createNode('Trigger', {
     activated: false,
 
-    update: function() {
-        if (this.activator && this.target) {
+    hitTest: function() {
+        var result = false;
+        if (this.activator) {
             var targetPos = this.activator.getWorldPosition();
             targetPos.x -= this.activator.size.x * this.activator.anchor.x;
             targetPos.y -= this.activator.size.y * this.activator.anchor.y;
@@ -24,6 +25,18 @@ bamboo.createNode('Trigger', {
                 targetPos.x <= thisPos.x + this.size.x &&
                 targetPos.y + this.activator.size.y >= thisPos.y &&
                 targetPos.y <= thisPos.y + this.size.y) {
+                result = true;
+            }
+
+            bamboo.pool.put(targetPos);
+            bamboo.pool.put(thisPos);
+        }
+        return result;
+    },
+
+    update: function() {
+        if (this.activator && this.target) {
+            if (this.hitTest()) {
                 if (!this.activated) {
                     if (typeof this.target.trigger === 'function') {
                         this.target.trigger(this);
@@ -32,12 +45,7 @@ bamboo.createNode('Trigger', {
                 }
                 this.activated = true;
             }
-            else {
-                this.activated = false;
-            }
-
-            bamboo.pool.put(targetPos);
-            bamboo.pool.put(thisPos);
+            else this.activated = false;
         }
     }
 });
