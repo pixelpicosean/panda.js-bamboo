@@ -39,6 +39,7 @@ bamboo.World.inject({
             width: this.width,
             height: this.height,
             bgcolor: this.bgcolor,
+            audio: this.audio,
             assets: this.assets,
             nodes: []
         };

@@ -285,6 +285,15 @@ bamboo.PropertyPanel = game.Class.extend({
                     }
                     this.settingsWindow.setInputSelectValue(key, node[key]);
                     break;
+                case bamboo.Property.TYPE.AUDIO:
+                    this.settingsWindow.addInputSelect(key, props[key].name, props[key].description, this.imagePropertyChanged.bind(this));
+                    var audio = this.editor.world.audio;
+                    for (var i = 0; i < audio.length; i++) {
+                        var name = audio[i];
+                        this.settingsWindow.addInputSelectOption(key, name, name);
+                    }
+                    this.settingsWindow.setInputSelectValue(key, node[key]);
+                    break;
                 case bamboo.Property.TYPE.TRIGGER:
                     this.settingsWindow.addInputSelect(key, props[key].name, props[key].description, this.triggerPropertyChanged.bind(this));
                     for(var n in this.editor.world.triggers)
@@ -348,7 +357,10 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     textPropertyChanged: function(key) {
-        this.editor.activeNode._editorNode.setProperty(key, this.settingsWindow.inputs[key].value);
+        var value = this.settingsWindow.inputs[key].value;
+        if (key === 'name') value = this.editor.getUniqueName(value);
+
+        this.editor.activeNode._editorNode.setProperty(key, value);
     },
 
     anglePropertyChanged: function(key) {

@@ -38,7 +38,8 @@ game.module(
     'bamboo.editor.nodes.emitter',
     'bamboo.editor.nodes.trigger',
     'bamboo.editor.nodes.tile',
-    'bamboo.editor.nodes.spine'
+    'bamboo.editor.nodes.spine',
+    'bamboo.runtime.nodes.audio'
 )
 .body(function() {
 

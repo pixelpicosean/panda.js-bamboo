@@ -140,7 +140,7 @@ bamboo.Controller = game.Class.extend({
 
     duplicateNode: function(node, parent) {
         var json = node._editorNode.toJSON();
-        json.properties.name = json.class;
+        json.properties.name = this.editor.getUniqueName(json.properties.name);
         if (parent) json.properties.parent = parent.name;
 
         var newNode = this.createNode(json.class, json.properties);

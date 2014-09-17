@@ -37,7 +37,8 @@ bamboo.Property.TYPE = {
     IMAGE: 9,
     TRIGGER: 10,
     COLOR: 11,
-    JSON: 12
+    JSON: 12,
+    AUDIO: 13
 };
 
 bamboo.Property.parse = function(world, obj, name, prop) {
@@ -51,6 +52,7 @@ bamboo.Property.parse = function(world, obj, name, prop) {
         case bamboo.Property.TYPE.ENUM:
         case bamboo.Property.TYPE.TRIGGER:
         case bamboo.Property.TYPE.COLOR:
+        case bamboo.Property.TYPE.AUDIO:
             return typeof obj[name] !== 'undefined' ? bamboo.Property.parseOptions(obj[name], prop.options) : prop.defaultValue;
 
         case bamboo.Property.TYPE.VECTOR:
@@ -92,6 +94,7 @@ bamboo.Property.toJSON = function(obj, name, desc) {
         case bamboo.Property.TYPE.ENUM:
         case bamboo.Property.TYPE.TRIGGER:
         case bamboo.Property.TYPE.COLOR:
+        case bamboo.Property.TYPE.AUDIO:
             return obj[name];
 
         case bamboo.Property.TYPE.VECTOR:

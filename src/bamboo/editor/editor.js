@@ -219,12 +219,7 @@ bamboo.Editor = game.Class.extend({
     getUniqueName: function(name) {
         if (!this.findNode(name)) return name;
 
-        var parts = name.split('.');
-        if (parts.length > 1) {
-            var suffix = parts[parts.length-1];
-            if (suffix.length === 4 && !isNaN(parseFloat(suffix)) && isFinite(suffix))
-                name = name.slice(0, name.length - 5);
-        }
+        name = name.replace(/[0-9]/g, '');
 
         var i = 2;
         while (true) {
@@ -465,13 +460,35 @@ bamboo.Editor = game.Class.extend({
         var assets = [];
         for (var i = 0; i < event.dataTransfer.files.length; i++) {
             var file = event.dataTransfer.files[i];
+
+            // Check if file is audio
+            var isAudio = false;
+            for (var f = 0; f < game.Audio.formats.length; f++) {
+                var ext = game.Audio.formats[f].ext;
+                if (file.name.indexOf('.' + ext) !== -1) {
+                    var filename = 'audio/' + file.name;
+                    if (this.world.audio.indexOf(filename) === -1) {
+                        this.world.audio.push(filename);
+                        this.world.audio.sort();
+                    }
+                    isAudio = true;
+                    break;
+                }
+            }
+            if (isAudio) continue;
+
             assets.push(game.config.mediaFolder + file.name);
         }
 
-        var loader = new game.AssetLoader(assets);
-        loader.onComplete = this.assetsLoaded.bind(this, loader);
-        loader.onProgress = this.assetsProgress.bind(this);
-        loader.load();
+        if (assets.length > 0) {
+            var loader = new game.AssetLoader(assets);
+            loader.onComplete = this.assetsLoaded.bind(this, loader);
+            loader.onProgress = this.assetsProgress.bind(this);
+            loader.load();
+        }
+        else {
+            if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
+        }
 
         return false;
     },
@@ -564,9 +581,16 @@ bamboo.Editor = game.Class.extend({
         content += '.body(function() {\n\n';
         content += 'var json = ' + JSON.stringify(json, null, '    ');
         content += ';\n\nbamboo.scenes.push(json);\n';
-        content += 'for (var i = 0; i < json.assets.length; i++) {\n';
-        content += '    game.addAsset(json.assets[i]);\n';
-        content += '}\n';
+        if (json.assets.length > 0) {
+           content += 'for (var i = 0; i < json.assets.length; i++) {\n';
+           content += '    game.addAsset(json.assets[i]);\n';
+           content += '}\n'; 
+        }
+        if (json.audio.length > 0) {
+            content += 'for (var i = 0; i < json.audio.length; i++) {\n';
+            content += '    game.addAudio(json.audio[i]);\n';
+            content += '}\n';
+        }
         content += '\n});\n';
 
         return content;
