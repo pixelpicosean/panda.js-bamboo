@@ -34,6 +34,8 @@ bamboo.createNode('PathFollower', {
             if (rounds % 2 === 1) elapsed = 1.0 - elapsed;
         }
 
+        if (this.reverse) elapsed = 1 - elapsed;
+
         var curDistance = this.parent.length * this.easing(elapsed);
         var newPos = this.parent.getPositionAtDistance(curDistance);
         newPos.x -= this.parent.points[0].x;
@@ -49,6 +51,7 @@ bamboo.addNodeProperty('PathFollower', 'duration', 'number', 2);
 bamboo.addNodeProperty('PathFollower', 'loop', 'boolean');
 bamboo.addNodeProperty('PathFollower', 'yoyo', 'boolean');
 bamboo.addNodeProperty('PathFollower', 'triggered', 'boolean');
+bamboo.addNodeProperty('PathFollower', 'reverse', 'boolean');
 bamboo.addNodeProperty('PathFollower', 'easing', 'easing');
 
 });
