@@ -182,4 +182,8 @@ window.addEventListener('resize', function() {
     if (bamboo.ui) bamboo.ui.onResize();
 });
 
+window.addEventListener('keydown', function(event) {
+    if (event.keyCode === 8) event.preventDefault();
+});
+
 });
