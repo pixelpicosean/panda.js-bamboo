@@ -200,16 +200,18 @@ bamboo.createNode('Path', {
         if (this.spline) {
             var splineDistances = this.splineSegmentDistances[i - 1];
             var t;
-            for (t = 0; t < 20; t++) {
+            for (t = 0; t < splineDistances.length - 1; t++) {
                 if (splineDistances[t] > dist) break;
             }
             var f;
-            if (t === 0)
+            if (t === 0) {
                 f = (dist - this.segmentDistances[i - 1]) / (splineDistances[t] - this.segmentDistances[i - 1]);
-            else
+            }
+            else {
                 f = (dist - splineDistances[t - 1]) / (splineDistances[t] - splineDistances[t - 1]);
+            }
 
-            f = (t + f) * 1.0 / 20.0;
+            f = (t + f) * 1 / 20;
 
             var p1 = this.points[i - 1];
             var p0 = p1;
