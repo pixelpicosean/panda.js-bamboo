@@ -1,13 +1,13 @@
 game.module(
-    'bamboo.editor.nodes.tile'
+    'bamboo.editor.nodes.collisiontile'
 )
 .require(
     'bamboo.editor.node',
-    'bamboo.runtime.nodes.tile'
+    'bamboo.runtime.nodes.collisiontile'
 )
 .body(function() {
 
-bamboo.nodes.Tile.editor = bamboo.Node.editor.extend({
+bamboo.nodes.CollisionTile.editor = bamboo.Node.editor.extend({
     helpText: 'LEFT prev tile, RIGHT next tile',
     frames: [],
     currentFrame: 0,
@@ -57,6 +57,6 @@ bamboo.nodes.Tile.editor = bamboo.Node.editor.extend({
     }
 });
 
-bamboo.addNodeProperty('Tile', 'tileset', 'json');
+bamboo.addNodeProperty('CollisionTile', 'tileset', 'json');
 
 });
