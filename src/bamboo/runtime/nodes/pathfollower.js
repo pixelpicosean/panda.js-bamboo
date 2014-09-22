@@ -9,28 +9,29 @@ game.module(
 
 bamboo.createNode('PathFollower', {
     active: true,
-    offset: 0,
+    startTime: 0,
 
     trigger: function() {
-        this.offset = this.world.time;
+        this.startTime = this.world.time;
         this.active = true;
     },
 
     ready: function() {
         this.origPosition = game.Point.from(this.position);
         if (this.triggered) this.active = false;
+        else this.update();
     },
 
     update: function() {
         if (!this.active) return;
         if (!this.parent.length) return;
 
-        var elapsed = ((this.world.time - this.offset) % this.duration) / this.duration;
+        var elapsed = ((this.world.time - this.startTime + this.offset) % this.duration) / this.duration;
 
-        if (!this.loop && this.world.time - this.offset >= this.duration) elapsed = 1;
+        if (!this.loop && this.world.time - this.startTime >= this.duration) elapsed = 1;
 
         if (this.yoyo && this.loop) {
-            var rounds = Math.floor((this.world.time - this.offset) / this.duration);
+            var rounds = Math.floor((this.world.time - this.startTime) / this.duration);
             if (rounds % 2 === 1) elapsed = 1.0 - elapsed;
         }
 
@@ -48,6 +49,7 @@ bamboo.createNode('PathFollower', {
 });
 
 bamboo.addNodeProperty('PathFollower', 'duration', 'number', 2);
+bamboo.addNodeProperty('PathFollower', 'offset', 'number', 0);
 bamboo.addNodeProperty('PathFollower', 'loop', 'boolean');
 bamboo.addNodeProperty('PathFollower', 'yoyo', 'boolean');
 bamboo.addNodeProperty('PathFollower', 'triggered', 'boolean');

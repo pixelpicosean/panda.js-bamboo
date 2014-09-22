@@ -183,7 +183,9 @@ window.addEventListener('resize', function() {
 });
 
 window.addEventListener('keydown', function(event) {
-    if (event.keyCode === 8) event.preventDefault();
+    if (event.keyCode === 8 && document.activeElement.type !== 'text') {
+        event.preventDefault();
+    }
 });
 
 });
