@@ -139,8 +139,6 @@ bamboo.addNodeProperty('Node', 'parent', 'node');
 bamboo.addNodeProperty('Node', 'name', 'string');
 bamboo.addNodeProperty('Node', 'position', 'vector');
 bamboo.addNodeProperty('Node', 'size', 'vector');
-// bamboo.addNodeProperty('Node', 'rotation', 'number', 0);
-// bamboo.addNodeProperty('Node', 'scale', 'vector', [1, 1]);
 bamboo.addNodeProperty('Node', 'anchor', 'vector');
 
 });
