@@ -23,6 +23,7 @@ bamboo.nodes.PathFollower.editor = bamboo.Node.editor.extend({
 
     stop: function() {
         this.setProperty('position', this.node.origPosition);
+        this.node.displayObject.scale.x = 1;
     },
 
     update: function() {

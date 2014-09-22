@@ -32,7 +32,15 @@ bamboo.createNode('PathFollower', {
 
         if (this.yoyo && this.loop) {
             var rounds = Math.floor((this.world.time - this.startTime) / this.duration);
-            if (rounds % 2 === 1) elapsed = 1.0 - elapsed;
+            if (rounds % 2 === 1) {
+                elapsed = 1.0 - elapsed;
+                if (this.flipOnYoyo && this.displayObject.scale.x === 1) {
+                    this.displayObject.scale.x = -1;
+                }
+            }
+            else if (this.flipOnYoyo && this.displayObject.scale.x === -1) {
+                this.displayObject.scale.x = 1;
+            }
         }
 
         if (this.reverse) elapsed = 1 - elapsed;
@@ -52,6 +60,7 @@ bamboo.addNodeProperty('PathFollower', 'duration', 'number', 2);
 bamboo.addNodeProperty('PathFollower', 'offset', 'number', 0);
 bamboo.addNodeProperty('PathFollower', 'loop', 'boolean');
 bamboo.addNodeProperty('PathFollower', 'yoyo', 'boolean');
+bamboo.addNodeProperty('PathFollower', 'flipOnYoyo', 'boolean');
 bamboo.addNodeProperty('PathFollower', 'triggered', 'boolean');
 bamboo.addNodeProperty('PathFollower', 'reverse', 'boolean');
 bamboo.addNodeProperty('PathFollower', 'easing', 'easing');
