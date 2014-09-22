@@ -533,7 +533,7 @@ bamboo.Editor = game.Class.extend({
         var filename = json.name.toLowerCase() + '.json';
         var content = JSON.stringify(json, null, '    ');
 
-        this.saveToFile('../../../media/', filename, content);
+        this.saveToFile(bamboo.editor.config.JSONSaveDir || '../../../media/', filename, content);
     },
 
     downloadAsModule: function() {
@@ -555,7 +555,7 @@ bamboo.Editor = game.Class.extend({
         if (!name) return this.showError('Scene must have name');
         var content = this.buildModuleFromJSON(json);
 
-        this.saveToFile('../../game/scenes/', name + '.js', content);
+        this.saveToFile(bamboo.editor.config.moduleSaveDir || '../../game/scenes/', name + '.js', content);
     },
 
     buildModuleFromJSON: function(json) {

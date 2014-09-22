@@ -1,4 +1,6 @@
-bamboo.editor = {};
+bamboo.editor = {
+    config: {}
+};
 
 game.module(
     'bamboo.editor.core'
