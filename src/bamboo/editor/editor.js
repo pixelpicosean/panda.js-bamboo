@@ -50,7 +50,7 @@ bamboo.Editor = game.Class.extend({
 
         this.tempMessage = new game.Text('', { font: '16px Arial', fill: 'white' });
         this.tempMessage.position.set(10, this.toolBar.height + 10);
-        this.displayObject.addChild(this.tempMessage);
+        this.overlay.addChild(this.tempMessage);
 
         this.changeMode('Main');
         this.cameraWorldPosition = new game.Point(
