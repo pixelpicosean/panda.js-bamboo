@@ -219,62 +219,77 @@ bamboo.Controller = game.Class.extend({
     },
 
     moveNodeDown: function(node) {
-        var nodes = this.editor.getNodesInLayer(node._editorNode.layer);
-        var index = nodes.indexOf(node._editorNode);
-        if (index === 0) return;
-        
-        var prevNode = nodes[index - 1];
+        var prevIndex;
+        for (var i = 0; i < this.editor.world.nodes.length; i++) {
+            if (this.editor.world.nodes[i].parent === node.parent) {
+                if (typeof prevIndex === 'undefined' && this.editor.world.nodes[i] === node) {
+                    // Node already first
+                    return;
+                }
+                if (this.editor.world.nodes[i] === node) break;
+                prevIndex = i;
+            }
+        }
 
-        // Swap editor nodes
-        var prevNodeIndex = this.editor.nodes.indexOf(prevNode);
-        var thisNodeIndex = this.editor.nodes.indexOf(node._editorNode);
-        this.editor.nodes[prevNodeIndex] = node._editorNode;
-        this.editor.nodes[thisNodeIndex] = prevNode;
+        var prevNode = this.editor.world.nodes[prevIndex];
+        var thisIndex = this.editor.world.nodes.indexOf(node);
 
         // Swap nodes
-        var prevNodeIndex = this.editor.world.nodes.indexOf(prevNode.node);
-        var thisNodeIndex = this.editor.world.nodes.indexOf(node);
-        this.editor.world.nodes[prevNodeIndex] = node;
-        this.editor.world.nodes[thisNodeIndex] = prevNode.node;
+        this.editor.world.nodes[prevIndex] = node;
+        this.editor.world.nodes[thisIndex] = prevNode;
 
-        // Reset displayObjects
-        var nodes = this.editor.getNodesInLayer(node._editorNode.layer);
-        for (var i = 0; i < nodes.length; i++) {
-            nodes[i].node.parent.displayObject.removeChild(nodes[i].node.displayObject);
-        }
-        for (var i = 0; i < nodes.length; i++) {
-            nodes[i].node.parent.displayObject.addChild(nodes[i].node.displayObject);
-        }
+        // Swap editor nodes
+        prevIndex = this.editor.nodes.indexOf(prevNode._editorNode);
+        thisIndex = this.editor.nodes.indexOf(node._editorNode);
+        this.editor.nodes[prevIndex] = node._editorNode;
+        this.editor.nodes[thisIndex] = prevNode._editorNode;
+
+        // Swap displayObjects
+        prevIndex = node.parent.displayObject.children.indexOf(prevNode.displayObject);
+        thisIndex = node.parent.displayObject.children.indexOf(node.displayObject);
+        node.parent.displayObject.children[prevIndex] = node.displayObject;
+        node.parent.displayObject.children[thisIndex] = prevNode.displayObject;
     },
 
     moveNodeUp: function(node) {
-        return;
-        var idx = node.displayObject.parent.children.indexOf(node.displayObject);
-        if (idx === node.displayObject.parent.children.length - 1) return;
+        var thisIndex;
+        var nextIndex;
+        for (var i = 0; i < this.editor.world.nodes.length; i++) {
+            if (this.editor.world.nodes[i].parent === node.parent) {
+                if (typeof thisIndex !== 'undefined' && typeof nextIndex === 'undefined') {
+                    nextIndex = i;
+                }
+                if (this.editor.world.nodes[i] === node) thisIndex = i;
+            }
+        }
+        // Already last
+        if (typeof nextIndex === 'undefined') return;
 
-        node.displayObject.parent.addChildAt(node.displayObject, idx + 1);
-        this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
-        this.editor.propertyPanel.activeNodeChanged(node);
+        var nextNode = this.editor.world.nodes[nextIndex];
+
+        // Swap nodes
+        this.editor.world.nodes[nextIndex] = node;
+        this.editor.world.nodes[thisIndex] = nextNode;
+
+        // Swap editor nodes
+        nextIndex = this.editor.nodes.indexOf(nextNode._editorNode);
+        thisIndex = this.editor.nodes.indexOf(node._editorNode);
+        this.editor.nodes[nextIndex] = node._editorNode;
+        this.editor.nodes[thisIndex] = nextNode._editorNode;
+
+        // Swap displayObjects
+        nextIndex = node.parent.displayObject.children.indexOf(nextNode.displayObject);
+        thisIndex = node.parent.displayObject.children.indexOf(node.displayObject);
+        node.parent.displayObject.children[nextIndex] = node.displayObject;
+        node.parent.displayObject.children[thisIndex] = nextNode.displayObject;
     },
 
     moveNodeTopMost: function(node) {
-        var idx = node.displayObject.parent.children.indexOf(node.displayObject);
-        if (idx === node.displayObject.parent.children.length-1)
-            return;// already in front of everything
 
-        node.displayObject.parent.addChildAt(node.displayObject, node.displayObject.parent.children.length-1);
-        this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
-        this.editor.propertyPanel.activeNodeChanged(node);
     },
 
     moveNodeBottomMost: function(node) {
-        var idx = node.displayObject.parent.children.indexOf(node.displayObject);
-        if (idx === 0)
-            return;// already behind everything
 
-        node.displayObject.parent.addChildAt(node.displayObject, 0);
-        this.editor.propertyPanel.activeLayerChanged(this.editor.activeLayer);
-        this.editor.propertyPanel.activeNodeChanged(node);
     },
 
     moveLayerUp: function(layer) {
