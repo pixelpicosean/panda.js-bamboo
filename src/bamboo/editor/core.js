@@ -96,6 +96,7 @@ bamboo.EditorScene = game.Scene.extend({
     },
 
     mousedown: function(event) {
+        if (event.originalEvent.button === 2) return;
         if (document.activeElement !== document.body) document.activeElement.blur();
         if (this.editor) this.editor.mousedown(event);
     },
