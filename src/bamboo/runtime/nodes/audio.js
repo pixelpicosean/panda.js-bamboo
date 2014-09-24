@@ -8,7 +8,15 @@ game.module(
     
 bamboo.createNode('Audio', {
     trigger: function() {
-        game.audio.playSound(this.audio, !!this.loop);
+        this.play();
+    },
+
+    play: function() {
+        this.audioId = game.audio.playSound(this.audio, !!this.loop);
+    },
+
+    stop: function() {
+        if (this.audioId) game.audio.stopSound(this.audioId);
     }
 });
 
