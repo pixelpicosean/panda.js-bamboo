@@ -13,8 +13,6 @@ bamboo.Controller = game.Class.extend({
 
         bamboo.nodes[className].prototype.ready = function() {};
         var node = new bamboo.nodes[className](this.editor.world, properties);
-        
-        // if (!node.displayObject) node.displayObject = new game.Container();
 
         if (!bamboo.nodes[className].editor) {
             var proto = bamboo.nodes[className].prototype;
@@ -34,8 +32,6 @@ bamboo.Controller = game.Class.extend({
         editorNode.debugDisplayObject.visible = this.editor.viewNodes;
 
         if (typeof editorNode.update === 'function') this.editor.world.updateableNodes.push(editorNode);
-
-        // node.displayObject.addChild(editorNode.displayObject);
         
         switch (this.editor.editorNodeVisibility) {
             case 0:
@@ -100,9 +96,6 @@ bamboo.Controller = game.Class.extend({
         var markChildren = function(c) {
             for (var i = 0; i < c.length; i++) {
                 var n = c[i];
-                // n._editorNode.parentSelectionRect.visible = true;
-                // n._editorNode.connectedToLine.visible = true;
-                // TODO: if (selectedNodes.indexOf(n) !== -1) continue
                 markChildren(n.world.getConnectedNodes(n));
             }
         };
@@ -120,16 +113,11 @@ bamboo.Controller = game.Class.extend({
         node._editorNode.selectionRect.visible = false;
         this.editor.nodeDeselected(node);
 
-        // if (this.editor.activeNode === node) this.setActiveNode();
-
         var unmarkChildren = function(c, selectedNodes) {
             for (var i=0; i<c.length; i++) {
                 var n = c[i];
-                // n._editorNode.parentSelectionRect.visible = false;
-                // n._editorNode.connectedToLine.visible = false;
 
-                if (selectedNodes.indexOf(n) !== -1)
-                    continue;
+                if (selectedNodes.indexOf(n) !== -1) continue;
 
                 unmarkChildren(n.world.getConnectedNodes(n), selectedNodes);
             }
@@ -190,7 +178,6 @@ bamboo.Controller = game.Class.extend({
         if (node) {
             this.deselectAllNodes();
             this.selectNode(node);
-            // this.editor.activeNode = node;
             this.editor.activeNode._editorNode.selectionAxis.visible = false;
             this.editor.activeNode._editorNode.selectionRect.visible = false;
             this.editor.activeNode._editorNode.activeAxis.visible = true;
@@ -249,6 +236,8 @@ bamboo.Controller = game.Class.extend({
         thisIndex = node.parent.displayObject.children.indexOf(node.displayObject);
         node.parent.displayObject.children[prevIndex] = node.displayObject;
         node.parent.displayObject.children[thisIndex] = prevNode.displayObject;
+
+        this.editor.propertyPanel.activeLayerChanged(node._editorNode.layer);
     },
 
     moveNodeUp: function(node) {
@@ -282,6 +271,8 @@ bamboo.Controller = game.Class.extend({
         thisIndex = node.parent.displayObject.children.indexOf(node.displayObject);
         node.parent.displayObject.children[nextIndex] = node.displayObject;
         node.parent.displayObject.children[thisIndex] = nextNode.displayObject;
+
+        this.editor.propertyPanel.activeLayerChanged(node._editorNode.layer);
     },
 
     moveNodeTopMost: function(node) {

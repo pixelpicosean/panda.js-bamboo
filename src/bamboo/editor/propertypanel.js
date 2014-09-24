@@ -124,7 +124,7 @@ bamboo.PropertyPanel = game.Class.extend({
             self.focusOnCanvas();
         });
         this.editor.buildNodeDropdown(this.layerWindow, 'activeNode', layer);
-        if(!this.editor.activeNode)
+        if (!this.editor.activeNode)
             this.layerWindow.setInputSelectValue('activeNode', '');
         else
             this.layerWindow.setInputSelectValue('activeNode', this.editor.activeNode.name);
@@ -139,14 +139,8 @@ bamboo.PropertyPanel = game.Class.extend({
             self.editor.updateLayers();
             self.focusOnCanvas();
         });
-
-        // this.layerWindow.addInputCheckbox('cacheAsBitmap', layer.cacheAsBitmap, 'Cache as bitmap', '', function() {
-        //     layer.cacheAsBitmap = this.inputs['cacheAsBitmap'].checked;
-        //     self.focusOnCanvas();
-        // });
         
         this.layerWindow.addInputText('name', layer.name, 'Name', 'Name of the layer', function() {layer._editorNode.setProperty('name', this.inputs['name'].value); self.updateLayerList();});
-        // this.layerWindow.addInputText('speedFactor', layer.speedFactor.toFixed(2), 'Speed', 'Speed relative to camera', function() {layer._editorNode.setProperty('speedFactor', parseFloat(this.inputs['speedFactor'].value));});
         this.layerWindow.addMultiInput('speedFactor', [layer.speedFactor.x.toFixed(2), layer.speedFactor.y.toFixed(2)], 2, 'Speed', '', function() {
             layer.speedFactor.set(
                 parseFloat(this.inputs['speedFactor.0'].value),
