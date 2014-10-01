@@ -1,3 +1,7 @@
+/**
+    @module node
+    @namespace bamboo
+**/
 game.module(
     'bamboo.runtime.node'
 )
@@ -7,7 +11,14 @@ game.module(
 .body(function() {
 'use strict';
 
+/**
+    @class Node
+**/
 bamboo.Node = game.Class.extend({
+    /**
+        List of nodes childrens.
+        @property {Array} children
+    **/
     children: [],
 
     staticInit: function(world, properties) {
@@ -16,10 +27,16 @@ bamboo.Node = game.Class.extend({
         this.name = properties.name;
     },
 
+    /**
+        @method init
+    **/
     init: function() {
         this.displayObject = new game.Container();
     },
 
+    /**
+        @method initProperties
+    **/
     initProperties: function() {
         var propDescs = this.getPropertyDescriptors();
 
@@ -28,16 +45,33 @@ bamboo.Node = game.Class.extend({
         }
     },
 
+    /**
+        Called, when node is ready and properties inited.
+        @method ready
+    **/
     ready: function() {
     },
 
+    /**
+        Called, when node is removed from it's world.
+        @method onRemove
+    **/
     onRemove: function() {
     },
 
+    /**
+        Remove node from it's world.
+        @method remove
+    **/
     remove: function() {
         return this.world.removeNode(this);
     },
 
+    /**
+        @method setProperty
+        @param {String} name
+        @param value
+    **/
     setProperty: function(name, value) {
         this[name] = value;
         
@@ -49,11 +83,21 @@ bamboo.Node = game.Class.extend({
         else if (name === 'parent') this.parent.addChild(this);
     },
 
+    /**
+        Add child to node.
+        @method addChild
+        @param {Node} node
+    **/
     addChild: function(node) {
         this.children.push(node);
         this.displayObject.addChild(node.displayObject);
     },
 
+    /**
+        Remove child from node.
+        @method removeChild
+        @param {Node} node
+    **/
     removeChild: function(node) {
         var index = this.children.indexOf(node);
         if (index !== -1) {
@@ -85,6 +129,12 @@ bamboo.Node = game.Class.extend({
         return props;
     },
 
+    /**
+        Convert world position to node's local position.
+        @method toLocalSpace
+        @param {Vector} point
+        @param {Vector} [output]
+    **/
     toLocalSpace: function(point, output) {
         var pos = this.getWorldPosition();
 
@@ -100,6 +150,12 @@ bamboo.Node = game.Class.extend({
         return pos;
     },
 
+    /**
+        Convert node's local position to world position.
+        @method toWorldSpace
+        @param {Vector} point
+        @param {Vector} [output]
+    **/
     toWorldSpace: function(point, output) {
         var pos = this.getWorldPosition();
 
@@ -115,6 +171,11 @@ bamboo.Node = game.Class.extend({
         return pos;
     },
 
+    /**
+        Get node's world position.
+        @method getWorldPosition
+        @param {Vector} [output]
+    **/
     getWorldPosition: function(output) {
         var x = this.position.x;
         var y = this.position.y;
@@ -135,12 +196,25 @@ bamboo.Node = game.Class.extend({
     }
 });
 
+/**
+    @property {Node} parent
+**/
 bamboo.addNodeProperty('Node', 'parent', 'node');
+/**
+    @property {String} name
+**/
 bamboo.addNodeProperty('Node', 'name', 'string');
+/**
+    @property {Vector} position
+**/
 bamboo.addNodeProperty('Node', 'position', 'vector');
+/**
+    @property {Vector} size
+**/
 bamboo.addNodeProperty('Node', 'size', 'vector');
-// bamboo.addNodeProperty('Node', 'rotation', 'number', 0);
-// bamboo.addNodeProperty('Node', 'scale', 'vector', [1, 1]);
+/**
+    @property {Vector} anchor
+**/
 bamboo.addNodeProperty('Node', 'anchor', 'vector');
 
 });

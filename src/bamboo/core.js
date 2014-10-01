@@ -1,3 +1,10 @@
+/**
+    @module bamboo
+    @namespace bamboo
+**/
+/**
+    @class Core
+**/
 var bamboo = {
     version: '0.3.0',
     scenes: [],
@@ -6,6 +13,12 @@ var bamboo = {
 
 pandaConfig.bamboo = pandaConfig.bamboo || {};
 
+/**
+    @method createNode
+    @param {String} name
+    @param {String} [className]
+    @param {Object} content
+**/
 bamboo.createNode = function(name, className, content) {
     if (!content) {
         content = className;
@@ -15,12 +28,25 @@ bamboo.createNode = function(name, className, content) {
     bamboo.nodes[name] = extendClass.extend(content);
 };
 
+/**
+    @method addNodeProperty
+    @param {String} node
+    @param {String} name
+    @param {String} type
+    @param defaultValue
+    @param {Boolean} hidden
+**/
 bamboo.addNodeProperty = function(node, name, type, defaultValue, hidden) {
     node = bamboo.nodes[node] || bamboo.Node;
     if (!node.props) node.props = {};
     node.props[name] = new bamboo.Property(hidden ? false : true, name, '', bamboo.Property.TYPE[type.toUpperCase()], defaultValue);
 };
 
+/**
+    @method createScene
+    @param {String} name
+    @param {Object} content
+**/
 bamboo.createScene = function(name, content) {
     content = content || {};
     content.name = name;

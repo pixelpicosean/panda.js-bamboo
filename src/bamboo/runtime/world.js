@@ -1,3 +1,7 @@
+/**
+    @module world
+    @namespace bamboo
+**/
 game.module(
     'bamboo.runtime.world'
 )
@@ -7,12 +11,39 @@ game.module(
 .body(function() {
 'use strict';
 
+/**
+    @class World
+**/
 bamboo.World = game.Class.extend({
+    /**
+        List of audio files.
+        @property audio
+    **/
     audio: [],
+    /**
+        List of assets.
+        @property assets
+    **/
     assets: [],
+    /**
+        List of nodes.
+        @property nodes
+    **/
     nodes: [],
+    /**
+        List of layers.
+        @property layers
+    **/
     layers: [],
+    /**
+        List of updateable nodes.
+        @property updateable nodes
+    **/
     updateableNodes: [],
+    /**
+        Current world time.
+        @property time
+    **/
     time: 0,
 
     init: function(data) {
@@ -48,6 +79,11 @@ bamboo.World = game.Class.extend({
         }
     },
 
+    /**
+        Find node by name.
+        @method findNode
+        @param {String} name
+    **/
     findNode: function(name) {
         if (this.name === name) return this;
         for (var i = 0; i < this.nodes.length; i++) {
@@ -55,6 +91,11 @@ bamboo.World = game.Class.extend({
         }
     },
 
+    /**
+        Add node to world.
+        @method addNode
+        @param {Node} node
+    **/
     addNode: function(node) {
         if (this.nodes.indexOf(node) === -1) this.nodes.push(node);
         if (typeof node.update === 'function') this.updateableNodes.push(node);
@@ -62,6 +103,11 @@ bamboo.World = game.Class.extend({
         this.nodeAdded(node);
     },
 
+    /**
+        Remove node from world.
+        @method removeNode
+        @param {Node} node
+    **/
     removeNode: function(node) {
         var index = this.updateableNodes.indexOf(node);
         if (index !== -1) return node._remove = true;
@@ -77,9 +123,19 @@ bamboo.World = game.Class.extend({
         return true;
     },
 
+    /**
+        Called, when node is added to world.
+        @method nodeAdded
+        @param {Node} node
+    **/
     nodeAdded: function(node) {
     },
 
+    /**
+        Called, when node is removed from world.
+        @method nodeRemoved
+        @param {Node} node
+    **/
     nodeRemoved: function(node) {
     },
 
