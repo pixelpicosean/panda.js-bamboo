@@ -204,7 +204,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
         this.node = node;
         this.settingsWindow.clear();
-        this.settingsWindow.setTitle('Node settings');
+        this.settingsWindow.setTitle('Node properties');
 
         if (!node) {
             this.layerWindow.setInputSelectValue('activeNode', '');
