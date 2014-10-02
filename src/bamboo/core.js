@@ -1,9 +1,8 @@
 /**
-    @module bamboo
-    @namespace bamboo
+    @namespace
 **/
 /**
-    @class Core
+    @class bamboo
 **/
 var bamboo = {
     version: '0.3.0',

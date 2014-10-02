@@ -1,8 +1,12 @@
-## Bamboo editor
+## Bamboo
 
-Scene editor for Panda.js game engine.
+Scene editor for [Panda.js](http://www.pandajs.net) game engine.
 
-http://www.pandajs.net
+http://www.pandajs.net/bamboo
+
+### Documentation
+
+http://www.pandajs.net/bamboo/docs
 
 ### License
 
