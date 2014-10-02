@@ -7,6 +7,10 @@ game.module(
 )
 .body(function() {
 
+/**
+    @class Tile
+    @namespace bamboo.Nodes
+**/
 bamboo.createNode('Tile', {
     init: function() {
         this.displayObject = new game.Sprite(new game.Texture(new game.BaseTexture()));

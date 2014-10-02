@@ -7,6 +7,11 @@ game.module(
 )
 .body(function() {
 
+/**
+    Rotator rotates it's children nodes.
+    @class Rotator
+    @namespace bamboo.Nodes
+**/
 bamboo.createNode('Rotator', {
     active: true,
     offset: 0,
@@ -44,12 +49,43 @@ bamboo.createNode('Rotator', {
     }
 });
 
+/**
+    Start angle of rotator.
+    @property {Number} rotation
+    @default 0
+**/
 bamboo.addNodeProperty('Rotator', 'rotation', 'number', 0);
+/**
+    Duration of rotation in seconds.
+    @property {Number} duration
+    @default 3
+**/
 bamboo.addNodeProperty('Rotator', 'duration', 'number', 3);
+/**
+    How much to rotate in degrees.
+    @property {Number} degrees
+    @default 360
+**/
 bamboo.addNodeProperty('Rotator', 'degrees', 'number', 360);
+/**
+    Easing function for rotation.
+    @property {Easing} easing
+**/
 bamboo.addNodeProperty('Rotator', 'easing', 'easing');
+/**
+    Should rotator loop.
+    @property {Boolean} loop
+**/
 bamboo.addNodeProperty('Rotator', 'loop', 'boolean');
+/**
+    Should rotator go back and forth.
+    @property {Boolean} yoyo
+**/
 bamboo.addNodeProperty('Rotator', 'yoyo', 'boolean');
+/**
+    Is rotator started from trigger.
+    @property {Boolean} triggered
+**/
 bamboo.addNodeProperty('Rotator', 'triggered', 'boolean');
 
 });

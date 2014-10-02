@@ -7,9 +7,18 @@ game.module(
 )
 .body(function() {
 
+/**
+    Calls targets trigger function, when activator touches trigger.
+    @class Trigger
+    @namespace bamboo.Nodes
+**/
 bamboo.createNode('Trigger', {
     activated: false,
 
+    /**
+        @method hitTest
+        @return {Boolean}
+    **/
     hitTest: function() {
         var result = false;
         if (this.activator) {
@@ -50,8 +59,18 @@ bamboo.createNode('Trigger', {
     }
 });
 
+/**
+    @property {Node} activator
+**/
 bamboo.addNodeProperty('Trigger', 'activator', 'node');
+/**
+    @property {Node} target
+**/
 bamboo.addNodeProperty('Trigger', 'target', 'node');
+/**
+    Disable trigger, after activated.
+    @property {Boolean} onetime
+**/
 bamboo.addNodeProperty('Trigger', 'onetime', 'boolean');
 
 });

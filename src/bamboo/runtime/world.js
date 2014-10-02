@@ -1,7 +1,3 @@
-/**
-    @module world
-    @namespace bamboo
-**/
 game.module(
     'bamboo.runtime.world'
 )
@@ -13,6 +9,7 @@ game.module(
 
 /**
     @class World
+    @namespace bamboo
 **/
 bamboo.World = game.Class.extend({
     /**

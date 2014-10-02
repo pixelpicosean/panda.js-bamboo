@@ -1,7 +1,3 @@
-/**
-    @module node
-    @namespace bamboo.Nodes
-**/
 game.module(
     'bamboo.runtime.nodes.image'
 )
@@ -14,6 +10,7 @@ game.module(
 /**
     Basic image node.
     @class Image
+    @namespace bamboo.Nodes
 **/
 bamboo.createNode('Image', {
     init: function() {

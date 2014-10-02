@@ -8,6 +8,10 @@ game.module(
 .body(function() {
 'use strict';
 
+/**
+    @class Layer
+    @namespace bamboo.Nodes
+**/
 bamboo.createNode('Layer', {
     ready: function() {
         if (this.cacheAsBitmap) {
@@ -42,8 +46,17 @@ bamboo.createNode('Layer', {
     }
 });
 
+/**
+    How fast layer should move.
+    @property {Vector} speedFactor
+    @default 1,1
+**/
 bamboo.addNodeProperty('Layer', 'speedFactor', 'vector', [1, 1]);
 bamboo.addNodeProperty('Layer', 'cacheAsBitmap', 'boolean');
+/**
+    Does layer use fixed position.
+    @property {Boolean} fixed
+**/
 bamboo.addNodeProperty('Layer', 'fixed', 'boolean');
 
 });

@@ -5,7 +5,12 @@ game.module(
     'bamboo.core'
 )
 .body(function() {
-    
+
+/**
+    Audio file, that is played from trigger.
+    @class Audio
+    @namespace bamboo.Nodes
+**/
 bamboo.createNode('Audio', {
     trigger: function() {
         this.play();
@@ -20,7 +25,15 @@ bamboo.createNode('Audio', {
     }
 });
 
+/**
+    Audio file.
+    @property {Audio} audio
+**/
 bamboo.addNodeProperty('Audio', 'audio', 'audio');
+/**
+    Is audio looping.
+    @property {Boolean} loop
+**/
 bamboo.addNodeProperty('Audio', 'loop', 'boolean');
 
 });

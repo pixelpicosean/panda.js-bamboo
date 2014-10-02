@@ -1,7 +1,3 @@
-/**
-    @module node
-    @namespace bamboo
-**/
 game.module(
     'bamboo.runtime.node'
 )
@@ -13,6 +9,7 @@ game.module(
 
 /**
     @class Node
+    @namespace bamboo
 **/
 bamboo.Node = game.Class.extend({
     /**

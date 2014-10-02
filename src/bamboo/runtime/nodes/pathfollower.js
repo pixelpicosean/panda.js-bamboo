@@ -7,6 +7,11 @@ game.module(
 )
 .body(function() {
 
+/**
+    Path follower follows path.
+    @class PathFollower
+    @namespace bamboo.Nodes
+**/
 bamboo.createNode('PathFollower', {
     active: true,
     startTime: 0,
@@ -56,13 +61,46 @@ bamboo.createNode('PathFollower', {
     }
 });
 
+/**
+    How fast to go from path's start to finish.
+    @property {Number} duration
+**/
 bamboo.addNodeProperty('PathFollower', 'duration', 'number', 2);
+/**
+    Offset time for follower.
+    @property {Number} offset
+    @default 0
+**/
 bamboo.addNodeProperty('PathFollower', 'offset', 'number', 0);
+/**
+    Should follower loop.
+    @property {Boolean} loop
+**/
 bamboo.addNodeProperty('PathFollower', 'loop', 'boolean');
+/**
+    Should follower go back and forth.
+    @property {Boolean} yoyo
+**/
 bamboo.addNodeProperty('PathFollower', 'yoyo', 'boolean');
+/**
+    Should follower flip when going back.
+    @property {Boolean} flipOnYoyo
+**/
 bamboo.addNodeProperty('PathFollower', 'flipOnYoyo', 'boolean');
+/**
+    Is follower activated from trigger.
+    @property {Boolean} triggered
+**/
 bamboo.addNodeProperty('PathFollower', 'triggered', 'boolean');
+/**
+    Is follower going reverse direction.
+    @property {Boolean} reverse
+**/
 bamboo.addNodeProperty('PathFollower', 'reverse', 'boolean');
+/**
+    Easing function for follower movement.
+    @property {Easing} easing
+**/
 bamboo.addNodeProperty('PathFollower', 'easing', 'easing');
 
 });
