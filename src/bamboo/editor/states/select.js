@@ -131,6 +131,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
                 for (var i = this.mode.editor.selectedNodes.length - 1; i >= 0; i--) {
                     var node = this.mode.editor.selectedNodes[i];
                     if (node !== parent) {
+                        if (parent.parent === node) continue;
                         node._editorNode.setProperty('parent', parent);
                         this.mode.editor.controller.deselectNode(node);
                     }
