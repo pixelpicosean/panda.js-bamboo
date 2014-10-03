@@ -19,10 +19,18 @@ bamboo.createNode('Image', {
 
     setProperty: function(name, value) {
         this._super(name, value);
-        if (name === 'image' && this.image) this.displayObject.setTexture(game.config.mediaFolder + this.image);
+        if (name === 'image' && this.image) {
+            this.displayObject.setTexture(game.config.mediaFolder + this.image);
+            this.displayObject.width = this.size.x;
+            this.displayObject.height = this.size.y;
+        }
         else if (name === 'alpha') this.displayObject.alpha = this.alpha;
-        else if (name === 'flipX') this.displayObject.scale.x = value ? -1 : 1;
-        else if (name === 'flipY') this.displayObject.scale.y = value ? -1 : 1;
+        else if (name === 'flipX') {
+            this.displayObject.width = value ? -this.size.x : this.size.x;
+        }
+        else if (name === 'flipY') {
+            this.displayObject.height = value ? -this.size.y : this.size.y;
+        }
         else if (name === 'anchor') this.displayObject.anchor.set(value.x, value.y);
     }
 });
