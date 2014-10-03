@@ -42,6 +42,11 @@ bamboo.World = game.Class.extend({
         @property time
     **/
     time: 0,
+    /**
+        Scene for the world.
+        @property scene
+    **/
+    scene: null,
 
     init: function(data) {
         game.merge(this, data);

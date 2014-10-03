@@ -81,6 +81,7 @@ bamboo.Scene = game.Scene.extend({
         this._super();
 
         this.world = new bamboo.World(data);
+        this.world.scene = this;
         this.stage.addChild(this.world.displayObject);
     }
 });
