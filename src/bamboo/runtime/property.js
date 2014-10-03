@@ -38,7 +38,8 @@ bamboo.Property.TYPE = {
     TRIGGER: 10,
     COLOR: 11,
     JSON: 12,
-    AUDIO: 13
+    AUDIO: 13,
+    OBJECT: 14
 };
 
 bamboo.Property.parse = function(world, obj, name, prop) {
@@ -54,6 +55,9 @@ bamboo.Property.parse = function(world, obj, name, prop) {
         case bamboo.Property.TYPE.COLOR:
         case bamboo.Property.TYPE.AUDIO:
             return typeof obj[name] !== 'undefined' ? bamboo.Property.parseOptions(obj[name], prop.options) : prop.defaultValue;
+
+        case bamboo.Property.TYPE.OBJECT:
+            return obj[name] || {};
 
         case bamboo.Property.TYPE.VECTOR:
             if (obj[name] instanceof Array) return new game.Point(obj[name][0], obj[name][1]);
@@ -95,6 +99,7 @@ bamboo.Property.toJSON = function(obj, name, desc) {
         case bamboo.Property.TYPE.TRIGGER:
         case bamboo.Property.TYPE.COLOR:
         case bamboo.Property.TYPE.AUDIO:
+        case bamboo.Property.TYPE.OBJECT:
             return obj[name];
 
         case bamboo.Property.TYPE.VECTOR:
