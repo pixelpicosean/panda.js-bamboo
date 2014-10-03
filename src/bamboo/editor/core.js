@@ -41,10 +41,11 @@ game.module(
     'bamboo.editor.nodes.trigger',
     'bamboo.editor.nodes.tile',
     'bamboo.editor.nodes.spine',
+    'bamboo.editor.nodes.collisiontile',
+    'bamboo.editor.nodes.triggerimage',
     'bamboo.runtime.nodes.audio',
     'bamboo.runtime.nodes.physics',
-    'bamboo.editor.nodes.collisiontile',
-    'bamboo.editor.nodes.triggerimage'
+    'bamboo.runtime.nodes.button'
 )
 .body(function() {
 
