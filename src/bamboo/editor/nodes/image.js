@@ -14,7 +14,7 @@ bamboo.nodes.Image.editor = bamboo.Node.editor.extend({
         this._super(key, value, oldValue);
 
         if (key === 'image') {
-            this.setProperty('size', new game.Point(this.node.displayObject.width, this.node.displayObject.height));
+            this.setProperty('size', new game.Point(this.node.displayObject.texture.width, this.node.displayObject.texture.height));
         }
         if (key === 'size' && this.node.image) {
             this.node.displayObject.width = this.node.flipX ? -value.x : value.x;
