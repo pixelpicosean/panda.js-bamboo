@@ -32,6 +32,9 @@ bamboo.editor.StateResize = bamboo.editor.State.extend({
             mousePos.x = Math.round(mousePos.x / this.mode.editor.gridSize) * this.mode.editor.gridSize;
             mousePos.y = Math.round(mousePos.y / this.mode.editor.gridSize) * this.mode.editor.gridSize;
         }
+
+        mousePos.x += this.startSize.x * this.node.anchor.x;
+        mousePos.y += this.startSize.y * this.node.anchor.y;
         
         this.node._editorNode.setProperty('size', mousePos);
     },
