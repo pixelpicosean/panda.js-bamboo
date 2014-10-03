@@ -336,8 +336,8 @@ bamboo.Controller = game.Class.extend({
     },
 
     enableEditMode: function(node, enabled) {
-        node.enableEditMode(enabled);
         node.editableRect.visible = enabled;
+        node.enableEditMode(enabled);
     }
 });
 
