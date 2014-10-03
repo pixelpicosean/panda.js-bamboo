@@ -24,7 +24,6 @@ bamboo.Node.editor = game.Class.extend({
         this.node._editorNode = this;
 
         this.displayObject = new game.Container();
-        // this.editor.nodeLayer.addChild(this.displayObject);
 
         this.debugDisplayObject = new game.Container();
         this.displayObject.addChild(this.debugDisplayObject);
@@ -158,8 +157,7 @@ bamboo.Node.editor = game.Class.extend({
             }
         }
         else if (property === 'position') {            
-            this.displayObject.position.set(this.node.position.x, this.node.position.y);
-            
+            this.displayObject.position.set(this.node.position.x, this.node.position.y); 
             this.redrawConnectedToLine();
         }
         else if (property === 'rotation') {
@@ -177,8 +175,8 @@ bamboo.Node.editor = game.Class.extend({
     },
 
     removePropertyChangeListener: function(listener) {
-        var idx = this.propertyChangeListeners.indexOf(listener);
-        this.propertyChangeListeners.splice(idx, 1);
+        var index = this.propertyChangeListeners.indexOf(listener);
+        if (index !== -1) this.propertyChangeListeners.splice(index, 1);
     },
 
     keydown: function(key) {  
