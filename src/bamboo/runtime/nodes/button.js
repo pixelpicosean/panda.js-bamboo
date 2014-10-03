@@ -17,6 +17,15 @@ bamboo.createNode('Button', 'Image', {
     },
 
     ready: function() {
+        if (!this.activateFromTrigger) this.activate();
+    },
+
+    trigger: function() {
+        this.activate();
+    },
+
+    activate: function() {
+        if (!this.active) return;
         this.displayObject.interactive = true;
         this.displayObject.buttonMode = !!this.buttonMode;
         this.displayObject.mousedown = this.displayObject.touchstart = this.mousedown.bind(this);
@@ -56,5 +65,6 @@ bamboo.addNodeProperty('Button', 'downImage', 'image');
 bamboo.addNodeProperty('Button', 'overImage', 'image');
 bamboo.addNodeProperty('Button', 'callback', 'string');
 bamboo.addNodeProperty('Button', 'buttonMode', 'boolean');
+bamboo.addNodeProperty('Button', 'activateFromTrigger', 'boolean');
 
 });
