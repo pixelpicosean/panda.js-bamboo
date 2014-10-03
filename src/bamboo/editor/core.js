@@ -43,6 +43,7 @@ game.module(
     'bamboo.editor.nodes.spine',
     'bamboo.editor.nodes.collisiontile',
     'bamboo.editor.nodes.triggerimage',
+    'bamboo.editor.nodes.tween',
     'bamboo.runtime.nodes.audio',
     'bamboo.runtime.nodes.physics',
     'bamboo.runtime.nodes.button'
