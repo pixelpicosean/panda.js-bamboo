@@ -22,7 +22,13 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
         this.addWindow.addInputText('name', '', 'Name', 'Name of the node', this.nodeNameChanged.bind(this));
         this.addWindow.addInputSelect('parent', 'Parent', 'Node that this node will follow');
         this.mode.editor.buildNodeDropdown(this.addWindow, 'parent', this.mode.editor.world);
-        this.addWindow.setInputSelectValue('parent', this.mode.editor.activeLayer.name);
+        
+        if (this.mode.editor.activeNode) {
+            this.addWindow.setInputSelectValue('parent', this.mode.editor.activeNode.name);
+        }
+        else {
+            this.addWindow.setInputSelectValue('parent', this.mode.editor.activeLayer.name);
+        }
 
         if(this.mode.editor.selectedNode) {
             this.addWindow.inputs['name'].value = this.mode.editor.getUniqueName(this.mode.editor.selectedNode.getClassName());
