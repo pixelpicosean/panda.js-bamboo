@@ -458,6 +458,7 @@ bamboo.Editor = game.Class.extend({
 
     filedrop: function(event) {
         var assets = [];
+        var audioFilesAdded = 0;
         for (var i = 0; i < event.dataTransfer.files.length; i++) {
             var file = event.dataTransfer.files[i];
 
@@ -470,6 +471,7 @@ bamboo.Editor = game.Class.extend({
                     if (this.world.audio.indexOf(filename) === -1) {
                         this.world.audio.push(filename);
                         this.world.audio.sort();
+                        audioFilesAdded++;
                     }
                     isAudio = true;
                     break;
@@ -478,6 +480,11 @@ bamboo.Editor = game.Class.extend({
             if (isAudio) continue;
 
             assets.push(game.config.mediaFolder + file.name);
+        }
+
+        if (audioFilesAdded > 0) {
+            var word = audioFilesAdded === 1 ? 'file' : 'files';
+            this.setTempMessage(audioFilesAdded + ' audio ' + word + ' added');
         }
 
         if (assets.length > 0) {
