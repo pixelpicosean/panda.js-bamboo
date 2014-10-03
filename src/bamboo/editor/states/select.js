@@ -9,7 +9,7 @@ game.module(
 bamboo.editor.StateSelect = bamboo.editor.State.extend({
     enter: function() {        
         if (this.mode.editor.activeNode) {
-            this.helpText = 'Select state: (D)uplicate, (E)dit, Set pare(n)t, (M)atch world size, BACKSPACE remove, ARROWS move';
+            this.helpText = 'Select state: (D)uplicate, (E)dit, Set/remove pare(n)t, (M)atch world size, BACKSPACE remove, ARROWS move';
         }
         else {
             this.helpText = 'Select state: MOUSE select';
@@ -136,6 +136,12 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
                         this.mode.editor.controller.deselectNode(node);
                     }
                 }
+            }
+            else if (this.mode.editor.activeNode) {
+                var parent = this.mode.editor.activeLayer;
+                var worldPos = this.mode.editor.activeNode.getWorldPosition();
+                this.mode.editor.activeNode._editorNode.setProperty('parent', parent);
+                this.mode.editor.activeNode._editorNode.setProperty('position', worldPos);
             }
         }
         if (key === 'NUM_PLUS') {
