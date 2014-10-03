@@ -53,7 +53,10 @@ game.module(
 game.addAsset('../src/bamboo/editor/media/hourglass.png');
 
 bamboo.EditorScene = game.Scene.extend({
-    init: function() {        
+    init: function() {
+        window.ondrop = window.ondragleave = window.ondragover = function(event) {
+            event.preventDefault();
+        };
         var canvas = game.system.canvas;
         canvas.ondragover = this.dragover.bind(this);
         canvas.ondragleave = this.dragleave.bind(this);
