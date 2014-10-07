@@ -169,19 +169,22 @@ bamboo.Ui.Window = game.Class.extend({
     },
 
     updateSize: function() {
-        if (this.resizable) {
+        if (this.resizable && !this.folded) {
             if (this.width < this.minWidth) this.width = this.minWidth;
             if (this.height < this.minHeight) this.height = this.minHeight;
-            if (this.children) {
-                this.children.width = this.width;
-                this.children.y = this.y + this.height;
-                this.children.updatePosition();
-                this.children.updateSize();
-            }
+        }
+
+        if (this.children) {
+            this.children.width = this.width;
+            this.children.y = this.y + this.height;
+            this.children.updatePosition();
+            this.children.updateSize();
         }
 
         if (this.width === 'window') this.windowDiv.style.width = window.innerWidth - this.borderSize * 2 + 'px';
         else this.windowDiv.style.width = (this.width - this.borderSize * 2) + 'px';
+
+        if (this.folded) return;
         if (this.height === 'window') this.windowDiv.style.height = window.innerHeight - this.borderSize * 2 + 'px';
         else this.windowDiv.style.height = (this.height - this.borderSize * 2) + 'px';
     },
@@ -218,8 +221,15 @@ bamboo.Ui.Window = game.Class.extend({
         if (this.folded) {
             this.windowDiv.style.height = this.titleHeight + 'px';
             this.windowDiv.style.overflow = 'hidden';
+            this.origHeight = this.height;
+            this.height = this.titleHeight;
+            if (this.children) {
+                this.children.y = this.y + this.height;
+                this.children.updatePosition();
+            }
         }
         else {
+            this.height = this.origHeight;
             this.windowDiv.style.overflow = 'auto';
             this.updateSize();
         }

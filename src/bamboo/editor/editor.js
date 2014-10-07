@@ -119,7 +119,8 @@ bamboo.Editor = game.Class.extend({
             width: 400,
             height: 303,
             resizable: true,
-            snappable: true
+            snappable: true,
+            minY: this.toolBar.height
         });
         this.assetsWindow.setTitle('Assets');
 

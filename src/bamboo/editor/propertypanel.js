@@ -5,7 +5,7 @@ game.module(
 
 bamboo.PropertyPanel = game.Class.extend({
     width: 200,
-    layerWindowHeight: 372,
+    layerWindowHeight: 389,
 
     init: function(editor) {
         this.editor = editor;
@@ -40,7 +40,6 @@ bamboo.PropertyPanel = game.Class.extend({
         this.layerList.className = 'layerList';
         this.layerList.size = 6;
         this.layerList.addEventListener('click', this.layerSelectionChanged.bind(this), false);
-        // this.layerWindow.titleDiv.appendChild(this.layerList);
 
         var buttonsDiv = document.createElement('div');
         buttonsDiv.className = 'buttonContainer';
@@ -70,8 +69,17 @@ bamboo.PropertyPanel = game.Class.extend({
         layerButton.addEventListener('click', this.deleteLayerClicked.bind(this), false);
         buttonsDiv.appendChild(layerButton);
 
-        // this.layerWindow.titleDiv.appendChild(buttonsDiv);
-        // this.layerWindow.titleDiv.style.display = 'block';
+        this.layerWindow.windowDiv.removeChild(this.layerWindow.contentDiv);
+        this.layerWindow.layerList = document.createElement('div');
+        this.layerWindow.layerList.className = 'content';
+        this.layerWindow.layerList.style.padding = '10px';
+
+        this.layerWindow.windowDiv.appendChild(this.layerWindow.layerList);
+        this.layerWindow.windowDiv.appendChild(this.layerWindow.contentDiv);
+
+        this.layerWindow.layerList.appendChild(this.layerList);
+        this.layerWindow.layerList.appendChild(buttonsDiv);
+        this.layerWindow.layerList.style.display = 'block';
     },
 
     updateWindows: function() {
