@@ -10,19 +10,37 @@ bamboo.PropertyPanel = game.Class.extend({
     init: function(editor) {
         this.editor = editor;
         
-        this.layerWindow = bamboo.ui.addWindow(this.width, game.system.height - this.layerWindowHeight - this.editor.statusBar.height, this.width, this.layerWindowHeight, 'right');
+        this.layerWindow = bamboo.ui.addWindow({
+            x: window.innerWidth - this.width,
+            y: game.system.height - this.layerWindowHeight - this.editor.statusBar.height,
+            width: this.width,
+            height: this.layerWindowHeight,
+            minY: this.editor.toolBar.height,
+            resizable: true,
+            snappable: true
+        });
         this.layerWindow.setTitle('Layers');
         this.layerWindow.show();
 
-        this.settingsWindow = bamboo.ui.addWindow(this.width, this.editor.toolBar.height, this.width, game.system.height - this.layerWindowHeight - this.editor.toolBar.height - this.editor.statusBar.height, 'right');
+        this.settingsWindow = bamboo.ui.addWindow({
+            x: window.innerWidth - this.width,
+            y: this.editor.toolBar.height,
+            width: this.width,
+            height: Math.max(250, game.system.height - this.layerWindowHeight - this.editor.toolBar.height - this.editor.statusBar.height),
+            minY: this.editor.toolBar.height,
+            resizable: true,
+            snappable: true
+        });
         this.settingsWindow.show();
+
+        this.settingsWindow.snap(this.layerWindow);
 
         // create layer list
         this.layerList = document.createElement('select');
         this.layerList.className = 'layerList';
         this.layerList.size = 6;
         this.layerList.addEventListener('click', this.layerSelectionChanged.bind(this), false);
-        this.layerWindow.titleDiv.appendChild(this.layerList);
+        // this.layerWindow.titleDiv.appendChild(this.layerList);
 
         var buttonsDiv = document.createElement('div');
         buttonsDiv.className = 'buttonContainer';
@@ -52,16 +70,15 @@ bamboo.PropertyPanel = game.Class.extend({
         layerButton.addEventListener('click', this.deleteLayerClicked.bind(this), false);
         buttonsDiv.appendChild(layerButton);
 
-        this.layerWindow.titleDiv.appendChild(buttonsDiv);
-        this.layerWindow.titleDiv.style.display = 'block';
+        // this.layerWindow.titleDiv.appendChild(buttonsDiv);
+        // this.layerWindow.titleDiv.style.display = 'block';
     },
 
     updateWindows: function() {
-        var settingsWindowHeight = window.innerHeight - this.layerWindowHeight - this.editor.toolBar.height - this.editor.statusBar.height;
-        var layerWindowY = window.innerHeight - this.layerWindowHeight - this.editor.statusBar.height;
-
-        this.settingsWindow.height = settingsWindowHeight;
-        this.layerWindow.y = layerWindowY;
+        // var settingsWindowHeight = window.innerHeight - this.layerWindowHeight - this.editor.toolBar.height - this.editor.statusBar.height;
+        // var layerWindowY = window.innerHeight - this.layerWindowHeight - this.editor.statusBar.height;
+        // this.settingsWindow.height = settingsWindowHeight;
+        // this.layerWindow.y = layerWindowY;
     },
 
     updateLayerList: function() {

@@ -58,7 +58,12 @@ bamboo.Editor = game.Class.extend({
             this.worldTargetPos.y - this.camera.position.y
         );
 
-        this.errorWindow = new bamboo.UiWindow('center', 'center', 400, 124);
+        this.errorWindow = new bamboo.Ui.Window({
+            x: 'center',
+            y: 'center',
+            width: 400,
+            height: 124
+        });
         this.errorWindow.setTitle('Error');
 
         this.initNodes();
@@ -74,23 +79,66 @@ bamboo.Editor = game.Class.extend({
 
         this.updateLayers();
         this.showSettings();
+        this.initShadow();
+    },
+
+    initShadow: function() {
+        this.shadow = document.createElement('div');
+        this.shadow.style.position = 'absolute';
+        this.shadow.style.left = '0px';
+        this.shadow.style.top = '0px';
+        this.shadow.style.width = '100%';
+        this.shadow.style.height = '100%';
+        this.shadow.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        this.shadow.style.zIndex = 10;
+        this.shadow.style.textAlign = 'center';
+        this.shadow.style.lineHeight = window.innerHeight + 'px';
+        this.shadow.style.display = 'none';
+        this.shadow.style.pointerEvents = 'none';
+        document.body.appendChild(this.shadow);
+    },
+
+    showShadow: function() {
+        this.shadow.style.display = 'block';
+    },
+
+    hideShadow: function() {
+        this.shadow.style.display = 'none';
+    },
+
+    setShadowText: function(text) {
+        this.shadow.innerHTML = text;
+        return this;
     },
 
     showAssets: function() {
-        var assetsWindow = new bamboo.UiWindow('center', 'center', 400, 303);
-        assetsWindow.setTitle('Assets');
+        this.hideAssets();
+        this.assetsWindow = bamboo.ui.addWindow({
+            x: 'center',
+            y: 'center',
+            width: 400,
+            height: 303,
+            resizable: true,
+            snappable: true
+        });
+        this.assetsWindow.setTitle('Assets');
 
         var assetsList = document.createElement('select');
         assetsList.className = 'assetsList';
-        assetsWindow.contentDiv.appendChild(assetsList);
+        this.assetsWindow.contentDiv.appendChild(assetsList);
 
-        assetsWindow.addButton('Remove', this.removeAsset.bind(this, assetsList));
-        assetsWindow.addButton('Close', function() {
-            assetsWindow.hide();
-        });
+        this.assetsWindow.addButton('Remove', this.removeAsset.bind(this, assetsList));
+        this.assetsWindow.addButton('Close', this.hideAssets.bind(this));
 
         this.updateAssetsList(assetsList);
-        assetsWindow.show();
+        this.assetsWindow.show();
+    },
+
+    hideAssets: function() {
+        if (this.assetsWindow) {
+            bamboo.ui.removeWindow(this.assetsWindow);
+            this.assetsWindow = null;
+        }
     },
 
     removeAsset: function(assetsList) {
@@ -192,6 +240,7 @@ bamboo.Editor = game.Class.extend({
 
     changeMode: function(mode, param) {
         if (this.mode) this.mode.exit();
+        if (this.mode && this.mode.state) this.mode.state.exit();
         this.mode = new bamboo.editor['Mode' + mode.ucfirst()](this, param);
         this.mode.enter();
         this.updateStatus();
@@ -211,9 +260,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     exit: function() {
-        this.propertyPanel.visible = false;
-        this.statusBar.window.hide();
-        this.statusBar.saveWindow.hide();
+        bamboo.ui.removeAll();
     },
 
     getUniqueName: function(name) {
@@ -631,6 +678,7 @@ bamboo.Editor = game.Class.extend({
         this.world.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);
         this.nodeLayer.position.x = game.system.width / 2 - game.System.width / 2;
         this.nodeLayer.position.y = game.system.height / 2 - game.System.height / 2;
+        this.shadow.style.lineHeight = window.innerHeight + 'px';
     }
 });
 

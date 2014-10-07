@@ -54,6 +54,10 @@ game.addAsset('../src/bamboo/editor/media/hourglass.png');
 
 bamboo.EditorScene = game.Scene.extend({
     init: function() {
+        // Disable right click
+        document.oncontextmenu = document.body.oncontextmenu = function() {
+            return false;
+        };
         window.ondrop = window.ondragleave = window.ondragover = function(event) {
             event.preventDefault();
         };
@@ -62,19 +66,36 @@ bamboo.EditorScene = game.Scene.extend({
         canvas.ondragleave = this.dragleave.bind(this);
         canvas.ondrop = this.filedrop.bind(this);
 
-        this.scenesWindow = bamboo.ui.addWindow('center', 'center', 310, 155);
+        this.scenesWindow = bamboo.ui.addWindow({
+            x: 'center',
+            y: 'center',
+            width: 310,
+            height: 155
+        });
         this.scenesWindow.setTitle('Welcome to Bamboo scene editor ' + bamboo.version);
         this.scenesWindow.addImageTextButton('New scene', 'polaroid.png', this.loadEditor.bind(this, null));
         this.scenesWindow.addImageTextButton('Load scene', 'stack.png', this.loadEditor.bind(this, bamboo.scenes[0]));
         this.scenesWindow.addImageTextButton('Settings', 'tools.png');
+        this.scenesWindow.onResize = this.onResize.bind(this);
 
         bamboo.nodes = game.ksort(bamboo.nodes);
 
         this.scenesWindow.show();
     },
 
+    onResize: function() {
+        if (this.scenesWindow) {
+            this.scenesWindow.x = window.innerWidth / 2 - this.scenesWindow.width / 2;
+            this.scenesWindow.y = window.innerHeight / 2 - this.scenesWindow.height / 2;
+            this.scenesWindow.updatePosition();
+        }
+    },
+
     loadEditor: function(data) {
-        bamboo.ui.removeWindow(this.scenesWindow);
+        if (this.scenesWindow) {
+            bamboo.ui.removeWindow(this.scenesWindow);
+            this.scenesWindow = null;
+        }
 
         if (this.editor) {
             this.editor.exit();
@@ -138,21 +159,21 @@ bamboo.EditorScene = game.Scene.extend({
     filedrop: function(event) {
         event.preventDefault();
         if (this.editor) {
-            bamboo.ui.hideOverlay();
+            this.editor.hideShadow();
             this.editor.filedrop(event);
         }
     },
 
     dragover: function() {
         if (this.editor) {
-            bamboo.ui.setOverlay('Drop here to add asset');
-            bamboo.ui.showOverlay();
+            this.editor.setShadowText('Drop here to add asset');
+            this.editor.showShadow();
         }
         return false;
     },
 
     dragleave: function() {
-        if (this.editor) bamboo.ui.hideOverlay();
+        if (this.editor) this.editor.hideShadow();
         return false;
     }
 });
@@ -188,7 +209,6 @@ game.start = function() {
 
 window.addEventListener('resize', function() {
     if (game.system) game.system.resize(window.innerWidth, window.innerHeight);
-    if (game.scene && game.scene.editor) game.scene.editor.propertyPanel.updateWindows();
     if (game.scene && game.scene.editor) game.scene.editor.onResize();
     if (bamboo.ui) bamboo.ui.onResize();
 });

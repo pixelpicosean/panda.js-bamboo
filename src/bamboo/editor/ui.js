@@ -4,68 +4,62 @@ game.module(
 .body(function() {
 
 bamboo.Ui = game.Class.extend({
-    windows: [],
     activeWindow: null,
+    windows: [],
 
     init: function() {
-        this.overlay = document.createElement('div');
-        this.overlay.style.position = 'absolute';
-        this.overlay.style.left = '0px';
-        this.overlay.style.top = '0px';
-        this.overlay.style.width = '100%';
-        this.overlay.style.height = '100%';
-        this.overlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
-        this.overlay.style.zIndex = 10;
-        this.overlay.style.textAlign = 'center';
-        this.overlay.style.lineHeight = window.innerHeight + 'px';
-        this.overlay.style.display = 'none';
-        this.overlay.style.pointerEvents = 'none';
-        document.body.appendChild(this.overlay);
-
-        // window.addEventListener('mousemove', this.mousemove.bind(this), false);
-        // window.addEventListener('mouseup', this.mouseup.bind(this), false);
+        window.addEventListener('mousemove', this.mousemove.bind(this), false);
+        window.addEventListener('mouseup', this.mouseup.bind(this), false);
     },
 
     onResize: function() {
-        this.overlay.style.lineHeight = window.innerHeight + 'px';
+        for (var i = 0; i < this.windows.length; i++) {
+            if (typeof this.windows[i].onResize === 'function') {
+                this.windows[i].onResize();
+            }
+            this.windows[i].updatePosition();
+            this.windows[i].updateSize();
+        }
     },
 
-    showOverlay: function() {
-        this.overlay.style.display = 'block';
-    },
-
-    hideOverlay: function() {
-        this.overlay.style.display = 'none';
-    },
-
-    setOverlay: function(text) {
-        this.overlay.innerHTML = text;
-        return this;
+    setActiveWindow: function(winElem) {
+        this.activeWindow = winElem;
+        if (this.activeWindow.resizing) document.body.style.cursor = 'nwse-resize';
+        else document.body.style.cursor = 'move';
     },
 
     mousemove: function(event) {
-        // if (this.activeWindow) this.activeWindow.mousemove(event);
+        if (this.activeWindow) this.activeWindow.mousemove(event);
     },
 
     mouseup: function() {
-        // document.body.style.cursor = 'default';
-        // this.activeWindow = null;
+        if (this.activeWindow) {
+            document.body.style.cursor = 'default';
+            this.activeWindow = null;
+        }
     },
     
-    addWindow: function(x, y, width, height, align) {
-        var w = new bamboo.UiWindow(x, y, width, height, align);
-        this.windows.push(w);
-        return w;
+    addWindow: function(settings) {
+        var winElem = new bamboo.Ui.Window(settings);
+        winElem.ui = this;
+        this.windows.push(winElem);
+        return winElem;
     },
 
-    removeWindow: function(elem) {
+    removeWindow: function(winElem) {
         for (var i = this.windows.length - 1; i >= 0; i--) {
-            if (this.windows[i] === elem) {
-                elem.hide();
+            if (this.windows[i] === winElem) {
+                winElem.hide();
                 this.windows.splice(i, 1);
-                break;
+                return true;
             }
         }
+        return false;
+    },
+
+    removeAll: function() {
+        this.hideAll();
+        this.windows.length = 0;
     },
 
     hideAll: function() {
@@ -87,7 +81,7 @@ bamboo.Ui = game.Class.extend({
     }
 });
 
-bamboo.UiWindow = game.Class.extend({
+bamboo.Ui.Window = game.Class.extend({
     x: 'center',
     y: 'center',
     width: 400,
@@ -96,20 +90,50 @@ bamboo.UiWindow = game.Class.extend({
     inputs: {},
     visible: false,
     align: 'left',
+    folded: false,
+    titleHeight: 30,
+    titlePadding: 8,
+    fixed: false,
+    minY: 0,
+    minX: 0,
+    closeable: false,
+    resizable: false,
+    minWidth: 200,
+    minHeight: 200,
+    parent: null,
+    children: null,
 
-    init: function(x, y, width, height, align) {
-        this.align = align || this.align;
-        if (typeof(x) !== 'undefined') this.x = x;
-        if (typeof(y) !== 'undefined') this.y = y;
-        if (typeof(width) !== 'undefined') this.width = width;
-        if (typeof(height) !== 'undefined') this.height = height;
+    init: function(settings) {
+        game.merge(this, settings);
+
+        if (this.x === 'center') this.x = window.innerWidth / 2 - this.width / 2;
+        if (this.y === 'center') this.y = window.innerHeight / 2 - this.height / 2;
 
         this.windowDiv = document.createElement('div');
         this.windowDiv.className = 'window';
 
         this.titleDiv = document.createElement('div');
-        this.titleDiv.addEventListener('mousedown', this.mousedown.bind(this), false);
+        if (!this.fixed) this.titleDiv.addEventListener('mousedown', this.mousedown.bind(this), false);
         this.titleDiv.className = 'title';
+        this.titleDiv.style.padding = this.titlePadding + 'px';
+        this.titleDiv.style.height = (this.titleHeight - this.titlePadding * 2) + 'px';
+
+        if (this.closeable) {
+            // TODO
+        }
+
+        if (this.resizable) {
+            var resizeDiv = document.createElement('div');
+            resizeDiv.style.width = '15px';
+            resizeDiv.style.height = '15px';
+            // resizeDiv.style.backgroundColor = 'green';
+            resizeDiv.style.position = 'absolute';
+            resizeDiv.style.right = '0px';
+            resizeDiv.style.bottom = '0px';
+            resizeDiv.addEventListener('mousedown', this.resizeDown.bind(this));
+            this.windowDiv.appendChild(resizeDiv);
+            this.origSize = new game.Point();
+        }
 
         this.mouseStartPos = new game.Point();
         this.origPosition = new game.Point();
@@ -121,40 +145,132 @@ bamboo.UiWindow = game.Class.extend({
         this.windowDiv.appendChild(this.contentDiv);
 
         window.addEventListener('resize', this.update.bind(this), false);
-        this.update();
+
+        this.updateSize();
+        this.updatePosition();
     },
 
-    mousedown: function() {
-        // document.body.style.cursor = 'move';
-        // this.ui.activeWindow = this;
-        // this.mouseStartPos.set(event.clientX, event.clientY);
-        // this.origPosition.set(this.x, this.y);
+    snap: function(target) {
+        this.children = target;
+        target.parent = this;
+
+        target.x = this.x;
+        target.y = this.y + this.height;
+        target.width = this.width;
+        target.updatePosition();
+        target.updateSize();
+    },
+
+    unsnap: function() {
+        if (this.parent) {
+            this.parent.children = null;
+            this.parent = null;
+        }
+    },
+
+    updateSize: function() {
+        if (this.resizable) {
+            if (this.width < this.minWidth) this.width = this.minWidth;
+            if (this.height < this.minHeight) this.height = this.minHeight;
+            if (this.children) {
+                this.children.width = this.width;
+                this.children.y = this.y + this.height;
+                this.children.updatePosition();
+                this.children.updateSize();
+            }
+        }
+
+        if (this.width === 'window') this.windowDiv.style.width = window.innerWidth - this.borderSize * 2 + 'px';
+        else this.windowDiv.style.width = (this.width - this.borderSize * 2) + 'px';
+        if (this.height === 'window') this.windowDiv.style.height = window.innerHeight - this.borderSize * 2 + 'px';
+        else this.windowDiv.style.height = (this.height - this.borderSize * 2) + 'px';
+    },
+
+    resizeDown: function() {
+        this.resizing = true;
+        this.ui.setActiveWindow(this);
+        this.mouseStartPos.set(event.clientX, event.clientY);
+        this.origSize.set(this.width, this.height);
+    },
+
+    bringFront: function() {
+        this.hide();
+        this.show();
+        if (this.children) this.children.bringFront();
+    },
+
+    mousedown: function(event) {
+        this.resizing = false;
+        if (event.button === 2) {
+            // Right mouse button
+            this.toggleFold();
+            return;
+        }
+        if (!this.ui) return;
+        this.bringFront();
+        this.ui.setActiveWindow(this);
+        this.mouseStartPos.set(event.clientX, event.clientY);
+        this.origPosition.set(this.x, this.y);
+    },
+
+    toggleFold: function() {
+        this.folded = !this.folded;
+        if (this.folded) {
+            this.windowDiv.style.height = this.titleHeight + 'px';
+            this.windowDiv.style.overflow = 'hidden';
+        }
+        else {
+            this.windowDiv.style.overflow = 'auto';
+            this.updateSize();
+        }
     },
 
     mousemove: function(event) {
-        // this.x = this.origPosition.x + event.clientX - this.mouseStartPos.x;
-        // this.y = this.origPosition.y + event.clientY - this.mouseStartPos.y;
-        // this.update();
+        if (this.parent) this.unsnap();
+        if (this.resizing) {
+            this.width = this.origSize.x + event.clientX - this.mouseStartPos.x;
+            this.height = this.origSize.y + event.clientY - this.mouseStartPos.y;
+            this.updateSize();
+        }
+        else {
+            this.x = this.origPosition.x + event.clientX - this.mouseStartPos.x;
+            this.y = this.origPosition.y + event.clientY - this.mouseStartPos.y;
+
+            if (this.snappable) {
+                for (var i = 0; i < this.ui.windows.length; i++) {
+                    if (this.ui.windows[i].snappable && this.ui.windows[i] !== this) {
+                        var target = this.ui.windows[i];
+                        if (Math.abs(target.x - this.x) <= 10 &&
+                            Math.abs((target.y + target.height) - this.y) <= 10) {
+                            target.snap(this);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            this.updatePosition();
+        }
+    },
+
+    updatePosition: function() {
+        if (this.x < this.minX) this.x = this.minX;
+        if (this.y < this.minY) this.y = this.minY;
+        if (this.x + this.width > window.innerWidth) this.x = window.innerWidth - this.width;
+        if (this.y + this.titleHeight > window.innerHeight) this.y = window.innerHeight - this.titleHeight;
+        
+        if (this.children) {
+            this.children.x = this.x;
+            this.children.y = this.y + this.height;
+            this.children.updatePosition();
+        }
+
+        this.windowDiv.style.left = this.x + 'px';
+        this.windowDiv.style.top = this.y + 'px';
     },
 
     update: function() {
-        if (this.width === 'window') this.windowDiv.style.width = window.innerWidth - this.borderSize * 2 + 'px';
-        else this.windowDiv.style.width = (this.width - this.borderSize * 2) + 'px';
-
-        if (this.height === 'window') this.windowDiv.style.height = window.innerHeight - this.borderSize * 2 + 'px';
-        else this.windowDiv.style.height = (this.height - this.borderSize * 2) + 'px';
-
-        if (this.x === 'center') this.windowDiv.style.left = window.innerWidth / 2 - this.width / 2 + 'px';
-        else {
-            if (this.align === 'right') this.windowDiv.style.left = window.innerWidth - this.x + 'px';
-            else this.windowDiv.style.left = this.x + 'px';
-        }
-
-        if (this.y === 'center') this.windowDiv.style.top = window.innerHeight / 2 - this.height / 2 + 'px';
-        else {
-            if (this.align === 'bottom') this.windowDiv.style.top = window.innerHeight - this.y + 'px';
-            else this.windowDiv.style.top = this.y + 'px';
-        }
+        this.updatePosition();
     },
 
     show: function() {

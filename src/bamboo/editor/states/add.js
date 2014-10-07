@@ -11,7 +11,13 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
     nameHasChanged: false,
 
     enter: function() {
-        this.addWindow = new bamboo.UiWindow('center', 'center', 400, 220);
+        this.addWindow = bamboo.ui.addWindow({
+            x: 'center',
+            y: 'center',
+            width: 400,
+            height: 220,
+            minY: this.mode.editor.toolBar.height
+        });
         this.addWindow.setTitle('Add Node');
         this.addWindow.addInputSelect('type', 'Node Type', 'Type of the node', this.nodeTypeChanged.bind(this));
 
@@ -30,7 +36,7 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
             this.addWindow.setInputSelectValue('parent', this.mode.editor.activeLayer.name);
         }
 
-        if(this.mode.editor.selectedNode) {
+        if (this.mode.editor.selectedNode) {
             this.addWindow.inputs['name'].value = this.mode.editor.getUniqueName(this.mode.editor.selectedNode.getClassName());
             this.addWindow.setInputSelectValue('type', this.mode.editor.selectedNode.getClassName());
             this.addWindow.setInputSelectValue('parent', this.mode.editor.selectedNode.parent.name);
@@ -44,7 +50,7 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
     },
 
     exit: function() {
-        this.addWindow.hide();
+        bamboo.ui.removeWindow(this.addWindow);
     },
 
     cancel: function() {
@@ -63,8 +69,6 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
 
     addPressed: function() {
         this.mode.editor.controller.deselectAllNodes();
-        
-        bamboo.ui.removeWindow(this.addWindow);
 
         var node = this.mode.editor.controller.createNode(this.addWindow.inputs['type'].value, {
             name: this.addWindow.inputs['name'].value,
