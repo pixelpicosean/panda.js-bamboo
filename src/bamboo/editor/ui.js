@@ -91,7 +91,7 @@ bamboo.Ui.Window = game.Class.extend({
     visible: false,
     align: 'left',
     folded: false,
-    titleHeight: 30,
+    titleHeight: 29,
     titlePadding: 8,
     fixed: false,
     minY: 0,
@@ -123,15 +123,16 @@ bamboo.Ui.Window = game.Class.extend({
         }
 
         if (this.resizable) {
-            var resizeDiv = document.createElement('div');
-            resizeDiv.style.width = '15px';
-            resizeDiv.style.height = '15px';
-            // resizeDiv.style.backgroundColor = 'green';
-            resizeDiv.style.position = 'absolute';
-            resizeDiv.style.right = '0px';
-            resizeDiv.style.bottom = '0px';
-            resizeDiv.addEventListener('mousedown', this.resizeDown.bind(this));
-            this.windowDiv.appendChild(resizeDiv);
+            var resizeImg = document.createElement('img');
+            resizeImg.src = 'src/bamboo/editor/media/resize.png';
+            resizeImg.webkitUserDrag = 'none';
+            resizeImg.style.width = '15px';
+            resizeImg.style.height = '15px';
+            resizeImg.style.position = 'absolute';
+            resizeImg.style.right = '0px';
+            resizeImg.style.bottom = '0px';
+            resizeImg.addEventListener('mousedown', this.resizeDown.bind(this));
+            this.windowDiv.appendChild(resizeImg);
             this.origSize = new game.Point();
         }
 
@@ -240,6 +241,7 @@ bamboo.Ui.Window = game.Class.extend({
         if (this.resizing) {
             this.width = this.origSize.x + event.clientX - this.mouseStartPos.x;
             this.height = this.origSize.y + event.clientY - this.mouseStartPos.y;
+            if (this.x + this.width > window.innerWidth) this.width = window.innerWidth - this.x;
             this.updateSize();
         }
         else {
