@@ -70,17 +70,17 @@ bamboo.EditorScene = game.Scene.extend({
             x: 'center',
             y: 'center',
             width: 310,
-            height: 155
+            height: 150,
+            fixed: true
         });
-        this.scenesWindow.setTitle('Welcome to Bamboo scene editor ' + bamboo.version);
+        this.scenesWindow.setTitle('Bamboo scene editor ' + bamboo.version);
         this.scenesWindow.addImageTextButton('New scene', 'polaroid.png', this.loadEditor.bind(this, null));
         this.scenesWindow.addImageTextButton('Load scene', 'stack.png', this.loadEditor.bind(this, bamboo.scenes[0]));
         this.scenesWindow.addImageTextButton('Settings', 'tools.png');
         this.scenesWindow.onResize = this.onResize.bind(this);
+        this.scenesWindow.show();
 
         bamboo.nodes = game.ksort(bamboo.nodes);
-
-        this.scenesWindow.show();
     },
 
     onResize: function() {
