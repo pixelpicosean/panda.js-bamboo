@@ -45,11 +45,11 @@ bamboo.Editor = game.Class.extend({
         this.overlay.addChild(this.boundaryLayer.displayObject);
 
         this.statusBar = new bamboo.StatusBar();
-        this.toolBar = new bamboo.ToolBar(this);
+        this.menuBar = new bamboo.MenuBar(this);
         this.propertyPanel = new bamboo.PropertyPanel(this);
 
         this.tempMessage = new game.Text('', { font: '16px Arial', fill: 'white' });
-        this.tempMessage.position.set(10, this.toolBar.height + 10);
+        this.tempMessage.position.set(10, this.menuBar.height + 10);
         this.overlay.addChild(this.tempMessage);
 
         this.changeMode('Main');
@@ -477,6 +477,8 @@ bamboo.Editor = game.Class.extend({
     },
 
     mousemove: function(event) {
+        if (this.menuBar.menuElem.active) this.menuBar.menuElem.activate();
+
         this.prevMousePos.x = event.global.x;
         this.prevMousePos.y = event.global.y;
 
@@ -680,6 +682,10 @@ bamboo.Editor = game.Class.extend({
         this.nodeLayer.position.x = game.system.width / 2 - game.System.width / 2;
         this.nodeLayer.position.y = game.system.height / 2 - game.System.height / 2;
         this.shadow.style.lineHeight = window.innerHeight + 'px';
+    },
+
+    showAbout: function() {
+
     }
 });
 

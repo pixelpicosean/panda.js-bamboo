@@ -6,10 +6,17 @@ game.module(
 bamboo.Ui = game.Class.extend({
     activeWindow: null,
     windows: [],
+    menus: [],
 
     init: function() {
         window.addEventListener('mousemove', this.mousemove.bind(this), false);
         window.addEventListener('mouseup', this.mouseup.bind(this), false);
+    },
+
+    addMenu: function(height) {
+        var menu = new bamboo.Ui.Menu(height);
+        this.menus.push(menu);
+        return menu;
     },
 
     onResize: function() {
@@ -19,6 +26,9 @@ bamboo.Ui = game.Class.extend({
             }
             this.windows[i].updatePosition();
             this.windows[i].updateSize();
+        }
+        for (var i = 0; i < this.menus.length; i++) {
+            this.menus[i].updateSize();
         }
     },
 
@@ -459,6 +469,105 @@ bamboo.Ui.Window = game.Class.extend({
     setInputSelectValue: function(name, value) {
         this.inputs[name].value = value;
         return this;
+    }
+});
+
+bamboo.Ui.Menu = game.Class.extend({
+    menus: {},
+    activeMenu: null,
+    height: 25,
+
+    init: function(height) {
+        this.height = height || this.height;
+        this.height -= 2;
+        this.windowDiv = document.createElement('div');
+        this.windowDiv.className = 'window';
+        this.windowDiv.style.height = this.height + 'px';
+        this.windowDiv.style.left = '0px';
+        this.windowDiv.style.top = '0px';
+        this.windowDiv.style.overflow = 'visible';
+        this.updateSize();
+
+        this.contentDiv = document.createElement('div');
+
+        this.windowDiv.appendChild(this.contentDiv);
+
+        document.body.appendChild(this.windowDiv);
+    },
+
+    show: function() {
+        this.windowDiv.style.display = 'block';
+    },
+
+    hide: function() {
+        this.windowDiv.style.display = 'none';
+    },
+
+    updateSize: function() {
+        this.windowDiv.style.width = window.innerWidth + 'px';
+    },
+
+    addMenu: function(name) {
+        var menuButton = document.createElement('div');
+        menuButton.className = 'menu';
+        menuButton.innerHTML = name;
+        menuButton.addEventListener('click', this.activate.bind(this, name));
+        menuButton.addEventListener('mouseover', this.openMenu.bind(this, name));
+        this.contentDiv.appendChild(menuButton);
+
+        var menuContent = document.createElement('div');
+        menuContent.className = 'menuContent';
+        menuContent.style.display = 'none';
+        menuContent.style.top = (this.height + 1) + 'px';
+        menuContent.style.left = menuButton.offsetLeft + 'px';
+        this.windowDiv.appendChild(menuContent);
+
+        this.menus[name] = menuContent;
+    },
+
+    addMenuItem: function(menu, name, callback) {
+        if (!this.menus[menu]) return;
+
+        var menuItem = document.createElement('div');
+        menuItem.innerHTML = name;
+        menuItem.addEventListener('click', this.menuItemClick.bind(this, menuItem));
+        menuItem.className = 'menuItem';
+        menuItem.parent = menu;
+        menuItem.callback = callback;
+
+        this.menus[menu].appendChild(menuItem);
+    },
+
+    menuItemClick: function(item) {
+        if (typeof item.callback === 'function') item.callback();
+        this.activate(item.parent);
+        this.activeMenu = null;
+    },
+
+    activate: function(name) {
+        if (this.activeMenu === name || !name) {
+            this.closeMenu(this.activeMenu);
+            this.active = false;
+            this.activeMenu = null;
+        }
+        else {
+            this.active = true;
+            this.openMenu(name);
+        }
+    },
+
+    openMenu: function(name) {
+        if (!this.active) return;
+        if (this.activeMenu === name) return;
+        if (this.activeMenu) this.closeMenu(this.activeMenu);
+
+        this.activeMenu = name;
+
+        this.menus[name].style.display = 'block';
+    },
+
+    closeMenu: function(name) {
+        this.menus[name].style.display = 'none';
     }
 });
 

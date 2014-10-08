@@ -15,7 +15,7 @@ bamboo.PropertyPanel = game.Class.extend({
             y: game.system.height - this.layerWindowHeight - this.editor.statusBar.height,
             width: this.width,
             height: this.layerWindowHeight,
-            minY: this.editor.toolBar.height,
+            minY: this.editor.menuBar.height,
             resizable: true,
             snappable: true
         });
@@ -24,10 +24,10 @@ bamboo.PropertyPanel = game.Class.extend({
 
         this.settingsWindow = bamboo.ui.addWindow({
             x: window.innerWidth - this.width,
-            y: this.editor.toolBar.height,
+            y: this.editor.menuBar.height,
             width: this.width,
-            height: Math.max(250, game.system.height - this.layerWindowHeight - this.editor.toolBar.height - this.editor.statusBar.height),
-            minY: this.editor.toolBar.height,
+            height: Math.max(250, game.system.height - this.layerWindowHeight - this.editor.menuBar.height - this.editor.statusBar.height),
+            minY: this.editor.menuBar.height,
             resizable: true,
             snappable: true
         });
@@ -83,7 +83,7 @@ bamboo.PropertyPanel = game.Class.extend({
     },
 
     updateWindows: function() {
-        // var settingsWindowHeight = window.innerHeight - this.layerWindowHeight - this.editor.toolBar.height - this.editor.statusBar.height;
+        // var settingsWindowHeight = window.innerHeight - this.layerWindowHeight - this.editor.menuBar.height - this.editor.statusBar.height;
         // var layerWindowY = window.innerHeight - this.layerWindowHeight - this.editor.statusBar.height;
         // this.settingsWindow.height = settingsWindowHeight;
         // this.layerWindow.y = layerWindowY;

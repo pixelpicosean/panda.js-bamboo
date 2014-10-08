@@ -15,7 +15,7 @@ game.module(
     'bamboo.editor.propertypanel',
     'bamboo.editor.state',
     'bamboo.editor.statusbar',
-    'bamboo.editor.toolbar',
+    'bamboo.editor.menubar',
     'bamboo.editor.ui',
     'bamboo.editor.world',
     
@@ -66,52 +66,28 @@ bamboo.EditorScene = game.Scene.extend({
         canvas.ondragleave = this.dragleave.bind(this);
         canvas.ondrop = this.filedrop.bind(this);
 
-        this.scenesWindow = bamboo.ui.addWindow({
-            x: 'center',
-            y: 'center',
-            width: 310,
-            height: 150,
-            fixed: true
-        });
-        this.scenesWindow.setTitle('Bamboo scene editor ' + bamboo.version);
-        this.scenesWindow.addImageTextButton('New scene', 'polaroid.png', this.loadEditor.bind(this, null));
-        this.scenesWindow.addImageTextButton('Load scene', 'stack.png', this.loadEditor.bind(this, bamboo.scenes[0]));
-        this.scenesWindow.addImageTextButton('Settings', 'tools.png');
-        this.scenesWindow.onResize = this.onResize.bind(this);
-        this.scenesWindow.show();
-
         bamboo.nodes = game.ksort(bamboo.nodes);
-    },
-
-    onResize: function() {
-        if (this.scenesWindow) {
-            this.scenesWindow.x = window.innerWidth / 2 - this.scenesWindow.width / 2;
-            this.scenesWindow.y = window.innerHeight / 2 - this.scenesWindow.height / 2;
-            this.scenesWindow.updatePosition();
-        }
+        this.loadEditor();
     },
 
     loadEditor: function(data) {
-        if (this.scenesWindow) {
-            bamboo.ui.removeWindow(this.scenesWindow);
-            this.scenesWindow = null;
-        }
-
         if (this.editor) {
             this.editor.exit();
             this.stage.removeChild(this.editor.displayObject);
             this.removeObject(this.editor);
         }
 
-        this.loader = new game.Sprite('../src/bamboo/editor/media/hourglass.png');
-        this.loader.center();
-        this.loader.addTo(this.stage);
-
-        this.addTimer(50, this.startLoading.bind(this, data));
+        if (data) {
+            this.loader = new game.Sprite('../src/bamboo/editor/media/hourglass.png');
+            this.loader.center();
+            this.loader.addTo(this.stage);
+            this.addTimer(50, this.startLoading.bind(this, data));
+        }
+        else this.startLoading();
     },
 
     startLoading: function(data) {
-        this.loader.remove();
+        if (this.loader) this.loader.remove();
         this.editor = new bamboo.Editor(data);
         this.stage.addChild(this.editor.displayObject);
         this.addObject(this.editor);

@@ -315,3 +315,33 @@ span.key {
     /*font-weight: bold;*/
     text-decoration: underline;
 }
+
+.window .menu {
+    padding: 5px 10px;
+    display: inline-block;
+    color: #eee;
+}
+.window .menu:hover {
+    color: #999;
+    background: #4a4a4a;
+    cursor: pointer;
+}
+.menuContent {
+    background: #393939;
+    z-index: 99999;
+    position: absolute;
+    border: 1px solid #202020;
+    border-top: none;
+    min-width: 150px;
+    /*width: 100px;*/
+    /*height: 100px;*/
+}
+.menuItem {
+    padding: 5px 10px;
+    color: #eee;
+}
+.menuItem:hover {
+    color: #999;
+    background: #4a4a4a;
+    cursor: pointer;
+}

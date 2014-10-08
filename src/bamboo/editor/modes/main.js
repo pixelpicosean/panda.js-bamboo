@@ -83,8 +83,14 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         }
         if (key === 'W') {
             this.editor.windowsHidden = !this.editor.windowsHidden;
-            if (this.editor.windowsHidden) bamboo.ui.hideAll();
-            else bamboo.ui.showAll();
+            if (this.editor.windowsHidden) {
+                bamboo.ui.hideAll();
+                this.editor.menuBar.hide();
+            }
+            else {
+                bamboo.ui.showAll();
+                this.editor.menuBar.show();
+            }
             return;
         }
         if (key === 'SPACE') {
