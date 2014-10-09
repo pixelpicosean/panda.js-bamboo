@@ -16,7 +16,8 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
             y: 'center',
             width: 400,
             height: 220,
-            minY: this.mode.editor.toolBar.height
+            minY: this.mode.editor.menuBar.height,
+            closeable: true
         });
         this.addWindow.setTitle('Add Node');
         this.addWindow.addInputSelect('type', 'Node Type', 'Type of the node', this.nodeTypeChanged.bind(this));
@@ -43,7 +44,6 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
         }
 
         this.addWindow.addButton('Add', this.addPressed.bind(this));
-        this.addWindow.addButton('Cancel', this.cancel.bind(this));
         this.addWindow.show();
 
         this.nodeTypeChanged();

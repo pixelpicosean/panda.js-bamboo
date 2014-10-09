@@ -333,8 +333,9 @@ span.key {
     border: 1px solid #202020;
     border-top: none;
     min-width: 150px;
-    /*width: 100px;*/
-    /*height: 100px;*/
+}
+.menuContent:hover {
+    cursor: pointer;
 }
 .menuItem {
     padding: 5px 10px;
@@ -343,5 +344,4 @@ span.key {
 .menuItem:hover {
     color: #999;
     background: #4a4a4a;
-    cursor: pointer;
 }
