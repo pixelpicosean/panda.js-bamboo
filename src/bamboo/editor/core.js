@@ -46,11 +46,15 @@ game.module(
     'bamboo.editor.nodes.tween',
     'bamboo.runtime.nodes.audio',
     'bamboo.runtime.nodes.physics',
-    'bamboo.runtime.nodes.button'
+    'bamboo.runtime.nodes.button',
+    'bamboo.runtime.nodes.mousetrigger'
 )
 .body(function() {
 
 game.addAsset('../src/bamboo/editor/media/hourglass.png');
+
+game.Loader.logo = 'src/bamboo/editor/media/logo.png';
+game.Loader.barWidth = 150;
 
 bamboo.EditorScene = game.Scene.extend({
     init: function() {
@@ -171,7 +175,7 @@ game.start = function() {
     var favicon = document.createElement('link');
     favicon.type = 'image/x-icon';
     favicon.rel = 'shortcut icon';
-    favicon.href = 'src/bamboo/editor/media/favicon.png';
+    favicon.href = 'src/bamboo/editor/media/favicon.png?';
     document.getElementsByTagName('head')[0].appendChild(favicon);
 
     bamboo.ui = new bamboo.Ui();
@@ -190,6 +194,7 @@ window.addEventListener('resize', function() {
 });
 
 window.addEventListener('keydown', function(event) {
+    // Prevent backspace
     if (event.keyCode === 8 && document.activeElement.type !== 'text') {
         event.preventDefault();
     }
