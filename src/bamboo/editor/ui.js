@@ -90,7 +90,7 @@ bamboo.Ui = game.Class.extend({
     },
 
     addWindow: function(settings) {
-        if (this.workspace) {
+        if (this.workspace && settings.id) {
             if (this.workspace.windows[settings.id]) {
                 var data = this.workspace.windows[settings.id];
                 for (var key in data) {
@@ -151,6 +151,7 @@ bamboo.Ui = game.Class.extend({
     removeAll: function() {
         this.hideAll();
         this.windows.length = 0;
+        this.menu.remove();
     },
 
     hideAll: function() {
@@ -190,7 +191,7 @@ bamboo.Ui.Window = game.Class.extend({
     closeable: false,
     resizable: false,
     minWidth: 200,
-    minHeight: 200,
+    minHeight: 100,
     parent: null,
     children: null,
     saved: true,
@@ -605,6 +606,10 @@ bamboo.Ui.Menu = game.Class.extend({
         document.body.appendChild(this.windowDiv);
     },
 
+    remove: function() {
+        document.body.removeChild(this.windowDiv);
+    },
+
     show: function() {
         this.windowDiv.style.display = 'block';
     },
@@ -628,7 +633,7 @@ bamboo.Ui.Menu = game.Class.extend({
         var menuContent = document.createElement('div');
         menuContent.className = 'menuContent';
         menuContent.style.display = 'none';
-        menuContent.style.top = (this.height + 1) + 'px';
+        menuContent.style.top = (this.height) + 'px';
         menuContent.style.left = menuButton.offsetLeft + 'px';
         this.windowDiv.appendChild(menuContent);
 
@@ -646,6 +651,15 @@ bamboo.Ui.Menu = game.Class.extend({
         menuItem.callback = callback;
 
         this.menus[menu].appendChild(menuItem);
+    },
+
+    addMenuItemSpacer: function(menu) {
+        if (!this.menus[menu]) return;
+
+        var menuSpacer = document.createElement('div');
+        menuSpacer.className = 'menuSpacer';
+        
+        this.menus[menu].appendChild(menuSpacer);
     },
 
     menuItemClick: function(item) {
@@ -702,6 +716,10 @@ bamboo.Ui.defaultWorkspace = {
         nodes: {
             height: 220,
             snappedTo: 'assets'
+        },
+        camera: {
+            height: 130,
+            snappedTo: 'nodes'
         }
     }
 };

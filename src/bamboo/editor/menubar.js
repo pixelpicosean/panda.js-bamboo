@@ -22,6 +22,11 @@ bamboo.MenuBar = game.Class.extend({
         this.menuElem.addMenuItem('File', 'Download module', this.editor.downloadAsModule.bind(this.editor));
         this.menuElem.addMenuItem('File', 'Download JSON', this.editor.downloadAsJSON.bind(this.editor));
 
+        this.menuElem.addMenu('Node');
+        this.menuElem.addMenuItem('Node', 'Delete', this.editor.controller.deleteSelectedNodes.bind(this.editor.controller));
+        this.menuElem.addMenuItem('Node', 'Duplicate', this.editor.controller.duplicateSelectedNodes.bind(this.editor.controller));
+        this.menuElem.addMenuItem('Node', 'Parent/unparent', this.editor.controller.setNodeParent.bind(this.editor.controller));
+
         this.menuElem.addMenu('Window');
         this.menuElem.addMenuItem('Window', 'Nodes', function() {
             bamboo.ui.showWindow('nodes');
@@ -37,12 +42,27 @@ bamboo.MenuBar = game.Class.extend({
         });
 
         this.menuElem.addMenu('Workspace');
+        this.menuElem.addMenuItem('Workspace', 'Grid', this.editor.changeGrid.bind(this.editor));
+        this.menuElem.addMenuItem('Workspace', 'Boundaries', this.editor.toggleBoundaries.bind(this.editor));
+        this.menuElem.addMenuItem('Workspace', 'Nodes', this.editor.toggleViewNodes.bind(this.editor));
+        this.menuElem.addMenuItem('Workspace', 'Lights', this.editor.boundaryLayer.toggleScreenDim.bind(this.editor.boundaryLayer));
+        this.menuElem.addMenuItemSpacer('Workspace');
         this.menuElem.addMenuItem('Workspace', 'Reset workspace', function() {
             bamboo.ui.resetWorkspace();
         });
         this.menuElem.addMenuItem('Workspace', 'Save workspace', this.saveWorkspace.bind(this));
         this.menuElem.addMenu('Help');
-        this.menuElem.addMenuItem('Help', 'About', this.editor.showAbout.bind(this.editor));
+        this.menuElem.addMenuItem('Help', 'API documentation', function() {
+            window.open('http://www.pandajs.net/bamboo/docs');
+        });
+        this.menuElem.addMenuItem('Help', 'View homepage', function() {
+            window.open('http://www.pandajs.net/bamboo');
+        });
+        this.menuElem.addMenuItem('Help', 'View on GitHub', function() {
+            window.open('http://github.com/ekelokorpi/panda.js-bamboo');
+        });
+        this.menuElem.addMenuItemSpacer('Help');
+        this.menuElem.addMenuItem('Help', 'About...', this.editor.showAbout.bind(this.editor));
     },
 
     saveWorkspace: function() {

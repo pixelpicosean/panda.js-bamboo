@@ -65,6 +65,37 @@ bamboo.Controller = game.Class.extend({
         }
     },
 
+    setNodeParent: function() {
+        if (this.editor.selectedNodes.length > 1 && this.editor.activeNode) {
+            var parent = this.editor.activeNode;
+            
+            for (var i = this.editor.selectedNodes.length - 1; i >= 0; i--) {
+                var node = this.editor.selectedNodes[i];
+                if (node !== parent) {
+                    if (parent.parent === node) continue;
+                    node._editorNode.setProperty('parent', parent);
+                    this.editor.controller.deselectNode(node);
+                }
+            }
+        }
+        else if (this.editor.activeNode) {
+            var parent = this.editor.activeLayer;
+            var worldPos = this.editor.activeNode.getWorldPosition();
+            this.editor.activeNode._editorNode.setProperty('parent', parent);
+            this.editor.activeNode._editorNode.setProperty('position', worldPos);
+        }
+    },
+
+    deleteSelectedNodes: function() {
+        if (this.editor.selectedNodes.length !== 0) {
+            for (var i = this.editor.selectedNodes.length-1; i >= 0; i--) {
+                this.editor.controller.deleteNode(this.editor.selectedNodes[i]);
+            }
+            this.editor.mode.state.cancel();
+            this.editor.changeState('Select');
+        }
+    },
+
     selectAllNodes: function() {
         for (var i = 0; i < this.editor.nodes.length; i++) {
             var n = this.editor.nodes[i];

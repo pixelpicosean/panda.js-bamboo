@@ -50,26 +50,11 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             return;
         }
         if (key === 'G') {
-            if (this.shiftDown) {
-                this.editor.gridSize /= 2;
-                if (this.editor.gridSize === 0) this.editor.gridSize = 128;
-                if (this.editor.gridSize === 4) this.editor.gridSize = 0;
-            }
-            else {
-                this.editor.gridSize *= 2;
-                if (this.editor.gridSize === 0) this.editor.gridSize = 8;
-                if (this.editor.gridSize > 128) this.editor.gridSize = 0;
-            }
-            game.storage.set('gridSize', this.editor.gridSize);
-
-            if (this.editor.gridSize > 0) this.editor.setTempMessage('Grid ' + this.editor.gridSize + ' x ' + this.editor.gridSize);
-            else this.editor.setTempMessage('Grid disabled');
-
-            this.editor.boundaryLayer.resetGraphics();
+            this.editor.changeGrid();
             return;
         }
         if (key === 'R') {
-            this.editor.cameraWorldPosition = new game.Point(this.editor.worldTargetPos.x, this.editor.worldTargetPos.y);
+            this.editor.resetCamera();
             return;
         }
         if (key === 'S') {
@@ -85,8 +70,7 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             return;
         }
         if (key === 'B') {
-            this.editor.boundaryLayer.boundaries.visible = !this.editor.boundaryLayer.boundaries.visible;
-            this.editor.setTempMessage('Boundaries ' + (this.editor.boundaryLayer.boundaries.visible ? 'on' : 'off'));
+            this.editor.toggleBoundaries();
             return;
         }
         if (key === 'ESC') {

@@ -57,6 +57,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
     },
 
     click: function(event) {
+        var button = event.originalEvent.button;
         var mousePos = new game.Point(event.global.x, event.global.y);
         var node;
 
@@ -74,7 +75,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             return;
         }
         
-        if (!this.mode.shiftDown && !this.mode.altDown) this.mode.editor.controller.deselectAllNodes();
+        if (!this.mode.shiftDown && !this.mode.altDown && button < 2) this.mode.editor.controller.deselectAllNodes();
         
         if (this.mode.altDown) {
             this.mode.editor.controller.deselectNode(node);
@@ -85,7 +86,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             else {
                 this.mode.editor.controller.selectNode(node);
             }
-            if (!this.mode.shiftDown) this.mode.editor.controller.setActiveNode(node);
+            if (!this.mode.shiftDown && button < 2) this.mode.editor.controller.setActiveNode(node);
         }
 
         this.mode.editor.changeState('Select');
@@ -125,24 +126,8 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             }
         }
         if (key === 'N') {
-            if (this.mode.editor.selectedNodes.length > 1 && this.mode.editor.activeNode) {
-                var parent = this.mode.editor.activeNode;
-                
-                for (var i = this.mode.editor.selectedNodes.length - 1; i >= 0; i--) {
-                    var node = this.mode.editor.selectedNodes[i];
-                    if (node !== parent) {
-                        if (parent.parent === node) continue;
-                        node._editorNode.setProperty('parent', parent);
-                        this.mode.editor.controller.deselectNode(node);
-                    }
-                }
-            }
-            else if (this.mode.editor.activeNode) {
-                var parent = this.mode.editor.activeLayer;
-                var worldPos = this.mode.editor.activeNode.getWorldPosition();
-                this.mode.editor.activeNode._editorNode.setProperty('parent', parent);
-                this.mode.editor.activeNode._editorNode.setProperty('position', worldPos);
-            }
+            this.mode.editor.controller.setNodeParent();
+            return;
         }
         if (key === 'NUM_PLUS') {
             if (this.mode.editor.activeNode) {
@@ -169,14 +154,8 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             if (this.mode.editor.activeNode) return this.mode.editor.changeMode('Edit');
         }
         if (key === 'BACKSPACE') {
-            if (this.mode.editor.selectedNodes.length !== 0) {
-                for (var i = this.mode.editor.selectedNodes.length-1; i >= 0; i--) {
-                    this.mode.editor.controller.deleteNode(this.mode.editor.selectedNodes[i]);
-                }
-                this.cancel();
-                this.mode.editor.changeState('Select');
-            }
-            return true;
+            this.mode.editor.controller.deleteSelectedNodes();
+            return;
         }
     }
 });

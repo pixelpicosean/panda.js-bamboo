@@ -338,3 +338,16 @@ span.key {
     color: #999;
     background: #4a4a4a;
 }
+.menuSpacer {
+    height: 10px;
+    border-bottom: 1px solid #4a4a4a;
+    margin-bottom: 10px;
+}
+a {
+    text-decoration: underline;
+    color: #eee;
+}
+a:hover {
+    text-decoration: none;
+    color: #686868;
+}

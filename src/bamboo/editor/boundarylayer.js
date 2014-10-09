@@ -22,8 +22,8 @@ bamboo.BoundaryLayer = game.Class.extend({
     },
 
     updateBoundary: function() {
-        var left = game.system.width / 2 - game.System.width / 2;
-        var top = game.system.height / 2 - game.System.height / 2;
+        var left = Math.round(game.system.width / 2 - game.System.width / 2);
+        var top = Math.round(game.system.height / 2 - game.System.height / 2);
 
         this.leftLine.position.x = left + this.editor.displayObject.scale.x * (0 - this.editor.camera.position.x) - 1;
         this.topLine.position.y = top + this.editor.displayObject.scale.y * (0 - this.editor.camera.position.y) - 1;
@@ -40,7 +40,7 @@ bamboo.BoundaryLayer = game.Class.extend({
         this.screenRect.position.y = top;
         
         this.screenDim.clear();
-        this.screenDim.beginFill(0, this.dimAmount);
+        this.screenDim.beginFill(0x2a2a2a, this.dimAmount);
 
         var miny = 0;
         var maxy = game.system.height;

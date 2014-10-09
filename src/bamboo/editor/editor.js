@@ -59,24 +59,25 @@ bamboo.Editor = game.Class.extend({
         );
 
         // Error window
-        this.errorWindow = new bamboo.Ui.Window({
-            x: 'center',
-            y: 'center',
+        this.errorWindow = bamboo.ui.addWindow({
             width: 400,
-            height: 124,
-            closeable: true
+            height: 120,
+            closeable: true,
+            fixed: true
         });
         this.errorWindow.setTitle('Error');
 
         // About window
         this.aboutWindow = bamboo.ui.addWindow({
             width: 400,
-            height: 124,
+            height: 125,
             closeable: true
         });
         this.aboutWindow.setTitle('About');
         this.aboutWindow.addText('Bamboo scene editor ' + bamboo.version);
-        this.aboutWindow.addText('Developed by Eemeli Kelokorpi and Esko Oramaa');
+        this.aboutWindow.addText('Developed by <a href="http://github.com/ekelokorpi" target="_blank">Eemeli Kelokorpi</a> and <a href="http://github.com/ezzkoram" target="_blank">Esko Oramaa</a>.');
+        this.aboutWindow.addText('<br>');
+        this.aboutWindow.addText('Released under the <a href="http://opensource.org/licenses/MIT" target="_blank">MIT License</a>.');
         
         // Assets window
         var assetsWindow = bamboo.ui.addWindow({
@@ -120,6 +121,8 @@ bamboo.Editor = game.Class.extend({
             this.nodesWindow.addInputSelectOption('type', name, name);
         }
 
+        this.nodesWindow.setInputSelectValue('type', 'Image');
+
         this.nodesWindow.addInputText('name', '', 'Name', 'Name of the node', this.nodeNameChanged.bind(this));
         this.nodesWindow.addInputSelect('parent', 'Parent', 'Node that this node will follow');
         this.buildNodeDropdown(this.nodesWindow, 'parent', this.world);
@@ -127,6 +130,18 @@ bamboo.Editor = game.Class.extend({
         this.nodesWindow.addButton('Add', this.addNode.bind(this));
         this.nodesWindow.show();
         this.nodeTypeChanged();
+
+        // Camera window
+        this.cameraWindow = bamboo.ui.addWindow({
+            id: 'camera',
+            resizable: true,
+            closeable: true,
+            snappable: true
+        });
+        this.cameraWindow.setTitle('Camera');
+        this.cameraWindow.addMultiInput('position', [this.camera.position.x, this.camera.position.y], 2, 'Position', '', this.updateCameraPosition.bind(this));
+        this.cameraWindow.addButton('Reset', this.resetCamera.bind(this));
+        this.cameraWindow.show();
 
         for (var i = 0; i < this.layers.length; i++) {
             if (this.layers[i].name === 'main') {
@@ -151,6 +166,36 @@ bamboo.Editor = game.Class.extend({
         this.nodesWindow.inputs['name'].value = this.getUniqueName(this.nodesWindow.inputs['type'].value);
     },
 
+    updateCameraPosition: function() {
+        this.camera.position.x = this.cameraWindow.inputs['position.0'].value;
+        this.camera.position.y = this.cameraWindow.inputs['position.1'].value;
+        this.cameraWorldPosition = this.cameraWorldPosition;
+    },
+
+    changeGrid: function() {
+        if (this.mode.shiftDown) {
+            this.gridSize /= 2;
+            if (this.gridSize === 0) this.gridSize = 128;
+            if (this.gridSize === 4) this.gridSize = 0;
+        }
+        else {
+            this.gridSize *= 2;
+            if (this.gridSize === 0) this.gridSize = 8;
+            if (this.gridSize > 128) this.gridSize = 0;
+        }
+        game.storage.set('gridSize', this.gridSize);
+
+        if (this.gridSize > 0) this.setTempMessage('Grid ' + this.gridSize + ' x ' + this.gridSize);
+        else this.setTempMessage('Grid disabled');
+
+        this.boundaryLayer.resetGraphics();
+    },
+
+    toggleBoundaries: function() {
+        this.boundaryLayer.boundaries.visible = !this.boundaryLayer.boundaries.visible;
+        this.setTempMessage('Boundaries ' + (this.boundaryLayer.boundaries.visible ? 'on' : 'off'));
+    },
+
     initShadow: function() {
         this.shadow = document.createElement('div');
         this.shadow.style.position = 'absolute';
@@ -165,6 +210,18 @@ bamboo.Editor = game.Class.extend({
         this.shadow.style.display = 'none';
         this.shadow.style.pointerEvents = 'none';
         document.body.appendChild(this.shadow);
+    },
+
+    updateCameraWindow: function() {
+        var x = this.camera.position.x;
+        var y = this.camera.position.y;
+        this.cameraWindow.inputs['position.0'].value = x;
+        this.cameraWindow.inputs['position.1'].value = y;
+    },
+
+    resetCamera: function() {
+        this.cameraWorldPosition = new game.Point(this.worldTargetPos.x, this.worldTargetPos.y);
+        this.updateCameraWindow();
     },
 
     showShadow: function() {
@@ -278,8 +335,7 @@ bamboo.Editor = game.Class.extend({
 
     showError: function(error) {
         this.errorWindow.clear();
-        this.errorWindow.addText(error + '<br><br>');
-        this.errorWindow.addButton('OK', this.hideError.bind(this));
+        this.errorWindow.addText(error);
         this.errorWindow.show();
     },
 
@@ -787,6 +843,7 @@ Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
         this.nodeLayer.position.x = game.system.width / 2 - game.System.width / 2;
         this.nodeLayer.position.y = game.system.height / 2 - game.System.height / 2;
         this.updateLayers();
+        if (this.cameraWindow) this.updateCameraWindow();
     }
 });
 
