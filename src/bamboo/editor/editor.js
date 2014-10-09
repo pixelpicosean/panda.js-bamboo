@@ -66,6 +66,15 @@ bamboo.Editor = game.Class.extend({
         });
         this.errorWindow.setTitle('Error');
 
+        this.aboutWindow = bamboo.ui.addWindow({
+            width: 400,
+            height: 124,
+            closeable: true
+        });
+        this.aboutWindow.setTitle('About');
+        this.aboutWindow.addText('Bamboo scene editor ' + bamboo.version);
+        this.aboutWindow.addText('Developed by Eemeli Kelokorpi and Esko Oramaa');
+
         this.initNodes();
         this.initNodeProperties();
 
@@ -120,7 +129,8 @@ bamboo.Editor = game.Class.extend({
             height: 303,
             resizable: true,
             snappable: true,
-            minY: this.toolBar.height
+            closeable: true,
+            minY: this.menuBar.height
         });
         this.assetsWindow.setTitle('Assets');
 
@@ -129,7 +139,6 @@ bamboo.Editor = game.Class.extend({
         this.assetsWindow.contentDiv.appendChild(assetsList);
 
         this.assetsWindow.addButton('Remove', this.removeAsset.bind(this, assetsList));
-        this.assetsWindow.addButton('Close', this.hideAssets.bind(this));
 
         this.updateAssetsList(assetsList);
         this.assetsWindow.show();
@@ -685,7 +694,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     showAbout: function() {
-
+        this.aboutWindow.show();
     }
 });
 
