@@ -96,6 +96,7 @@ bamboo.Editor = game.Class.extend({
         };
         assetsWindow.onResize();
         this.assetsList.className = 'assetsList';
+        this.assetsList.style.overflow = 'auto';
         assetsWindow.contentDiv.appendChild(this.assetsList);
 
         assetsWindow.addButton('Remove', this.removeAsset.bind(this, this.assetsList));
