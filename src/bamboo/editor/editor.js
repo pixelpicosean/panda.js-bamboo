@@ -58,14 +58,17 @@ bamboo.Editor = game.Class.extend({
             this.worldTargetPos.y - this.camera.position.y
         );
 
+        // Error window
         this.errorWindow = new bamboo.Ui.Window({
             x: 'center',
             y: 'center',
             width: 400,
-            height: 124
+            height: 124,
+            closeable: true
         });
         this.errorWindow.setTitle('Error');
 
+        // About window
         this.aboutWindow = bamboo.ui.addWindow({
             width: 400,
             height: 124,
@@ -75,6 +78,7 @@ bamboo.Editor = game.Class.extend({
         this.aboutWindow.addText('Bamboo scene editor ' + bamboo.version);
         this.aboutWindow.addText('Developed by Eemeli Kelokorpi and Esko Oramaa');
         
+        // Assets window
         var assetsWindow = bamboo.ui.addWindow({
             id: 'assets',
             resizable: true,
@@ -85,7 +89,12 @@ bamboo.Editor = game.Class.extend({
         });
         assetsWindow.setTitle('Assets');
 
-        this.assetsList = document.createElement('select');
+        var assetsList = document.createElement('select');
+        this.assetsList = assetsList;
+        assetsWindow.onResize = function() {
+            assetsList.style.height = (assetsWindow.height - 100) + 'px';
+        };
+        assetsWindow.onResize();
         this.assetsList.className = 'assetsList';
         assetsWindow.contentDiv.appendChild(this.assetsList);
 
@@ -94,6 +103,29 @@ bamboo.Editor = game.Class.extend({
 
         this.initNodes();
         this.initNodeProperties();
+
+        // Nodes window
+        this.nodesWindow = bamboo.ui.addWindow({
+            id: 'nodes',
+            closeable: true,
+            resizable: true,
+            snappable: true,
+            minY: this.menuBar.height
+        });
+        this.nodesWindow.setTitle('Nodes');
+        this.nodesWindow.addInputSelect('type', 'Node type', 'Type of the node', this.nodeTypeChanged.bind(this));
+
+        for (var name in bamboo.nodes) {
+            this.nodesWindow.addInputSelectOption('type', name, name);
+        }
+
+        this.nodesWindow.addInputText('name', '', 'Name', 'Name of the node', this.nodeNameChanged.bind(this));
+        this.nodesWindow.addInputSelect('parent', 'Parent', 'Node that this node will follow');
+        this.buildNodeDropdown(this.nodesWindow, 'parent', this.world);
+
+        this.nodesWindow.addButton('Add', this.addNode.bind(this));
+        this.nodesWindow.show();
+        this.nodeTypeChanged();
 
         for (var i = 0; i < this.layers.length; i++) {
             if (this.layers[i].name === 'main') {
@@ -106,6 +138,16 @@ bamboo.Editor = game.Class.extend({
         this.updateLayers();
         this.showSettings();
         this.initShadow();
+    },
+
+    nodeNameChanged: function() {
+        this.nameHasChanged = true;
+    },
+
+    nodeTypeChanged: function() {
+        if (this.nameHasChanged) return;
+
+        this.nodesWindow.inputs['name'].value = this.getUniqueName(this.nodesWindow.inputs['type'].value);
     },
 
     initShadow: function() {
@@ -163,11 +205,11 @@ bamboo.Editor = game.Class.extend({
 
         this.tempMessage.alpha = 1;
         this.tempMessage.setText(text);
+        this.tempMessage.updateTransform();
+        this.tempMessage.position.x = game.system.width / 2 - this.tempMessage.width / 2;
         this.tempMessageTween = game.scene.addTween(this.tempMessage, {
             alpha: 0
-        }, 2000, {
-            delay: 0
-        }).start();
+        }, 2000).start();
     },
 
     initNodes: function() {
@@ -188,8 +230,38 @@ bamboo.Editor = game.Class.extend({
     },
 
     addNode: function() {
-        this.changeMode('Main');
-        this.changeState('Add');
+        this.controller.deselectAllNodes();
+
+        var name = this.getUniqueName(this.nodesWindow.inputs['name'].value);
+
+        var node = this.controller.createNode(this.nodesWindow.inputs['type'].value, {
+            name: name,
+            parent: this.nodesWindow.inputs['parent'].value
+        });
+
+        node.initProperties();
+        node._editorNode.layerChanged();
+        node._editorNode.ready();
+
+        if (node.displayObject && node.size.x === 0 && node.size.y === 0 && node.displayObject.width > 1 && node.displayObject.height > 1) {
+            node._editorNode.setProperty('size', new game.Point(node.displayObject.width, node.displayObject.height));
+        }
+        if (node.size.x === 0 && node.size.y === 0) {
+            node._editorNode.setProperty('size', new game.Point(32, 32));
+        }
+
+        this.controller.setActiveNode(node);
+        this.propertyPanel.updateLayerList();
+        this.changeState('Move');
+
+        var parentPos = node.parent.getWorldPosition();
+        var pos = this.toWorldSpace(this.prevMousePos);
+        this.mode.state.offset.x -= pos.x - parentPos.x;
+        this.mode.state.offset.y -= pos.y - parentPos.y;
+        this.mode.state.update(this.prevMousePos.x, this.prevMousePos.y);
+
+        this.nodesWindow.inputs['parent'].innerHTML = '';
+        this.buildNodeDropdown(this.nodesWindow, 'parent', this.world);
     },
 
     toggleViewNodes: function() {
@@ -323,6 +395,8 @@ bamboo.Editor = game.Class.extend({
             // force update for node-list
             this.propertyPanel.activeLayerChanged(this.activeLayer);
         }
+        this.nodesWindow.inputs['parent'].innerHTML = '';
+        this.buildNodeDropdown(this.nodesWindow, 'parent', this.world);
     },
 
     nodeSelected: function(node) {
@@ -349,6 +423,13 @@ bamboo.Editor = game.Class.extend({
 
     activeNodeChanged: function(node) {
         this.propertyPanel.activeNodeChanged(node);
+
+        if (node) {
+            this.nodesWindow.setInputSelectValue('parent', node.name);
+        }
+        else {
+            this.nodesWindow.setInputSelectValue('parent', this.activeLayer.name);
+        }
     },
 
     showSettings: function() {

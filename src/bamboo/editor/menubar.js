@@ -23,7 +23,9 @@ bamboo.MenuBar = game.Class.extend({
         this.menuElem.addMenuItem('File', 'Download JSON', this.editor.downloadAsJSON.bind(this.editor));
 
         this.menuElem.addMenu('Window');
-        this.menuElem.addMenuItem('Window', 'Add node', this.editor.addNode.bind(this.editor));
+        this.menuElem.addMenuItem('Window', 'Nodes', function() {
+            bamboo.ui.showWindow('nodes');
+        });
         this.menuElem.addMenuItem('Window', 'Properties', function() {
             bamboo.ui.showWindow('properties');
         });
@@ -35,10 +37,17 @@ bamboo.MenuBar = game.Class.extend({
         });
 
         this.menuElem.addMenu('Workspace');
-        this.menuElem.addMenuItem('Workspace', 'Reset workspace');
-        this.menuElem.addMenuItem('Workspace', 'Save workspace');
+        this.menuElem.addMenuItem('Workspace', 'Reset workspace', function() {
+            bamboo.ui.resetWorkspace();
+        });
+        this.menuElem.addMenuItem('Workspace', 'Save workspace', this.saveWorkspace.bind(this));
         this.menuElem.addMenu('Help');
         this.menuElem.addMenuItem('Help', 'About', this.editor.showAbout.bind(this.editor));
+    },
+
+    saveWorkspace: function() {
+        game.storage.set('workspace', bamboo.ui.getWorkspace());
+        this.editor.setTempMessage('Workspace saved');
     },
 
     hide: function() {

@@ -49,11 +49,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
             this.editor.toggleViewNodes();
             return;
         }
-        if (key === 'A') {
-            if (this.editor.mode.state instanceof bamboo.editor.StateAdd) return;
-            this.editor.changeState('Add');
-            return;
-        }
         if (key === 'G') {
             if (this.shiftDown) {
                 this.editor.gridSize /= 2;

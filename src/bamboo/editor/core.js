@@ -178,13 +178,12 @@ game.start = function() {
     favicon.href = 'src/bamboo/editor/media/favicon.png?';
     document.getElementsByTagName('head')[0].appendChild(favicon);
 
-    bamboo.ui = new bamboo.Ui();
-
     var width = window.innerWidth;
     var height = window.innerHeight;
     width += width % 2 === 0 ? 1 : 0;
     height += height % 2 === 0 ? 1 : 0;
     game._start(bamboo.EditorScene, width, height);
+    bamboo.ui = new bamboo.Ui();
 };
 
 window.addEventListener('resize', function() {

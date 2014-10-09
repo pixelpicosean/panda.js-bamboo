@@ -10,9 +10,10 @@ bamboo.StatusBar = game.Class.extend({
         this.windowElem = bamboo.ui.addWindow({
             id: 'status',
             x: 0,
-            y: window.innerHeight - this.height - bamboo.ui.menu.height,
+            y: window.innerHeight - this.height,
             width: 'window',
             height: this.height,
+            saved: false
         });
         this.windowElem.show();
         this.windowElem.onResize = this.onResize.bind(this);
