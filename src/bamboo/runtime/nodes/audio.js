@@ -17,6 +17,7 @@ bamboo.createNode('Audio', {
     },
 
     play: function() {
+        if (this.oneAtTime) this.stop();
         this.audioId = game.audio.playSound(this.audio, !!this.loop);
     },
 
@@ -35,5 +36,10 @@ bamboo.addNodeProperty('Audio', 'audio', 'audio');
     @property {Boolean} loop
 **/
 bamboo.addNodeProperty('Audio', 'loop', 'boolean');
+/**
+    Should stop previous sound, before playing new.
+    @property {Boolean} oneAtTime
+**/
+bamboo.addNodeProperty('Audio', 'oneAtTime', 'boolean');
 
 });
