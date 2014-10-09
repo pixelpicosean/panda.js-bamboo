@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 
 bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
-    helpText: 'Main mode: (W)indows, (B)oundaries, (L)ights, (P)lay, (G)rid, (V)iew nodes, (R)eset view, SPACE pan view, ESC cancel',
+    helpText: 'Main mode: (B)oundaries, (L)ights, (P)lay, (G)rid, (V)iew nodes, (R)eset view, SPACE pan view, ESC cancel',
     animationRunning: false,
     shiftDown: false,
     altDown: false,
@@ -74,18 +74,6 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         }
         if (key === 'S') {
             this.editor.saveAsModule();
-            return;
-        }
-        if (key === 'W') {
-            this.editor.windowsHidden = !this.editor.windowsHidden;
-            if (this.editor.windowsHidden) {
-                bamboo.ui.hideAll();
-                this.editor.menuBar.hide();
-            }
-            else {
-                bamboo.ui.showAll();
-                this.editor.menuBar.show();
-            }
             return;
         }
         if (key === 'SPACE') {

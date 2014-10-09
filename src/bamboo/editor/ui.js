@@ -212,12 +212,15 @@ bamboo.Ui.Window = game.Class.extend({
         this.titleDiv.style.height = (this.titleHeight - this.titlePadding * 2) + 'px';
 
         if (this.closeable) {
-            var closeButton = document.createElement('img');
+            var closeButton = document.createElement('div');
             closeButton.className = 'close';
-            closeButton.src = 'src/bamboo/editor/media/close.png';
+            // closeButton.src = 'src/bamboo/editor/media/close.png';
             closeButton.style.position = 'absolute';
             closeButton.style.right = '0px';
-            closeButton.style.top = '3px';
+            closeButton.style.top = '0px';
+            closeButton.style.width = '29px';
+            closeButton.style.height = '29px';
+            closeButton.style.backgroundImage = 'url(src/bamboo/editor/media/close.png)';
             closeButton.addEventListener('click', this.close.bind(this));
             this.windowDiv.appendChild(closeButton);
         }
@@ -404,6 +407,7 @@ bamboo.Ui.Window = game.Class.extend({
 
     close: function() {
         this.unsnap();
+        this.children = null;
         this.hide();
     },
 

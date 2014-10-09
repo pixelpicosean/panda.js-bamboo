@@ -200,19 +200,12 @@ body.notready div {
     /*padding-top: 10px;*/
 }
 .window .close {
-    float: right;
-    font-size: 18px;
-    font-weight: bold;
-    color: #666;
-    /*background: #6b6b6b;*/
-    /*width: 22px;*/
-    text-align: center;
-    margin-top: -3px;
-    /*padding-top: 1px;*/
+
 }
 .window .close:hover {
-    cursor: pointer;
+    background-position: -29px;
     color: #333;
+    cursor: pointer;
 }
 label {
     width: 110px;
