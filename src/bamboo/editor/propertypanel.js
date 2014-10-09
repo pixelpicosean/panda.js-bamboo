@@ -10,30 +10,32 @@ bamboo.PropertyPanel = game.Class.extend({
     init: function(editor) {
         this.editor = editor;
         
-        this.layerWindow = bamboo.ui.addWindow({
-            x: window.innerWidth - this.width,
-            y: game.system.height - this.layerWindowHeight - this.editor.statusBar.height,
-            width: this.width,
-            height: this.layerWindowHeight,
-            minY: this.editor.menuBar.height,
-            resizable: true,
-            snappable: true
-        });
-        this.layerWindow.setTitle('Layers');
-        this.layerWindow.show();
-
         this.settingsWindow = bamboo.ui.addWindow({
+            id: 'properties',
             x: window.innerWidth - this.width,
             y: this.editor.menuBar.height,
             width: this.width,
             height: Math.max(250, game.system.height - this.layerWindowHeight - this.editor.menuBar.height - this.editor.statusBar.height),
             minY: this.editor.menuBar.height,
             resizable: true,
-            snappable: true
+            snappable: true,
+            closeable: true
         });
         this.settingsWindow.show();
 
-        this.settingsWindow.snap(this.layerWindow);
+        this.layerWindow = bamboo.ui.addWindow({
+            id: 'layers',
+            x: window.innerWidth - this.width,
+            y: game.system.height - this.layerWindowHeight - this.editor.statusBar.height,
+            width: this.width,
+            height: this.layerWindowHeight,
+            minY: this.editor.menuBar.height,
+            resizable: true,
+            snappable: true,
+            closeable: true
+        });
+        this.layerWindow.setTitle('Layers');
+        this.layerWindow.show();
 
         // create layer list
         this.layerList = document.createElement('select');
@@ -104,7 +106,7 @@ bamboo.PropertyPanel = game.Class.extend({
     showSettings: function() {
         this.settingsWindow.clear();
 
-        this.settingsWindow.setTitle('Scene settings');
+        this.settingsWindow.setTitle('Properties');
 
         this.settingsWindow.addInputText('name', this.editor.world.name, 'Name', '', this.settingsChanged.bind(this, 'name'));
         this.settingsWindow.addInputText('width', this.editor.world.width, 'Width', '', this.settingsChanged.bind(this, 'width'));
@@ -229,7 +231,7 @@ bamboo.PropertyPanel = game.Class.extend({
 
         this.node = node;
         this.settingsWindow.clear();
-        this.settingsWindow.setTitle('Node properties');
+        this.settingsWindow.setTitle('Properties');
 
         if (!node) {
             this.layerWindow.setInputSelectValue('activeNode', '');

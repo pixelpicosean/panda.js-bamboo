@@ -44,8 +44,8 @@ bamboo.Editor = game.Class.extend({
         this.boundaryLayer = new bamboo.BoundaryLayer(this);
         this.overlay.addChild(this.boundaryLayer.displayObject);
 
-        this.statusBar = new bamboo.StatusBar();
         this.menuBar = new bamboo.MenuBar(this);
+        this.statusBar = new bamboo.StatusBar();
         this.propertyPanel = new bamboo.PropertyPanel(this);
 
         this.tempMessage = new game.Text('', { font: '16px Arial', fill: 'white' });
@@ -74,6 +74,23 @@ bamboo.Editor = game.Class.extend({
         this.aboutWindow.setTitle('About');
         this.aboutWindow.addText('Bamboo scene editor ' + bamboo.version);
         this.aboutWindow.addText('Developed by Eemeli Kelokorpi and Esko Oramaa');
+        
+        var assetsWindow = bamboo.ui.addWindow({
+            id: 'assets',
+            resizable: true,
+            snappable: true,
+            closeable: true,
+            visible: true,
+            minY: this.menuBar.height
+        });
+        assetsWindow.setTitle('Assets');
+
+        this.assetsList = document.createElement('select');
+        this.assetsList.className = 'assetsList';
+        assetsWindow.contentDiv.appendChild(this.assetsList);
+
+        assetsWindow.addButton('Remove', this.removeAsset.bind(this, this.assetsList));
+        this.updateAssetsList();
 
         this.initNodes();
         this.initNodeProperties();
@@ -120,37 +137,6 @@ bamboo.Editor = game.Class.extend({
         return this;
     },
 
-    showAssets: function() {
-        this.hideAssets();
-        this.assetsWindow = bamboo.ui.addWindow({
-            x: 'center',
-            y: 'center',
-            width: 400,
-            height: 303,
-            resizable: true,
-            snappable: true,
-            closeable: true,
-            minY: this.menuBar.height
-        });
-        this.assetsWindow.setTitle('Assets');
-
-        var assetsList = document.createElement('select');
-        assetsList.className = 'assetsList';
-        this.assetsWindow.contentDiv.appendChild(assetsList);
-
-        this.assetsWindow.addButton('Remove', this.removeAsset.bind(this, assetsList));
-
-        this.updateAssetsList(assetsList);
-        this.assetsWindow.show();
-    },
-
-    hideAssets: function() {
-        if (this.assetsWindow) {
-            bamboo.ui.removeWindow(this.assetsWindow);
-            this.assetsWindow = null;
-        }
-    },
-
     removeAsset: function(assetsList) {
         if (assetsList.value && confirm('Remove ' + assetsList.value + '?')) {
             var index = this.world.assets.indexOf(assetsList.value);
@@ -161,14 +147,14 @@ bamboo.Editor = game.Class.extend({
         }
     },
 
-    updateAssetsList: function(assetsList) {
-        assetsList.innerHTML = '';
-        assetsList.size = 2;
+    updateAssetsList: function() {
+        this.assetsList.innerHTML = '';
+        this.assetsList.size = 2;
         for (var i = 0; i < this.world.assets.length; i++) {
             var opt = document.createElement('option');
             opt.value = this.world.assets[i];
             opt.innerHTML = this.world.assets[i];
-            assetsList.appendChild(opt);
+            this.assetsList.appendChild(opt);
         }
     },
 
@@ -577,6 +563,8 @@ bamboo.Editor = game.Class.extend({
         var word = count === 1 ? 'asset' : 'assets';
         this.setTempMessage(count + ' ' + word + ' added');
         if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
+
+        this.updateAssetsList();
     },
 
     update: function() {

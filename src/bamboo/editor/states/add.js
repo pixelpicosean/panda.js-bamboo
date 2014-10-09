@@ -17,7 +17,9 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
             width: 400,
             height: 220,
             minY: this.mode.editor.menuBar.height,
-            closeable: true
+            closeable: true,
+            resizable: true,
+            snappable: true
         });
         this.addWindow.setTitle('Add Node');
         this.addWindow.addInputSelect('type', 'Node Type', 'Type of the node', this.nodeTypeChanged.bind(this));

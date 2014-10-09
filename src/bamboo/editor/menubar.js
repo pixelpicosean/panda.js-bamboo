@@ -24,10 +24,15 @@ bamboo.MenuBar = game.Class.extend({
 
         this.menuElem.addMenu('Window');
         this.menuElem.addMenuItem('Window', 'Add node', this.editor.addNode.bind(this.editor));
-        this.menuElem.addMenuItem('Window', 'Properties');
-        this.menuElem.addMenuItem('Window', 'Layers');
-        this.menuElem.addMenuItem('Window', 'Assets', this.editor.showAssets.bind(this.editor));
-        this.menuElem.addMenuItem('Window', 'Status');
+        this.menuElem.addMenuItem('Window', 'Properties', function() {
+            bamboo.ui.showWindow('properties');
+        });
+        this.menuElem.addMenuItem('Window', 'Layers', function() {
+            bamboo.ui.showWindow('layers');
+        });
+        this.menuElem.addMenuItem('Window', 'Assets', function() {
+            bamboo.ui.showWindow('assets');
+        });
 
         this.menuElem.addMenu('Workspace');
         this.menuElem.addMenuItem('Workspace', 'Reset workspace');

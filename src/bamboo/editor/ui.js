@@ -6,17 +6,53 @@ game.module(
 bamboo.Ui = game.Class.extend({
     activeWindow: null,
     windows: [],
-    menus: [],
+    menu: null,
+    workspace: null,
 
     init: function() {
         window.addEventListener('mousemove', this.mousemove.bind(this), false);
         window.addEventListener('mouseup', this.mouseup.bind(this), false);
+        this.loadWorkspace(bamboo.Ui.defaultWorkspace);
+    },
+
+    loadWorkspace: function(data) {
+        this.workspace = data;
+    },
+
+    showWindow: function(id) {
+        for (var i = 0; i < this.windows.length; i++) {
+            if (this.windows[i].id === id) {
+                this.windows[i].show();
+                return true;
+            }
+        }
+        return false;
+    },
+
+    findWindow: function(id) {
+        for (var i = 0; i < this.windows.length; i++) {
+            if (this.windows[i].id === id) return this.windows[i];
+        }
+    },
+
+    addWindow: function(settings) {
+        if (this.workspace) {
+            if (this.workspace.windows[settings.id]) {
+                var data = this.workspace.windows[settings.id];
+                for (var key in data) {
+                    settings[key] = data[key];
+                }
+            }
+        }
+        if (typeof settings.y === 'number') settings.y += this.menu.height;
+        var winElem = new bamboo.Ui.Window(this, settings);
+        this.windows.push(winElem);
+        return winElem;
     },
 
     addMenu: function(height) {
-        var menu = new bamboo.Ui.Menu(height);
-        this.menus.push(menu);
-        return menu;
+        this.menu = new bamboo.Ui.Menu(height);
+        return this.menu;
     },
 
     onResize: function() {
@@ -47,13 +83,6 @@ bamboo.Ui = game.Class.extend({
             document.body.style.cursor = 'default';
             this.activeWindow = null;
         }
-    },
-    
-    addWindow: function(settings) {
-        var winElem = new bamboo.Ui.Window(settings);
-        winElem.ui = this;
-        this.windows.push(winElem);
-        return winElem;
     },
 
     removeWindow: function(winElem) {
@@ -113,7 +142,8 @@ bamboo.Ui.Window = game.Class.extend({
     parent: null,
     children: null,
 
-    init: function(settings) {
+    init: function(parent, settings) {
+        this.ui = parent;
         game.merge(this, settings);
 
         if (this.x === 'center') this.x = window.innerWidth / 2 - this.width / 2;
@@ -163,6 +193,18 @@ bamboo.Ui.Window = game.Class.extend({
 
         this.updateSize();
         this.updatePosition();
+
+        if (this.visible) document.body.appendChild(this.windowDiv);
+        if (this.folded) {
+            this.folded = false;
+            this.toggleFold();
+        }
+        if (this.snappedTo) {
+            var parent = this.ui.findWindow(this.snappedTo);
+            if (parent) {
+                parent.snap(this); 
+            }
+        }
     },
 
     snap: function(target) {
@@ -575,5 +617,29 @@ bamboo.Ui.Menu = game.Class.extend({
         this.menus[name].style.display = 'none';
     }
 });
+
+bamboo.Ui.defaultWorkspace = {
+    windows: {
+        properties: {
+            x: window.innerWidth - 200,
+            y: 40,
+            width: 200,
+            height: 400
+        },
+        assets: {
+            x: 0,
+            y: 40,
+            width: 200,
+            height: 295
+        },
+        layers: {
+            x: window.innerWidth - 200,
+            y: 440,
+            width: 200,
+            height: 390,
+            snappedTo: 'properties'
+        }
+    }
+};
 
 });
