@@ -32,7 +32,7 @@ bamboo.createNode('MouseTrigger', {
     Disable trigger, after clicked.
     @property {Boolean} onetime
 **/
-bamboo.addNodeProperty('Trigger', 'onetime', 'boolean');
-bamboo.addNodeProperty('Trigger', 'buttonMode', 'boolean');
+bamboo.addNodeProperty('MouseTrigger', 'onetime', 'boolean');
+bamboo.addNodeProperty('MouseTrigger', 'buttonMode', 'boolean');
 
 });
