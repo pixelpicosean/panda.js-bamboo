@@ -129,15 +129,19 @@ bamboo.Ui.Window = game.Class.extend({
         this.titleDiv.style.height = (this.titleHeight - this.titlePadding * 2) + 'px';
 
         if (this.closeable) {
-            // TODO
+            var closeButton = document.createElement('img');
+            closeButton.className = 'close';
+            closeButton.src = 'src/bamboo/editor/media/close.png';
+            closeButton.style.position = 'absolute';
+            closeButton.style.right = '0px';
+            closeButton.style.top = '3px';
+            closeButton.addEventListener('click', this.hide.bind(this));
+            this.windowDiv.appendChild(closeButton);
         }
 
         if (this.resizable) {
             var resizeImg = document.createElement('img');
             resizeImg.src = 'src/bamboo/editor/media/resize.png';
-            resizeImg.webkitUserDrag = 'none';
-            resizeImg.style.width = '15px';
-            resizeImg.style.height = '15px';
             resizeImg.style.position = 'absolute';
             resizeImg.style.right = '0px';
             resizeImg.style.bottom = '0px';
@@ -486,6 +490,7 @@ bamboo.Ui.Menu = game.Class.extend({
         this.windowDiv.style.left = '0px';
         this.windowDiv.style.top = '0px';
         this.windowDiv.style.overflow = 'visible';
+        this.windowDiv.style.zIndex = 999999;
         this.updateSize();
 
         this.contentDiv = document.createElement('div');
