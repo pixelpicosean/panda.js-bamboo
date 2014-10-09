@@ -8,6 +8,7 @@ game.module(
 .require(
     'bamboo.editor.boundarylayer',
     'bamboo.editor.editor',
+    'bamboo.editor.console',
     'bamboo.editor.controller',
     'bamboo.editor.filesaver',
     'bamboo.editor.mode',
@@ -184,6 +185,7 @@ game.start = function() {
     height += height % 2 === 0 ? 1 : 0;
     game._start(bamboo.EditorScene, width, height);
     bamboo.ui = new bamboo.Ui();
+    bamboo.console = new bamboo.Console();
 };
 
 window.addEventListener('resize', function() {

@@ -10,17 +10,17 @@ bamboo.MenuBar = game.Class.extend({
         this.editor = editor;
 
         this.menuElem = bamboo.ui.addMenu(this.height);
-        this.menuElem.addMenu('File');
-        this.menuElem.addMenuItem('File', 'New scene', function() {
+        this.menuElem.addMenu('Scene');
+        this.menuElem.addMenuItem('Scene', 'New scene', function() {
             game.scene.loadEditor();
         });
-        this.menuElem.addMenuItem('File', 'Load last scene', function() {
+        this.menuElem.addMenuItem('Scene', 'Load last scene', function() {
             game.scene.loadEditor(bamboo.scenes[0]);
         });
-        this.menuElem.addMenuItem('File', 'Save module', this.editor.saveAsModule.bind(this.editor));
-        this.menuElem.addMenuItem('File', 'Save JSON', this.editor.saveAsJSON.bind(this.editor));
-        this.menuElem.addMenuItem('File', 'Download module', this.editor.downloadAsModule.bind(this.editor));
-        this.menuElem.addMenuItem('File', 'Download JSON', this.editor.downloadAsJSON.bind(this.editor));
+        this.menuElem.addMenuItem('Scene', 'Save module', this.editor.saveAsModule.bind(this.editor));
+        this.menuElem.addMenuItem('Scene', 'Save JSON', this.editor.saveAsJSON.bind(this.editor));
+        this.menuElem.addMenuItem('Scene', 'Download module', this.editor.downloadAsModule.bind(this.editor));
+        this.menuElem.addMenuItem('Scene', 'Download JSON', this.editor.downloadAsJSON.bind(this.editor));
 
         this.menuElem.addMenu('Node');
         this.menuElem.addMenuItem('Node', 'Delete', this.editor.controller.deleteSelectedNodes.bind(this.editor.controller));
@@ -39,6 +39,12 @@ bamboo.MenuBar = game.Class.extend({
         });
         this.menuElem.addMenuItem('Window', 'Assets', function() {
             bamboo.ui.showWindow('assets');
+        });
+        this.menuElem.addMenuItem('Window', 'Camera', function() {
+            bamboo.ui.showWindow('camera');
+        });
+        this.menuElem.addMenuItem('Window', 'Console', function() {
+            bamboo.ui.showWindow('console');
         });
 
         this.menuElem.addMenu('Workspace');
@@ -63,6 +69,13 @@ bamboo.MenuBar = game.Class.extend({
         });
         this.menuElem.addMenuItemSpacer('Help');
         this.menuElem.addMenuItem('Help', 'About...', this.editor.showAbout.bind(this.editor));
+
+        var version = document.createElement('div');
+        version.innerHTML = bamboo.version;
+        version.style.position = 'absolute';
+        version.style.right = '10px';
+        version.style.top = '5px';
+        this.menuElem.windowDiv.appendChild(version);
     },
 
     saveWorkspace: function() {

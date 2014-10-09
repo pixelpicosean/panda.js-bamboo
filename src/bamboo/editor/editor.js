@@ -45,7 +45,7 @@ bamboo.Editor = game.Class.extend({
         this.overlay.addChild(this.boundaryLayer.displayObject);
 
         this.menuBar = new bamboo.MenuBar(this);
-        this.statusBar = new bamboo.StatusBar();
+        // this.statusBar = new bamboo.StatusBar();
         this.propertyPanel = new bamboo.PropertyPanel(this);
 
         this.tempMessage = new game.Text('', { font: '16px Arial', fill: 'white' });
@@ -57,6 +57,9 @@ bamboo.Editor = game.Class.extend({
             this.worldTargetPos.x - this.camera.position.x,
             this.worldTargetPos.y - this.camera.position.y
         );
+
+        this.initNodes();
+        this.initNodeProperties();
 
         // Error window
         this.errorWindow = bamboo.ui.addWindow({
@@ -100,11 +103,9 @@ bamboo.Editor = game.Class.extend({
         this.assetsList.style.overflow = 'auto';
         assetsWindow.contentDiv.appendChild(this.assetsList);
 
+        assetsWindow.addButton('Add', this.removeAsset.bind(this, this.assetsList));
         assetsWindow.addButton('Remove', this.removeAsset.bind(this, this.assetsList));
         this.updateAssetsList();
-
-        this.initNodes();
-        this.initNodeProperties();
 
         // Nodes window
         this.nodesWindow = bamboo.ui.addWindow({
@@ -115,7 +116,7 @@ bamboo.Editor = game.Class.extend({
             minY: this.menuBar.height
         });
         this.nodesWindow.setTitle('Nodes');
-        this.nodesWindow.addInputSelect('type', 'Node type', 'Type of the node', this.nodeTypeChanged.bind(this));
+        this.nodesWindow.addInputSelect('type', 'Type');
 
         for (var name in bamboo.nodes) {
             this.nodesWindow.addInputSelectOption('type', name, name);
@@ -123,13 +124,12 @@ bamboo.Editor = game.Class.extend({
 
         this.nodesWindow.setInputSelectValue('type', 'Image');
 
-        this.nodesWindow.addInputText('name', '', 'Name', 'Name of the node', this.nodeNameChanged.bind(this));
+        // this.nodesWindow.addInputText('name', '', 'Name', 'Name of the node', this.nodeNameChanged.bind(this));
         this.nodesWindow.addInputSelect('parent', 'Parent', 'Node that this node will follow');
         this.buildNodeDropdown(this.nodesWindow, 'parent', this.world);
 
         this.nodesWindow.addButton('Add', this.addNode.bind(this));
         this.nodesWindow.show();
-        this.nodeTypeChanged();
 
         // Camera window
         this.cameraWindow = bamboo.ui.addWindow({
@@ -140,8 +140,6 @@ bamboo.Editor = game.Class.extend({
         });
         this.cameraWindow.setTitle('Camera');
         this.cameraWindow.addMultiInput('position', [this.camera.position.x, this.camera.position.y], 2, 'Position', '', this.updateCameraPosition.bind(this));
-        this.cameraWindow.addButton('Reset', this.resetCamera.bind(this));
-        this.cameraWindow.show();
 
         for (var i = 0; i < this.layers.length; i++) {
             if (this.layers[i].name === 'main') {
@@ -154,16 +152,8 @@ bamboo.Editor = game.Class.extend({
         this.updateLayers();
         this.showSettings();
         this.initShadow();
-    },
 
-    nodeNameChanged: function() {
-        this.nameHasChanged = true;
-    },
-
-    nodeTypeChanged: function() {
-        if (this.nameHasChanged) return;
-
-        this.nodesWindow.inputs['name'].value = this.getUniqueName(this.nodesWindow.inputs['type'].value);
+        bamboo.console.log('Editor initiated');
     },
 
     updateCameraPosition: function() {
@@ -259,6 +249,9 @@ bamboo.Editor = game.Class.extend({
     },
 
     setTempMessage: function(text) {
+        bamboo.console.log(text);
+        return;
+        
         if (this.tempMessageTween) this.tempMessageTween.stop();
 
         this.tempMessage.alpha = 1;
@@ -290,7 +283,7 @@ bamboo.Editor = game.Class.extend({
     addNode: function() {
         this.controller.deselectAllNodes();
 
-        var name = this.getUniqueName(this.nodesWindow.inputs['name'].value);
+        var name = this.getUniqueName(this.nodesWindow.inputs['type'].value);
 
         var node = this.controller.createNode(this.nodesWindow.inputs['type'].value, {
             name: name,
@@ -379,6 +372,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     updateStatus: function() {
+        return;
         var status = this.mode.helpText;
         if (this.mode.state) status += '<br>' + this.mode.state.helpText;
         this.statusBar.setStatus(status);

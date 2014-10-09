@@ -334,7 +334,7 @@ bamboo.Ui.Window = game.Class.extend({
         this.folded = !this.folded;
         if (this.folded) {
             this.windowDiv.style.height = this.titleHeight + 'px';
-            this.windowDiv.style.overflow = 'hidden';
+            // this.windowDiv.style.overflow = 'hidden';
             this.origHeight = this.height;
             this.height = this.titleHeight;
             if (this.children) {
@@ -344,7 +344,7 @@ bamboo.Ui.Window = game.Class.extend({
         }
         else {
             this.height = this.origHeight;
-            this.windowDiv.style.overflow = 'auto';
+            // this.windowDiv.style.overflow = 'auto';
             this.updateSize();
         }
     },
@@ -699,27 +699,35 @@ bamboo.Ui.defaultWorkspace = {
     windows: {
         properties: {
             x: window.innerWidth - 210,
-            y: 26 + 10,
+            y: 36,
             width: 200,
-            height: 400
+            height: 500
         },
         assets: {
             x: 10,
-            y: 26 + 10,
+            y: 36,
             width: 200,
-            height: 295
+            height: 230
         },
         layers: {
-            height: 390,
+            height: 180,
             snappedTo: 'properties'
         },
         nodes: {
-            height: 220,
+            height: 180,
             snappedTo: 'assets'
         },
         camera: {
-            height: 130,
-            snappedTo: 'nodes'
+            width: 200,
+            height: 100
+        },
+        layerSettings: {
+            width: 200,
+            height: 243
+        },
+        console: {
+            width: 400,
+            height: 400
         }
     }
 };
