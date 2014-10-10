@@ -40,32 +40,32 @@ bamboo.PropertyPanel = game.Class.extend({
 
         var layerButton = document.createElement('div');
 
-        layerButton.className = 'button';
-        layerButton.innerHTML = '+';
+        layerButton.className = 'button image';
+        layerButton.innerHTML = '<img src="src/bamboo/editor/media/blue-document--plus.png">';
         layerButton.addEventListener('click', this.newLayerClicked.bind(this), false);
         buttonsDiv.appendChild(layerButton);
 
         layerButton = document.createElement('div');
-        layerButton.className = 'button';
-        layerButton.innerHTML = '<';
+        layerButton.className = 'button image';
+        layerButton.innerHTML = '<img src="src/bamboo/editor/media/arrow-090.png">';
         layerButton.addEventListener('click', this.moveLayerUpClicked.bind(this), false);
         buttonsDiv.appendChild(layerButton);
 
         layerButton = document.createElement('div');
-        layerButton.className = 'button';
-        layerButton.innerHTML = '>';
+        layerButton.className = 'button image';
+        layerButton.innerHTML = '<img src="src/bamboo/editor/media/arrow-270.png">';
         layerButton.addEventListener('click', this.moveLayerDownClicked.bind(this), false);
         buttonsDiv.appendChild(layerButton);
 
         layerButton = document.createElement('div');
-        layerButton.className = 'button';
-        layerButton.innerHTML = '×';
+        layerButton.className = 'button image';
+        layerButton.innerHTML = '<img src="src/bamboo/editor/media/cross.png">';
         layerButton.addEventListener('click', this.deleteLayerClicked.bind(this), false);
         buttonsDiv.appendChild(layerButton);
 
         layerButton = document.createElement('div');
-        layerButton.className = 'button';
-        layerButton.innerHTML = 'S';
+        layerButton.className = 'button image last';
+        layerButton.innerHTML = '<img src="src/bamboo/editor/media/gear.png">';
         layerButton.addEventListener('click', this.showLayerSettings.bind(this), false);
         buttonsDiv.appendChild(layerButton);
 
@@ -80,13 +80,6 @@ bamboo.PropertyPanel = game.Class.extend({
             closeable: true
         });
         this.layerSettingsWindow.setTitle('Layer settings');
-        // this.layerWindow.windowDiv.removeChild(this.layerWindow.contentDiv);
-        // this.layerWindow.layerList = document.createElement('div');
-        // this.layerWindow.layerList.className = 'content';
-        // this.layerWindow.layerList.style.padding = '10px';
-
-        // this.layerWindow.windowDiv.appendChild(this.layerWindow.layerList);
-        // this.layerWindow.windowDiv.appendChild(this.layerWindow.contentDiv);
 
         this.layerWindow.contentDiv.appendChild(this.layerList);
         this.layerWindow.contentDiv.appendChild(buttonsDiv);
@@ -155,6 +148,8 @@ bamboo.PropertyPanel = game.Class.extend({
 
         this.layerSettingsWindow.clear();
 
+        this.layerSettingsWindow.addInputText('name', layer.name, 'Name', 'Name of the layer', function() {layer._editorNode.setProperty('name', this.inputs['name'].value); self.updateLayerList();});
+
         this.layerSettingsWindow.addInputSelect('activeNode', 'Active node', 'Active node', function() {
             self.editor.controller.setActiveNode(self.editor.world.findNode(this.inputs['activeNode'].value));
             self.focusOnCanvas();
@@ -176,7 +171,6 @@ bamboo.PropertyPanel = game.Class.extend({
             self.focusOnCanvas();
         });
         
-        this.layerSettingsWindow.addInputText('name', layer.name, 'Name', 'Name of the layer', function() {layer._editorNode.setProperty('name', this.inputs['name'].value); self.updateLayerList();});
         this.layerSettingsWindow.addMultiInput('speedFactor', [layer.speedFactor.x.toFixed(2), layer.speedFactor.y.toFixed(2)], 2, 'Speed', '', function() {
             layer.speedFactor.set(
                 parseFloat(this.inputs['speedFactor.0'].value),

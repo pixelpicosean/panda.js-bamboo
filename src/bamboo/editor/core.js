@@ -185,7 +185,6 @@ game.start = function() {
     height += height % 2 === 0 ? 1 : 0;
     game._start(bamboo.EditorScene, width, height);
     bamboo.ui = new bamboo.Ui();
-    bamboo.console = new bamboo.Console();
 };
 
 window.addEventListener('resize', function() {
