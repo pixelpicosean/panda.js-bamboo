@@ -359,8 +359,8 @@ bamboo.Editor = game.Class.extend({
                 continue;
             }
             layer.displayObject.position.set(
-                layer.position.x + this.camera.position.x * -layer.speedFactor.x,
-                layer.position.y + this.camera.position.y * -layer.speedFactor.y
+                Math.round(layer.position.x + this.camera.position.x * -layer.speedFactor.x),
+                Math.round(layer.position.y + this.camera.position.y * -layer.speedFactor.y)
             );
             layer._editorNode.displayObject.position.set(
                 layer.position.x + this.camera.position.x * -layer.speedFactor.x,
