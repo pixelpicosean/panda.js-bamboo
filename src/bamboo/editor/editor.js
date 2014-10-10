@@ -22,6 +22,8 @@ bamboo.Editor = game.Class.extend({
         this.world = new bamboo.World(data);
         game.system.stage.setBackgroundColor(parseInt(this.world.bgcolor));
 
+        bamboo.console = new bamboo.Console();
+
         this.gridSize = game.storage.get('gridSize', 16);
 
         this.camera.position = new game.Point();
@@ -103,7 +105,7 @@ bamboo.Editor = game.Class.extend({
         this.assetsList.style.overflow = 'auto';
         assetsWindow.contentDiv.appendChild(this.assetsList);
 
-        assetsWindow.addButton('Add', this.removeAsset.bind(this, this.assetsList));
+        assetsWindow.addButton('Add', this.addAsset.bind(this, this.assetsList));
         assetsWindow.addButton('Remove', this.removeAsset.bind(this, this.assetsList));
         this.updateAssetsList();
 
@@ -153,7 +155,18 @@ bamboo.Editor = game.Class.extend({
         this.showSettings();
         this.initShadow();
 
-        bamboo.console.log('Editor initiated');
+        bamboo.console.log('Scene ' + this.world.name + ' loaded');
+    },
+
+    addAsset: function() {
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.onchange = this.addAssetInputChange.bind(this, input);
+        input.click();
+    },
+
+    addAssetInputChange: function(input) {
+        this.loadFiles(input.files);
     },
 
     updateCameraPosition: function() {
@@ -634,10 +647,14 @@ bamboo.Editor = game.Class.extend({
     },
 
     filedrop: function(event) {
+        this.loadFiles(event.dataTransfer.files);
+    },
+
+    loadFiles: function(fileList) {
         var assets = [];
         var audioFilesAdded = 0;
-        for (var i = 0; i < event.dataTransfer.files.length; i++) {
-            var file = event.dataTransfer.files[i];
+        for (var i = 0; i < fileList.length; i++) {
+            var file = fileList[i];
 
             // Check if file is audio
             var isAudio = false;
