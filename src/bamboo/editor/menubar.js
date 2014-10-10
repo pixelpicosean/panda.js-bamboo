@@ -43,6 +43,9 @@ bamboo.MenuBar = game.Class.extend({
         this.menuElem.addMenuItem('Window', 'Layers', function() {
             bamboo.ui.toggleWindow('layers');
         });
+        this.menuElem.addMenuItem('Window', 'Layer settings', function() {
+            bamboo.ui.toggleWindow('layerSettings');
+        });
         this.menuElem.addMenuItem('Window', 'Nodes', function() {
             bamboo.ui.toggleWindow('nodes');
         });
