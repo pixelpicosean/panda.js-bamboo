@@ -74,12 +74,14 @@ bamboo.Ui = game.Class.extend({
     },
 
     showWindow: function(id) {
-        for (var i = 0; i < this.windows.length; i++) {
-            if (this.windows[i].id === id) {
-                this.windows[i].show();
-                return true;
-            }
-        }
+        var win = this.findWindow(id);
+        if (win) return win.show();
+        return false;
+    },
+
+    toggleWindow: function(id) {
+        var win = this.findWindow(id);
+        if (win) return win.toggleVisibility();
         return false;
     },
 
@@ -383,7 +385,7 @@ bamboo.Ui.Window = game.Class.extend({
         if (this.x < this.minX) this.x = this.minX;
         if (this.y < this.minY) this.y = this.minY;
         if (this.x + this.width > window.innerWidth) this.x = window.innerWidth - this.width;
-        if (this.y + this.titleHeight > window.innerHeight) this.y = window.innerHeight - this.titleHeight;
+        if (this.y + this.height > window.innerHeight) this.y = window.innerHeight - this.height;
         
         if (this.children) {
             this.children.x = this.x;
@@ -416,6 +418,11 @@ bamboo.Ui.Window = game.Class.extend({
         if (!this.visible) return;
         this.visible = false;
         document.body.removeChild(this.windowDiv);
+    },
+
+    toggleVisibility: function() {
+        if (this.visible) this.hide();
+        else this.show();
     },
 
     clear: function() {
@@ -726,8 +733,10 @@ bamboo.Ui.defaultWorkspace = {
             height: 243
         },
         console: {
-            width: 400,
-            height: 400
+            x: 10,
+            y: window.innerHeight - 210,
+            width: window.innerWidth - 20,
+            height: 200
         }
     }
 };
