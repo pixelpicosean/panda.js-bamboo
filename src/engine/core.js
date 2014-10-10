@@ -28,7 +28,7 @@ var game = {
         Current engine version.
         @property {String} version
     **/
-    version: '1.8.0',
+    version: '1.9.0',
     /**
         Engine settings.
         @property {Object} config
@@ -489,7 +489,7 @@ var game = {
             var i = this;
             if (i < min) i = min;
             if (i > max) i = max;
-            return i;
+            return parseFloat(i);
         };
 
         Number.prototype.round = function(precision) {
@@ -559,7 +559,7 @@ var game = {
 
         // iPhone
         this.device.iPhone = /iPhone/i.test(navigator.userAgent);
-        this.device.iPhone4 = (this.device.iPhone && this.device.pixelRatio === 2);
+        this.device.iPhone4 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 920);
         this.device.iPhone5 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 1096);
 
         // iPad
@@ -577,7 +577,9 @@ var game = {
         // Android
         this.device.android = /android/i.test(navigator.userAgent);
         this.device.android2 = /android 2/i.test(navigator.userAgent);
-
+        var androidVer = navigator.userAgent.match(/Android.*AppleWebKit\/([\d.]+)/);
+        this.device.androidStock = (androidVer && androidVer[1] < 537);
+        
         // Internet Explorer
         this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
         this.device.ie10 = /MSIE 10/i.test(navigator.userAgent);
@@ -616,7 +618,14 @@ var game = {
     
         for (var i in this.device) {
             if (this.device[i] && this.config[i]) {
-                for (var o in this.config[i]) this.merge(this.config[o], this.config[i][o]);
+                for (var o in this.config[i]) {
+                    if (typeof this.config[i][o] === 'object') {
+                        this.merge(this.config[o], this.config[i][o]);
+                    }
+                    else {
+                        this.config[o] = this.config[i][o];
+                    }
+                }
             }
         }
 

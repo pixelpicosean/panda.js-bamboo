@@ -125,12 +125,31 @@ game.Sprite = game.PIXI.Sprite.extend({
         if (game.device.mobile && !this.touchendoutside && this.mouseupoutside) this.touchendoutside = this.mouseupoutside;
     },
 
+    /**
+        Change sprite texture.
+        @method setTexture
+        @param {String} id
+    **/
     setTexture: function(id) {
         if (typeof id === 'string') {
             id = game.paths[id] || id;
             id = game.Texture.fromFrame(id);
         }
         this._super(id);
+    },
+
+    /**
+        Crop sprite.
+        @method crop
+        @param {Number} x
+        @param {Number} y
+        @param {Number} width
+        @param {Number} height
+    **/
+    crop: function(x, y, width, height) {
+        var texture = new game.PIXI.Texture(this.texture, new game.HitRectangle(x, y, width, height));
+        this.setTexture(texture);
+        return this;
     },
 
     /**
@@ -168,6 +187,43 @@ game.Sprite = game.PIXI.Sprite.extend({
     addTo: function(container) {
         container.addChild(this);
         return this;
+    }
+});
+
+game.SpriteSheet = game.Class.extend({
+    init: function(id, width, height) {
+        this.width = width;
+        this.height = height;
+        this.texture = game.TextureCache[game.paths[id]];
+        this.sx = Math.floor(this.texture.width / this.width);
+        this.sy = Math.floor(this.texture.height / this.height);
+        this.frames = this.sx * this.sy;
+    },
+
+    frame: function(index) {
+        index = index.limit(0, this.frames - 1);
+
+        var i = 0;
+        for (var y = 0; y < this.sy; y++) {
+            for (var x = 0; x < this.sx; x++) {
+                if (i === index) {
+                    var sprite = new game.Sprite(this.texture);
+                    sprite.crop(x * this.width, y * this.height, this.width, this.height);
+                    return sprite;
+                }
+                i++;
+            }
+        }
+    },
+
+    anim: function(count, index) {
+        index = index || 0;
+        count = count || this.frames;
+        var textures = [];
+        for (var i = 0; i < count; i++) {
+            textures.push(this.frame(index + i).texture);
+        }
+        return new game.Animation(textures);
     }
 });
 
@@ -317,28 +373,6 @@ game.TilingSprite = game.PIXI.TilingSprite.extend({
     @param {Array} textures
 **/
 game.Animation = game.PIXI.MovieClip.extend({
-    /**
-        @property {Number} animationSpeed
-        @default 1
-    **/
-    /**
-        @property {Array} textures
-    **/
-    /**
-        @property {Boolean} loop
-    **/
-    /**
-        @property {Number} currentFrame
-    **/
-    /**
-        @property {Boolean} playing
-    **/
-    /**
-        @property {Number} totalFrames
-    **/
-    /**
-        @property {Function} onComplete
-    **/
     init: function(textures) {
         if (typeof textures === 'string') {
             var frames = Array.prototype.slice.call(arguments);
@@ -352,27 +386,29 @@ game.Animation = game.PIXI.MovieClip.extend({
         this._super(textures);
     },
 
+    /**
+        Add to container.
+        @method addTo
+        @param {game.Container} container
+    **/
     addTo: function(container) {
         container.addChild(this);
         return this;
     },
 
+    /**
+        Remove from it's container.
+        @method remove
+    **/
     remove: function() {
         if (this.parent) this.parent.removeChild(this);
     },
 
-    /**
-        @method play
-    **/
-    /**
-        @method stop
-    **/
-    /**
-        @method gotoAndPlay
-    **/
-    /**
-        @method gotoAndStop
-    **/
+    updateTransform: function() {
+        this.currentFrame -= this.animationSpeed;
+        this.currentFrame += this.animationSpeed * 60 * game.system.delta;
+        this._super();
+    }
 });
 
 });
