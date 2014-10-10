@@ -14,9 +14,12 @@ bamboo.MenuBar = game.Class.extend({
         this.menuElem.addMenuItem('Scene', 'New scene', function() {
             game.scene.loadEditor();
         });
-        this.menuElem.addMenuItem('Scene', 'Load last scene', function() {
-            game.scene.loadEditor(bamboo.scenes[0]);
-        });
+        if (bamboo.scenes.length > 0) {
+            var title = bamboo.scenes.length > 1 ? 'Load scene...' : 'Load scene';
+            this.menuElem.addMenuItem('Scene', 'Load scene', function() {
+                if (bamboo.scenes.length === 1) game.scene.loadEditor(bamboo.scenes[0]);
+            });
+        }
         this.menuElem.addMenuItem('Scene', 'Save module', this.editor.saveAsModule.bind(this.editor));
         this.menuElem.addMenuItem('Scene', 'Save JSON', this.editor.saveAsJSON.bind(this.editor));
         this.menuElem.addMenuItem('Scene', 'Download module', this.editor.downloadAsModule.bind(this.editor));
@@ -28,23 +31,23 @@ bamboo.MenuBar = game.Class.extend({
         this.menuElem.addMenuItem('Node', 'Parent/unparent', this.editor.controller.setNodeParent.bind(this.editor.controller));
 
         this.menuElem.addMenu('Window');
-        this.menuElem.addMenuItem('Window', 'Nodes', function() {
-            bamboo.ui.showWindow('nodes');
-        });
-        this.menuElem.addMenuItem('Window', 'Properties', function() {
-            bamboo.ui.showWindow('properties');
-        });
-        this.menuElem.addMenuItem('Window', 'Layers', function() {
-            bamboo.ui.showWindow('layers');
-        });
         this.menuElem.addMenuItem('Window', 'Assets', function() {
-            bamboo.ui.showWindow('assets');
+            bamboo.ui.toggleWindow('assets');
         });
         this.menuElem.addMenuItem('Window', 'Camera', function() {
-            bamboo.ui.showWindow('camera');
+            bamboo.ui.toggleWindow('camera');
         });
         this.menuElem.addMenuItem('Window', 'Console', function() {
-            bamboo.ui.showWindow('console');
+            bamboo.ui.toggleWindow('console');
+        });
+        this.menuElem.addMenuItem('Window', 'Layers', function() {
+            bamboo.ui.toggleWindow('layers');
+        });
+        this.menuElem.addMenuItem('Window', 'Nodes', function() {
+            bamboo.ui.toggleWindow('nodes');
+        });
+        this.menuElem.addMenuItem('Window', 'Properties', function() {
+            bamboo.ui.toggleWindow('properties');
         });
 
         this.menuElem.addMenu('Workspace');
