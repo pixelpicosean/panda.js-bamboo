@@ -45,6 +45,10 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         if (key === 'ALT') this.altDown = true;
         if (key === 'CTRL') this.ctrlDown = true;
 
+        if (key === 'C') {
+            bamboo.ui.toggleWindow('console');
+            return;
+        }
         if (key === 'V') {
             this.editor.toggleViewNodes();
             return;
