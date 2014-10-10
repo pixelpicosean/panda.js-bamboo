@@ -183,6 +183,7 @@ bamboo.PropertyPanel = game.Class.extend({
         this.editor.controller.setActiveLayer(this.editor.findNode(this.layerList.value));
         this.editor.controller.setActiveNode();
         this.focusOnCanvas();
+        this.editor.activeNodeChanged();
     },
 
     focusOnCanvas: function() {
