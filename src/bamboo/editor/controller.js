@@ -306,12 +306,50 @@ bamboo.Controller = game.Class.extend({
         this.editor.propertyPanel.activeLayerChanged(node._editorNode.layer);
     },
 
-    moveNodeTopMost: function(node) {
+    moveNodeTop: function(node) {
+        node = node || this.editor.activeNode;
+        if (!node) return;
 
+        // Move node
+        var nodeIndex = this.editor.world.nodes.indexOf(node);
+        this.editor.world.nodes.splice(nodeIndex, 1);
+        this.editor.world.nodes.push(node);
+
+        // Move editor node
+        nodeIndex = this.editor.nodes.indexOf(node._editorNode);
+        this.editor.nodes.splice(nodeIndex, 1);
+        this.editor.nodes.push(node._editorNode);
+
+        // Move displayObject
+        node.parent.displayObject.removeChild(node.displayObject);
+        node.parent.displayObject.addChild(node.displayObject);
+
+        this.editor.propertyPanel.activeLayerChanged(node._editorNode.layer);
+
+        bamboo.console.log('Moved node to top');
     },
 
-    moveNodeBottomMost: function(node) {
+    moveNodeBottom: function(node) {
+        node = node || this.editor.activeNode;
+        if (!node) return;
 
+        // Move node
+        var nodeIndex = this.editor.world.nodes.indexOf(node);
+        this.editor.world.nodes.splice(nodeIndex, 1);
+        this.editor.world.nodes.unshift(node);
+
+        // Move editor node
+        nodeIndex = this.editor.nodes.indexOf(node._editorNode);
+        this.editor.nodes.splice(nodeIndex, 1);
+        this.editor.nodes.unshift(node._editorNode);
+
+        // Move displayObject
+        node.parent.displayObject.removeChild(node.displayObject);
+        node.parent.displayObject.addChildAt(node.displayObject, 0);
+
+        this.editor.propertyPanel.activeLayerChanged(node._editorNode.layer);
+
+        bamboo.console.log('Moved node to bottom');
     },
 
     moveLayerUp: function(layer) {

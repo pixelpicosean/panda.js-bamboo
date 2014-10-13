@@ -29,6 +29,8 @@ bamboo.MenuBar = game.Class.extend({
         this.menuElem.addMenuItem('Node', 'Delete', this.editor.controller.deleteSelectedNodes.bind(this.editor.controller));
         this.menuElem.addMenuItem('Node', 'Duplicate', this.editor.controller.duplicateSelectedNodes.bind(this.editor.controller));
         this.menuElem.addMenuItem('Node', 'Parent/unparent', this.editor.controller.setNodeParent.bind(this.editor.controller));
+        this.menuElem.addMenuItem('Node', 'Move to top', this.editor.controller.moveNodeTop.bind(this.editor.controller));
+        this.menuElem.addMenuItem('Node', 'Move to bottom', this.editor.controller.moveNodeBottom.bind(this.editor.controller));
 
         this.menuElem.addMenu('Window');
         this.menuElem.addMenuItem('Window', 'Assets', function() {

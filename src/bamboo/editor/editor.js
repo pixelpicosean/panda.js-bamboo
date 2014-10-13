@@ -126,7 +126,6 @@ bamboo.Editor = game.Class.extend({
 
         this.nodesWindow.setInputSelectValue('type', 'Image');
 
-        // this.nodesWindow.addInputText('name', '', 'Name', 'Name of the node', this.nodeNameChanged.bind(this));
         this.nodesWindow.addInputSelect('parent', 'Parent', 'Node that this node will follow');
         this.buildNodeDropdown(this.nodesWindow, 'parent', this.world);
 

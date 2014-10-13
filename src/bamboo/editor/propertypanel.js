@@ -197,8 +197,12 @@ bamboo.PropertyPanel = game.Class.extend({
         });
         node.initProperties();
         this.editor.nodeAdded(node);
-        this.editor.controller.setActiveNode();
         this.focusOnCanvas();
+
+        this.editor.nodesWindow.inputs['parent'].innerHTML = '';
+        this.editor.buildNodeDropdown(this.editor.nodesWindow, 'parent', this.editor.world);
+        this.editor.controller.setActiveNode();
+        this.editor.activeNodeChanged();
     },
 
     moveLayerUpClicked: function() {
