@@ -115,7 +115,7 @@ game.World = game.Class.extend({
                 if (!group) break;
                 b = group[i];
                 if (body !== b) this.solver.solve(body, b);
-            }   
+            }
         }
     },
 
@@ -413,6 +413,11 @@ game.Body = game.Class.extend({
         this.last = new game.Vector();
 
         game.merge(this, settings);
+
+        // Deprecated
+        if (typeof this.collideAgainst === 'number') {
+            this.collideAgainst = [this.collideAgainst];
+        }
     },
 
     /**

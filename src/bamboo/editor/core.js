@@ -56,8 +56,9 @@ game.addAsset('../src/bamboo/editor/media/hourglass.png');
 
 game.Loader.logo = 'src/bamboo/editor/media/logo.png';
 game.Loader.barWidth = 150;
+game.System.startScene = 'Editor';
 
-bamboo.EditorScene = game.Scene.extend({
+game.SceneEditor = game.Scene.extend({
     init: function() {
         // Disable right click
         document.oncontextmenu = document.body.oncontextmenu = function() {
@@ -183,7 +184,7 @@ game.start = function() {
     var height = window.innerHeight;
     width += width % 2 === 0 ? 1 : 0;
     height += height % 2 === 0 ? 1 : 0;
-    game._start(bamboo.EditorScene, width, height);
+    game._start(null, width, height);
     bamboo.ui = new bamboo.Ui();
 };
 

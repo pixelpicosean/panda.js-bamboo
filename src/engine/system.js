@@ -14,6 +14,11 @@ game.module(
 **/
 game.System = game.Class.extend({
     /**
+        Name of current scene.
+        @property {String} currentSceneName
+    **/
+    currentSceneName: null,
+    /**
         Width of the game screen.
         @property {Number} width
     **/
@@ -69,6 +74,11 @@ game.System = game.Class.extend({
         @property {Number} gameLoopId
     **/
     gameLoopId: 0,
+    /**
+        Is WebGL enabled.
+        @property {Boolean} webGL
+    **/
+    webGL: false,
     newSceneClass: null,
     running: false,
 
@@ -78,7 +88,7 @@ game.System = game.Class.extend({
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
 
-        if (game.System.resizeToFill && navigator.isCocoonJS) {
+        if (game.System.resizeToFill && game.device.mobile) {
             if (window.innerWidth / window.innerHeight !== width / height) {
                 if (width > height) {
                     width = height * (window.innerWidth / window.innerHeight);
@@ -89,23 +99,24 @@ game.System = game.Class.extend({
             }
         }
 
-        if (game.System.hires) {
-            if (typeof game.System.hiresWidth === 'number' && typeof game.System.hiresHeight === 'number') {
-                if (window.innerWidth >= game.System.hiresWidth && window.innerHeight >= game.System.hiresHeight) {
-                    this.hires = true;
-                }
-            }
-            else if (window.innerWidth >= width * game.System.hiresFactor && window.innerHeight >= height * game.System.hiresFactor) {
+        for (var i = 2; i <= game.System.hires; i *= 2) {
+            if (window.innerWidth >= width * i && window.innerHeight >= height * i) {
                 this.hires = true;
+                game.scale = i;
             }
+        }
+        if (this.hires) {
+            width *= game.scale;
+            height *= game.scale;
         }
         if (game.System.retina && game.device.pixelRatio === 2) {
-            this.retina = true;
-        }
-        if (this.hires || this.retina) {
-            width *= 2;
-            height *= 2;
-            game.scale = 2;
+            // Check if we are already using highest textures
+            if (game.scale < game.System.hires) {
+                this.retina = true;
+                width *= 2;
+                height *= 2;
+                game.scale *= 2;
+            }
         }
 
         this.width = width;
@@ -124,6 +135,7 @@ game.System = game.Class.extend({
         if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
         else this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
 
+        this.webGL = !!this.renderer.gl;
         this.canvas = this.renderer.view;
         this.stage = new game.Stage();
 
@@ -234,10 +246,11 @@ game.System = game.Class.extend({
     /**
         Change current scene.
         @method setScene
-        @param {game.Scene} sceneClass
+        @param {String} sceneClass
     **/
     setScene: function(sceneClass) {
-        if (typeof sceneClass === 'string') sceneClass = game['Scene' + sceneClass];
+        this.currentSceneName = sceneClass;
+        sceneClass = game['Scene' + sceneClass];
         if (this.running) this.newSceneClass = sceneClass;
         else this.setSceneNow(sceneClass);
     },
@@ -424,19 +437,6 @@ game.System = game.Class.extend({
             if (game.device.iOS7 && window.innerHeight === 319) height = 320;
             if (game.device.iOS7 && game.device.pixelRatio === 2 && this.orientation === 'landscape') height += 2;
             if (game.device.iPad && height === 671) height = 672;
-            
-            if (game.System.resizeToFill && !this.rotateScreenVisible && game.System.rotateScreen) {
-                if (width / height !== this.width / this.height) {
-                    // Wrong ratio, need to resize
-                    if (this.orientation === 'landscape') {
-                        this.width = Math.ceil(this.height * (width / height));
-                    }
-                    else {
-                        this.height = Math.ceil(this.width * (height / width));
-                    }
-                    this.renderer.resize(this.width, this.height);
-                }
-            }
 
             // Landscape game
             if (this.width > this.height) {
@@ -548,19 +548,11 @@ game.System.idtkScale = 'ScaleAspectFit';
 **/
 game.System.screenCanvas = true;
 /**
-    Use HiRes mode.
-    @attribute {Boolean} hires
-    @default false
+    HiRes mode.
+    @attribute {Number} hires
+    @default 0
 **/
-game.System.hires = false;
-/**
-    Canvas width/height factor, when HiRes mode is enabled.
-    @attribute {Number} hiresFactor
-    @default 1.5
-**/
-game.System.hiresFactor = 1.5;
-game.System.hiresWidth = null;
-game.System.hiresHeight = null;
+game.System.hires = 0;
 /**
     Use Retina mode.
     @attribute {Boolean} retina

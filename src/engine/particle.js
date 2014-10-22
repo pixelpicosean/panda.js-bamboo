@@ -59,7 +59,6 @@ game.Particle = game.Class.extend({
 
 /**
     Particle emitter.
-
     @class Emitter
     @extends game.Class
     @constructor
@@ -119,11 +118,11 @@ game.Emitter = game.Class.extend({
     **/
     speedVar: 0,
     /**
-        Particle's life in seconds. 0 is forever.
+        Particle's life in ms (0 is forever).
         @property {Number} life
-        @default 2
+        @default 2000
     **/
-    life: 2,
+    life: 2000,
     /**
         Particle's life variance.
         @property {Number} lifeVar
@@ -131,18 +130,18 @@ game.Emitter = game.Class.extend({
     **/
     lifeVar: 0,
     /**
-        Emitter duration in seconds. 0 is forever.
+        Emitter duration in ms (0 is forever).
         @property {Number} duration
         @default 0
     **/
     duration: 0,
     durationTimer: 0,
     /**
-        Emitter rate.
+        How often to emit new particles in ms.
         @property {Number} rate
-        @default 0.1
+        @default 100
     **/
-    rate: 0.1,
+    rate: 100,
     rateTimer: 0,
     /**
         Emit count of particles.
@@ -336,7 +335,7 @@ game.Emitter = game.Class.extend({
 
         if (this.startAlpha !== this.endAlpha) {
             particle.deltaAlpha = this.endAlpha - this.startAlpha;
-            particle.deltaAlpha /= particle.life;
+            particle.deltaAlpha /= particle.life / 1000;
         }
         else particle.deltaAlpha = 0;
 
@@ -345,7 +344,7 @@ game.Emitter = game.Class.extend({
         var startScale = this.startScale + this.getVariance(this.startScaleVar);
         if (this.startScale !== this.endScale) {
             particle.deltaScale = (this.endScale + this.getVariance(this.endScaleVar)) - startScale;
-            particle.deltaScale /= particle.life;
+            particle.deltaScale /= particle.life / 1000;
         }
         else particle.deltaScale = 0;
         particle.sprite.scale.x = particle.sprite.scale.y = startScale;
@@ -361,7 +360,7 @@ game.Emitter = game.Class.extend({
     **/
     updateParticle: function(particle) {
         if (particle.life > 0) {
-            particle.life -= game.system.delta;
+            particle.life -= game.system.delta * 1000;
             if (particle.life <= 0) return this.removeParticle(particle);
         }
 
@@ -436,11 +435,11 @@ game.Emitter = game.Class.extend({
             return;
         }
 
-        this.durationTimer += game.system.delta;
+        this.durationTimer += game.system.delta * 1000;
         if (this.duration > 0) this.active = this.durationTimer < this.duration;
 
         if (this.rate && this.active) {
-            this.rateTimer += game.system.delta;
+            this.rateTimer += game.system.delta * 1000;
             if (this.rateTimer >= this.rate) {
                 this.rateTimer = 0;
                 this.emit(this.count);

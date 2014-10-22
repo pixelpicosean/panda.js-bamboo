@@ -238,6 +238,10 @@ game.BitmapText = game.PIXI.BitmapText.extend({
     addTo: function(container) {
         container.addChild(this);
         return this;
+    },
+
+    remove: function() {
+        if (this.parent) this.parent.removeChild(this);
     }
 });
 
@@ -405,10 +409,25 @@ game.Animation = game.PIXI.MovieClip.extend({
     },
 
     updateTransform: function() {
-        this.currentFrame -= this.animationSpeed;
-        this.currentFrame += this.animationSpeed * 60 * game.system.delta;
+        if (this.playing) {
+            this.currentFrame -= this.animationSpeed;
+            this.currentFrame += this.animationSpeed * 60 * game.system.delta;
+        }
         this._super();
     }
 });
+
+game.Animation.fromFrames = function(name, reverse) {
+    var textures = [];
+
+    for (var key in game.TextureCache) {
+        if (key.indexOf(name) !== -1) {
+            if (reverse) textures.unshift(game.TextureCache[key]);
+            else textures.push(game.TextureCache[key]);
+        }
+    }
+
+    return new game.Animation(textures);
+};
 
 });
