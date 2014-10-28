@@ -119,7 +119,7 @@ bamboo.Ui = game.Class.extend({
             this.windows[i].updatePosition();
             this.windows[i].updateSize();
         }
-        this.menu.updateSize();
+        if (this.menu) this.menu.updateSize();
     },
 
     setActiveWindow: function(winElem) {
