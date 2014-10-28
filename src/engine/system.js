@@ -88,17 +88,6 @@ game.System = game.Class.extend({
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
 
-        if (game.System.resizeToFill && game.device.mobile) {
-            if (window.innerWidth / window.innerHeight !== width / height) {
-                if (width > height) {
-                    width = height * (window.innerWidth / window.innerHeight);
-                }
-                else {
-                    height = width * (window.innerHeight / window.innerWidth);
-                }
-            }
-        }
-
         for (var i = 2; i <= game.System.hires; i *= 2) {
             if (window.innerWidth >= width * i && window.innerHeight >= height * i) {
                 this.hires = true;
@@ -132,8 +121,15 @@ game.System = game.Class.extend({
 
         game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
 
-        if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
-        else this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
+        if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, {
+            view: document.getElementById(this.canvasId),
+            transparent: game.System.transparent,
+            antialias: game.System.antialias
+        });
+        else this.renderer = new game.CanvasRenderer(width, height, {
+            view: document.getElementById(this.canvasId),
+            transparent: game.System.transparent
+        });
 
         this.webGL = !!this.renderer.gl;
         this.canvas = this.renderer.view;
@@ -183,9 +179,6 @@ game.System = game.Class.extend({
                 }
             }, false);
 
-            // Fixes iOS8 WebGL background color bug
-            if (game.device.iOS8 && game.System.webGL) game.System.bgColorMobile = '#000000';
-
             if (game.System.bgColor && !game.System.bgColorMobile) game.System.bgColorMobile = game.System.bgColor;
             if (game.System.bgColorMobile && !game.System.bgColorRotate) game.System.bgColorRotate = game.System.bgColorMobile;
 
@@ -201,7 +194,34 @@ game.System = game.Class.extend({
             this.initResize();
         }
         else {
+            this.resizeToFill();
             this.canvas.style.cssText = 'idtkscale:' + game.System.idtkScale + ';';
+        }
+    },
+
+    resizeToFill: function() {
+        if (!game.System.resizeToFill || !game.device.mobile) return;
+        if (this.rotateScreenVisible) return;
+
+        if (this._resizeToFill) return;
+        this._resizeToFill = true;
+
+        var orientation = this.width > this.height ? 'landscape' : 'portrait';
+        var curOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
+        var width = this.width;
+        var height = this.height;
+
+        if (window.innerWidth / window.innerHeight !== this.width / this.height && orientation === curOrientation) {
+            if (width > height) {
+                width = Math.round(height * (window.innerWidth / window.innerHeight));
+            }
+            else {
+                height = Math.round(width * (window.innerHeight / window.innerWidth));
+            }
+        }
+
+        if (this.width !== width || this.height !== height) {
+            this.resize(width, height);
         }
     },
 
@@ -427,6 +447,8 @@ game.System = game.Class.extend({
 
         if (game.device.mobile) {
             this.ratio = this.orientation === 'landscape' ? this.width / this.height : this.height / this.width;
+
+            this.resizeToFill();
 
             // Mobile resize
             var width = window.innerWidth;
@@ -685,11 +707,5 @@ game.System.canvasId = null;
     @default linear
 **/
 game.System.scaleMode = 'linear';
-/**
-    Stop all audio, when scene is changed.
-    @attribute {Boolean} stopAudioOnSceneChange
-    @default true
-**/
-game.System.stopAudioOnSceneChange = true;
 
 });

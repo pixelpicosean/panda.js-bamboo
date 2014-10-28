@@ -62,8 +62,8 @@ game.Audio = game.Class.extend({
         // Disable audio on iOS 5
         if (game.device.iOS5) game.Audio.enabled = false;
 
-        // Disable audio on Windows Phone
-        if (game.device.wp) game.Audio.enabled = false;
+        // Disable audio on Windows Phone 7
+        if (game.device.wp7) game.Audio.enabled = false;
 
         // Disable audio on Android 2
         if (game.device.android2) game.Audio.enabled = false;
@@ -260,8 +260,6 @@ game.Audio = game.Class.extend({
             // This gives error on IE
             // audio.currentTime = 0;
         }
-
-        delete this.audioObjects[id];
 
         return true;
     },
@@ -683,14 +681,12 @@ game.Audio = game.Class.extend({
     @default true
 **/
 game.Audio.enabled = true;
-
 /**
     Enable Web Audio.
     @attribute {Boolean} webAudio
     @default true
 **/
 game.Audio.webAudio = true;
-
 /**
     List of available audio formats.
     @attribute {Array} formats
@@ -700,5 +696,11 @@ game.Audio.formats = [
     { ext: 'ogg', type: 'audio/ogg; codecs="vorbis"' },
     { ext: 'wav', type: 'audio/wav' }
 ];
+/**
+    Stop audio, when changing scene.
+    @attribute {Boolean} stopOnSceneChange
+    @default true
+**/
+game.Audio.stopOnSceneChange = true;
 
 });
