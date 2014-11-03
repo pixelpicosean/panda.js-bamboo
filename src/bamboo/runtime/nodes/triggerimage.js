@@ -18,7 +18,11 @@ bamboo.createNode('TriggerImage', 'Trigger', {
 
     setProperty: function(name, value) {
         this._super(name, value);
-        if (name === 'image' && this.image) this.displayObject.setTexture(game.config.mediaFolder + this.image);
+        if (name === 'image' && this.image) {
+            var path = this.image;
+            if (game.config.mediaFolder) path = game.config.mediaFolder + '/' + path;
+            this.displayObject.setTexture(path);
+        }
     }
 });
 
