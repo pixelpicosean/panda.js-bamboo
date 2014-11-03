@@ -20,7 +20,9 @@ bamboo.createNode('Image', {
     setProperty: function(name, value) {
         this._super(name, value);
         if (name === 'image' && this.image) {
-            this.displayObject.setTexture(game.config.mediaFolder + this.image);
+            var path = this.image;
+            if (game.config.mediaFolder) path = game.config.mediaFolder + '/' + path;
+            this.displayObject.setTexture(path);
             this.displayObject.width = this.size.x;
             this.displayObject.height = this.size.y;
         }
