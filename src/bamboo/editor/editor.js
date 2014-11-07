@@ -672,7 +672,7 @@ bamboo.Editor = game.Class.extend({
             }
             if (isAudio) continue;
 
-            assets.push(game.config.mediaFolder + file.name);
+            assets.push(game.config.mediaFolder + '/' + file.name);
         }
 
         if (audioFilesAdded > 0) {
@@ -701,7 +701,7 @@ bamboo.Editor = game.Class.extend({
         var filename;
         var count = 0;
         for (var i = 0; i < loader.assetURLs.length; i++) {
-            filename = loader.assetURLs[i].replace(game.config.mediaFolder, '');
+            filename = loader.assetURLs[i].replace(game.config.mediaFolder + '/', '');
             if (this.world.assets.indexOf(filename) === -1) {
                 this.world.assets.push(filename);
                 count++;
