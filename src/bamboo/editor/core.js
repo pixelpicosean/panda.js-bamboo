@@ -56,7 +56,7 @@ game.addAsset('../src/bamboo/editor/media/hourglass.png');
 
 game.Loader.logo = 'src/bamboo/editor/media/logo.png';
 game.Loader.barWidth = 150;
-game.System.startScene = 'Editor';
+pandaConfig.system.startScene = 'Editor';
 
 game.SceneEditor = game.Scene.extend({
     init: function() {
