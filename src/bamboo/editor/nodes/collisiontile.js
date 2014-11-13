@@ -23,7 +23,7 @@ bamboo.nodes.CollisionTile.editor = bamboo.Node.editor.extend({
     },
 
     getFrames: function() {
-        var json = game.json[game.config.mediaFolder + this.node.tileset];
+        var json = game.json[game.config.mediaFolder + '/' + this.node.tileset];
         for (var name in json.frames) {
             this.frames.push(name);
         }
