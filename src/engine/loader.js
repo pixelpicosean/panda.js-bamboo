@@ -58,9 +58,6 @@ game.Loader = game.Class.extend({
         this.onComplete(callback);
         this.stage = game.system.stage;
 
-        // Deprecated
-        if (typeof game.Loader.timeout === 'number') game.Loader.time = game.Loader.timeout;
-
         for (var i = 0; i < game.assetQueue.length; i++) {
             if (game.TextureCache[game.assetQueue[i]]) continue;
             this.assetQueue.push(this.getPath(game.assetQueue[i]));
@@ -96,7 +93,8 @@ game.Loader = game.Class.extend({
         if (game.Loader.logo) {
             this.logo = new game.Sprite(game.Texture.fromImage(game.Loader.logo));
             this.logo.anchor.set(0.5, 1.0);
-            this.logo.center();
+            this.logo.position.x = game.system.width / 2;
+            this.logo.position.y = game.system.height / 2;
             this.logo.position.y -= barHeight / 2 + barMargin;
             this.stage.addChild(this.logo);
         }
@@ -155,13 +153,8 @@ game.Loader = game.Class.extend({
         else if (this.dynamic) this.ready();
     },
 
-    /**
-        Error loading file.
-        @method error
-        @param {String} error
-    **/
-    error: function(error) {
-        if (error) throw error;
+    error: function(path) {
+        throw 'loading file ' + path;
     },
 
     /**
@@ -191,7 +184,7 @@ game.Loader = game.Class.extend({
     **/
     loadAudio: function() {
         for (var i = this.audioQueue.length - 1; i >= 0; i--) {
-            game.audio.load(this.audioQueue[i], this.progress.bind(this));
+            game.audio.load(this.audioQueue[i], this.progress.bind(this), this.error.bind(this, this.audioQueue[i]));
         }
     },
 

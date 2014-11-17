@@ -285,6 +285,6 @@ bamboo.addNodeProperty('Path', 'spline', 'boolean');
     List of points in path.
     @property {Array} points
 **/
-bamboo.nodes.Path.props.points = new bamboo.Property(false, '', '', bamboo.Property.TYPE.ARRAY, [], new bamboo.Property(false, '', '', bamboo.Property.TYPE.VECTOR));
+game.bamboo.nodes.Path.properties.points = new game.bamboo.Property('', '', game.bamboo.Property.TYPE.ARRAY, [], new game.bamboo.Property('', '', game.bamboo.Property.TYPE.VECTOR));
 
 });

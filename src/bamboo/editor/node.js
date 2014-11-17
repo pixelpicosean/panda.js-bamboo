@@ -9,7 +9,7 @@ game.module(
 game.addAsset('../src/bamboo/editor/media/axis.png');
 game.addAsset('../src/bamboo/editor/media/axis_active.png');
 
-bamboo.Node.editor = game.Class.extend({
+game.bamboo.Node.editor = game.Class.extend({
     helpText: '',
     editMode: false,
     propertyChangeListeners: [],
@@ -21,7 +21,7 @@ bamboo.Node.editor = game.Class.extend({
     init: function(node, editor) {
         this.editor = editor;
         this.node = node;
-        this.node._editorNode = this;
+        this.node.editorNode = this;
 
         this.displayObject = new game.Container();
 
@@ -65,7 +65,7 @@ bamboo.Node.editor = game.Class.extend({
     },
 
     ready: function() {
-        this.node.parent._editorNode.displayObject.addChild(this.displayObject);
+        this.node.parent.editorNode.displayObject.addChild(this.displayObject);
         this.displayObject.position.set(this.node.position.x, this.node.position.y);
         this.redrawConnectedToLine();
     },
@@ -73,7 +73,7 @@ bamboo.Node.editor = game.Class.extend({
     layerChanged: function() {
         var node = this.node;
         while (node) {
-            if (node instanceof bamboo.nodes.Layer) {
+            if (node instanceof game.bamboo.nodes.Layer) {
                 this.layer = node;
                 break;
             }
@@ -89,11 +89,11 @@ bamboo.Node.editor = game.Class.extend({
         this.connectedToLine.clear();
 
         if (this.node.parent) {
-            if (this.node.parent instanceof bamboo.nodes.Layer) return;
-            if (this.node.parent instanceof bamboo.World) return;
+            if (this.node.parent instanceof game.bamboo.nodes.Layer) return;
+            if (this.node.parent instanceof game.BambooScene) return;
             this.connectedToLine.lineStyle(1, 0xffffff, 0.5);
             this.connectedToLine.moveTo(0,0);
-            var point = this.node.toLocalSpace(this.node.parent.getWorldPosition());
+            var point = this.node.toLocalSpace(this.node.parent.getGlobalPosition());
             this.connectedToLine.lineTo(point.x, point.y);
         }
     },
@@ -142,15 +142,15 @@ bamboo.Node.editor = game.Class.extend({
             this.sizeChanged();
         }
         else if (property === 'parent') {
-            oldValue._editorNode.displayObject.removeChild(this.displayObject);
-            value._editorNode.displayObject.addChild(this.displayObject);
+            oldValue.editorNode.displayObject.removeChild(this.displayObject);
+            value.editorNode.displayObject.addChild(this.displayObject);
 
             var newPos = value.toLocalSpace(this.node.position);
             this.setProperty('position', newPos);
 
             this.displayObject.position.set(this.node.position.x, this.node.position.y);
 
-            if (value instanceof bamboo.nodes.Layer) {
+            if (value instanceof game.bamboo.nodes.Layer) {
                 this.layerChanged();
                 this.editor.controller.setActiveLayer(value);
                 this.editor.controller.setActiveNode(this.node);
@@ -204,7 +204,7 @@ bamboo.Node.editor = game.Class.extend({
     
     mousemove: function(p) {
         if (this.movingOriginOffset) {
-            p.subtract(this.movingOriginOffset);// <- origin total delta in world space
+            p.subtract(this.movingOriginOffset);// <- origin total delta in global space
 
             var wt = this.startMatrix;
             var id = 1.0 / (wt.a*wt.d - wt.b*wt.c);
@@ -220,9 +220,9 @@ bamboo.Node.editor = game.Class.extend({
 
     getClassName: function() {
         var proto;
-        for (var name in bamboo.nodes) {
+        for (var name in game.bamboo.nodes) {
             proto = Object.getPrototypeOf(this.node);
-            if (proto === bamboo.nodes[name].prototype) return name;
+            if (proto === game.bamboo.nodes[name].prototype) return name;
         }
     },
 
@@ -245,7 +245,7 @@ bamboo.Node.editor = game.Class.extend({
         var propDescs = this.node.getPropertyDescriptors();
         var jsonProperties = {};
         for (var key in propDescs) {
-            jsonProperties[key] = bamboo.Property.toJSON(this.node, key, propDescs[key]);
+            jsonProperties[key] = game.bamboo.Property.toJSON(this.node, key, propDescs[key]);
         }
         return {
             class: this.getClassName(),

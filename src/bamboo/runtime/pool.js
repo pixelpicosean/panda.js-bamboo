@@ -6,25 +6,22 @@ game.module(
 )
 .body(function() {
     
-bamboo.Pool = game.Class.extend({
+game.bamboo.pool = {
     objects: [],
 
-    init: function(count) {
-        for (var i = 0; i < count; i++) {
-            this.put(new game.Point());
-        }
-    },
-
     get: function() {
-        if (this.objects.length === 0 && !bamboo.editor && game.Debug.enabled) console.log('POOL EMPTY');
+        // if (this.objects.length === 0 && !bamboo.editor && game.Debug.enabled) console.log('POOL EMPTY');
         return this.objects.pop() || new game.Point();
     },
 
     put: function(point) {
         this.objects.push(point);
     }
-});
+};
 
-bamboo.pool = new bamboo.Pool(game.config.bamboo.poolSize || 10);
+var poolSize = game.config.bamboo.poolSize || 10;
+for (var i = 0; i < poolSize; i++) {
+    game.bamboo.pool.put(new game.Point());
+}
 
 });

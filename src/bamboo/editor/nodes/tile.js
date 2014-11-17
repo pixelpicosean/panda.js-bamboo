@@ -7,7 +7,7 @@ game.module(
 )
 .body(function() {
 
-bamboo.nodes.Tile.editor = bamboo.Node.editor.extend({
+game.bamboo.nodes.Tile.editor = game.bamboo.Node.editor.extend({
     helpText: 'LEFT prev tile, RIGHT next tile',
     frames: [],
     currentFrame: 0,
@@ -57,6 +57,6 @@ bamboo.nodes.Tile.editor = bamboo.Node.editor.extend({
     }
 });
 
-bamboo.addNodeProperty('Tile', 'tileset', 'json');
+game.addNodeProperty('Tile', 'tileset', 'json');
 
 });

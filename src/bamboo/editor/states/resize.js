@@ -6,9 +6,7 @@ game.module(
 )
 .body(function() {
 
-bamboo.editor.StateResize = bamboo.editor.State.extend({
-    helpText: 'Resize state: SHIFT lock ratio',
-
+game.bamboo.editor.createState('Resize', {
     enter: function() {
         this.node = this.mode.editor.activeNode;
         this.startSize = this.node.size.clone();
@@ -20,12 +18,12 @@ bamboo.editor.StateResize = bamboo.editor.State.extend({
     },
 
     cancel: function() {
-        this.node._editorNode.setProperty('size', this.startSize);
+        this.node.editorNode.setProperty('size', this.startSize);
     },
 
     mousemove: function(event) {
         var mousePos = new game.Point(event.global.x, event.global.y);
-        mousePos = this.mode.editor.toWorldSpace(mousePos);
+        mousePos = this.mode.editor.toGlobalSpace(mousePos);
         mousePos = this.node.toLocalSpace(mousePos);
 
         mousePos.x += this.node.size.x * this.node.anchor.x;
@@ -40,7 +38,7 @@ bamboo.editor.StateResize = bamboo.editor.State.extend({
             mousePos.x = mousePos.y * ratio;
         }
         
-        this.node._editorNode.setProperty('size', mousePos);
+        this.node.editorNode.setProperty('size', mousePos);
     },
 
     click: function(event) {

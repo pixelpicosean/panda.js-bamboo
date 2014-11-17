@@ -3,11 +3,11 @@ game.module(
 )
 .body(function() {
     
-bamboo.Console = game.Class.extend({
+game.bamboo.Console = game.Class.extend({
     messages: [],
 
     init: function() {
-        this.consoleWindow = bamboo.ui.addWindow({
+        this.consoleWindow = game.bamboo.ui.addWindow({
             id: 'console',
             resizable: true,
             closeable: true,

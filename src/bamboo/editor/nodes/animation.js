@@ -8,7 +8,7 @@ game.module(
 .body(function() {
 'use strict';
 
-bamboo.nodes.Animation.editor = bamboo.Node.editor.extend({
+game.createEditorNode('Animation', {
     ready: function() {
         this._super();
         this.node.displayObject.gotoAndStop(0);

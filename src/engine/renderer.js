@@ -191,6 +191,8 @@ game.Sprite = game.PIXI.Sprite.extend({
     }
 });
 
+game.Sprite.fromImage = game.PIXI.Sprite.fromImage;
+
 /**
     @class SpriteSheet
     @constructor
@@ -448,5 +450,87 @@ game.Animation.fromFrames = function(name, reverse) {
 
     return new game.Animation(textures);
 };
+
+/**
+    @class Video
+    @constructor
+    @param {String} source
+**/
+game.Video = game.Class.extend({
+    /**
+        @property {Boolean} loop
+        @default false
+    **/
+    loop: false,
+    /**
+        Video element.
+        @property {Video} videoElem
+    **/
+    videoElem: null,
+    /**
+        Video sprite.
+        @property {game.Sprite} sprite
+    **/
+    sprite: null,
+
+    init: function() {
+        this.videoElem = document.createElement('video');
+        this.videoElem.addEventListener('ended', this._complete.bind(this));
+
+        var urls = Array.prototype.slice.call(arguments);
+        var source;
+        for (var i = 0; i < urls.length; i++) {
+            source = document.createElement('source');
+            source.src = game.getMediaPath(urls[i]);
+            this.videoElem.appendChild(source);
+        }
+
+        var videoTexture = game.PIXI.VideoTexture.textureFromVideo(this.videoElem);
+        videoTexture.baseTexture.addEventListener('loaded', this._loaded.bind(this));
+        
+        this.sprite = new game.Sprite(videoTexture);
+    },
+
+    _loaded: function() {
+        if (typeof this._loadCallback === 'function') this._loadCallback();
+    },
+
+    _complete: function() {
+        if (typeof this._completeCallback === 'function') this._completeCallback();
+    },
+
+    /**
+        @method onLoaded
+        @param {Function} callback
+    **/
+    onLoaded: function(callback) {
+        this._loadCallback = callback;
+    },
+
+    /**
+        @method onComplete
+        @param {Function} callback
+    **/
+    onComplete: function(callback) {
+        this._completeCallback = callback;
+    },
+
+    /**
+        @method play
+    **/
+    play: function() {
+        this.videoElem.loop = !!this.loop;
+        this.videoElem.play();
+    },
+
+    /**
+        @method stop
+        @param {Boolean} remove
+    **/
+    stop: function(remove) {
+        this.videoElem.pause();
+        if (remove) this.sprite.remove();
+    }
+});
 
 });

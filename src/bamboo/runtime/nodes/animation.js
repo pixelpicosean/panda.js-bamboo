@@ -24,9 +24,7 @@ bamboo.createNode('Animation', {
         this._super(name, value);
         if (name === 'spritesheet' && value) {
             var textures = [];
-            var path = value;
-            if (game.config.mediaFolder) path = game.config.mediaFolder + '/' + path;
-            var json = game.json[path];
+            var json = game.json[game.getMediaPath(value)];
             var frame = 0;
             for (var key in json.frames) {
                 if (frame >= this.startFrame) textures.push(game.TextureCache[key]);

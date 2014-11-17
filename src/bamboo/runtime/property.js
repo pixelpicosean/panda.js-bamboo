@@ -7,24 +7,19 @@ game.module(
 )
 .body(function() {
 
-bamboo.Property = game.Class.extend({
-    editable: false,
-    name: null,
-    description: null,
-    type: null,
+game.bamboo.Property = game.Class.extend({
     options: {},
 
-    init: function(editable, name, desc, type, defaultValue, options) {
-        this.editable = editable;
+    init: function(name, type, defaultValue, hidden, options) {
         this.name = name;
-        this.description = desc;
         this.type = type;
         this.defaultValue = defaultValue;
+        this.hidden = !!hidden;
         this.options = options || this.options;
     }
 });
 
-bamboo.Property.TYPE = {
+game.bamboo.Property.TYPE = {
     NUMBER: 0,
     ANGLE: 1,
     STRING: 2,
@@ -42,85 +37,66 @@ bamboo.Property.TYPE = {
     OBJECT: 14
 };
 
-bamboo.Property.parse = function(world, obj, name, prop) {
+game.bamboo.Property.parse = function(scene, obj, name, prop) {
     switch (prop.type) {
-        case bamboo.Property.TYPE.NUMBER:
-        case bamboo.Property.TYPE.ANGLE:
-        case bamboo.Property.TYPE.STRING:
-        case bamboo.Property.TYPE.IMAGE:
-        case bamboo.Property.TYPE.JSON:
-        case bamboo.Property.TYPE.BOOLEAN:
-        case bamboo.Property.TYPE.ENUM:
-        case bamboo.Property.TYPE.TRIGGER:
-        case bamboo.Property.TYPE.COLOR:
-        case bamboo.Property.TYPE.AUDIO:
-            return typeof obj[name] !== 'undefined' ? bamboo.Property.parseOptions(obj[name], prop.options) : prop.defaultValue;
-
-        case bamboo.Property.TYPE.OBJECT:
+        case game.bamboo.Property.TYPE.OBJECT:
             return obj[name] || {};
 
-        case bamboo.Property.TYPE.VECTOR:
+        case game.bamboo.Property.TYPE.VECTOR:
             if (obj[name] instanceof Array) return new game.Point(obj[name][0], obj[name][1]);
             return typeof obj[name] !== 'undefined' ? new game.Point(obj[name].x, obj[name].y) : prop.defaultValue ? new game.Point(prop.defaultValue[0], prop.defaultValue[1]) : new game.Point();
 
-        case bamboo.Property.TYPE.NODE:
-            return world.findNode(obj[name]);
+        case game.bamboo.Property.TYPE.NODE:
+            return scene.findNode(obj[name]);
 
-        case bamboo.Property.TYPE.EASING:
+        case game.bamboo.Property.TYPE.EASING:
             return game.Tween.Easing.getByName(obj[name]);
 
-        case bamboo.Property.TYPE.ARRAY:
+        case game.bamboo.Property.TYPE.ARRAY:
             var a = [];
             if (!obj[name]) return a;
             for (var i = 0; i < obj[name].length; i++) {
-                var value = bamboo.Property.parse(world, obj[name], i, prop.options);
+                var value = game.bamboo.Property.parse(scene, obj[name], i, prop.options);
                 a.push(value);
             }
             return a;
+
+        default:
+            return typeof obj[name] !== 'undefined' ? game.bamboo.Property.parseOptions(obj[name], prop.options) : prop.defaultValue;
     }
-    return null;
 };
 
-bamboo.Property.parseOptions = function(value, options) {
+game.bamboo.Property.parseOptions = function(value, options) {
     if (typeof options.min === 'number' && value < options.min) value = options.min;
     if (typeof options.max === 'number' && value > options.max) value = options.max;
     return value;
 };
 
-bamboo.Property.toJSON = function(obj, name, desc) {
+game.bamboo.Property.toJSON = function(obj, name, desc) {
     switch (desc.type) {
-        case bamboo.Property.TYPE.NUMBER:
-        case bamboo.Property.TYPE.ANGLE:
-        case bamboo.Property.TYPE.STRING:
-        case bamboo.Property.TYPE.IMAGE:
-        case bamboo.Property.TYPE.JSON:
-        case bamboo.Property.TYPE.BOOLEAN:
-        case bamboo.Property.TYPE.ENUM:
-        case bamboo.Property.TYPE.TRIGGER:
-        case bamboo.Property.TYPE.COLOR:
-        case bamboo.Property.TYPE.AUDIO:
-        case bamboo.Property.TYPE.OBJECT:
-            return obj[name];
-
-        case bamboo.Property.TYPE.VECTOR:
+        case game.bamboo.Property.TYPE.VECTOR:
             return { x: obj[name].x, y: obj[name].y };
 
-        case bamboo.Property.TYPE.NODE:
+        case game.bamboo.Property.TYPE.NODE:
             if (!obj[name]) return '';
             return obj[name].name;
 
-        case bamboo.Property.TYPE.EASING:
+        case game.bamboo.Property.TYPE.EASING:
             return game.Tween.Easing.getName(obj[name]);
 
-        case bamboo.Property.TYPE.ARRAY:
+        case game.bamboo.Property.TYPE.ARRAY:
             var a = [];
             for (var i = 0; i < obj[name].length; i++) {
-                a.push(bamboo.Property.toJSON(obj[name], i, desc.options));
+                a.push(game.bamboo.Property.toJSON(obj[name], i, desc.options));
             }
             return a;
+
+        default:
+            return obj[name];
     }
 };
 
+// Helper functions for easing
 game.Tween.Easing.getNamesList = function() {
     var names = [];
     for (var i in game.Tween.Easing) {

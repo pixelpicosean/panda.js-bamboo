@@ -6,15 +6,9 @@ game.module(
 )
 .body(function() {
 
-bamboo.editor.StateSelect = bamboo.editor.State.extend({
+game.bamboo.editor.createState('Select', {
     enter: function() {        
-        if (this.mode.editor.activeNode) {
-            this.helpText = 'Select state: (D)uplicate, (E)dit, Set/remove pare(n)t, (M)atch world size, BACKSPACE remove, ARROWS move';
-        }
-        else {
-            this.helpText = 'Select state: MOUSE select';
-            this.mode.editor.showSettings();
-        }
+        if (!this.mode.editor.activeNode) this.mode.editor.showSettings();
     },
 
     cancel: function() {
@@ -30,8 +24,8 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
 
             if (node && this.mode.editor.activeNode === node) {
                 var resizeArea = 10;
-                var pos = node.getWorldPosition();
-                mousePos = this.mode.editor.toWorldSpace(mousePos);
+                var pos = node.getGlobalPosition();
+                mousePos = this.mode.editor.toGlobalSpace(mousePos);
                 var bottomRightX = (pos.x - node.anchor.x * node.size.x) + node.size.x - resizeArea;
                 var bottomRightY = (pos.y - node.anchor.y * node.size.y) + node.size.y - resizeArea;
                 if (mousePos.x >= bottomRightX && mousePos.y >= bottomRightY) {
@@ -64,7 +58,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
         if (!node) {
             node = this.mode.editor.getNodeAt(mousePos, this.mode.editor.activeLayer);
             if (node) {
-                this.mode.editor.controller.setActiveLayer(node._editorNode.layer);
+                this.mode.editor.controller.setActiveLayer(node.editorNode.layer);
             }
         }
 
@@ -98,7 +92,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
                 node = this.mode.editor.selectedNodes[i];
                 var newPos = this.mode.shiftDown ? node.size.x : this.mode.editor.gridSize || 1;
-                node._editorNode.setProperty('position', new game.Point(node.position.x + newPos, node.position.y));
+                node.editorNode.setProperty('position', new game.Point(node.position.x + newPos, node.position.y));
             }
         }
         if (key === 'LEFT') {
@@ -106,7 +100,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
                 node = this.mode.editor.selectedNodes[i];
                 var newPos = this.mode.shiftDown ? node.size.x : this.mode.editor.gridSize || 1;
-                node._editorNode.setProperty('position', new game.Point(node.position.x - newPos, node.position.y));
+                node.editorNode.setProperty('position', new game.Point(node.position.x - newPos, node.position.y));
             }
         }
         if (key === 'UP') {
@@ -114,7 +108,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
                 node = this.mode.editor.selectedNodes[i];
                 var newPos = this.mode.shiftDown ? node.size.y : this.mode.editor.gridSize || 1;
-                node._editorNode.setProperty('position', new game.Point(node.position.x, node.position.y - newPos));
+                node.editorNode.setProperty('position', new game.Point(node.position.x, node.position.y - newPos));
             }
         }
         if (key === 'DOWN') {
@@ -122,7 +116,7 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
             for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
                 node = this.mode.editor.selectedNodes[i];
                 var newPos = this.mode.shiftDown ? node.size.y : this.mode.editor.gridSize || 1;
-                node._editorNode.setProperty('position', new game.Point(node.position.x, node.position.y + newPos));
+                node.editorNode.setProperty('position', new game.Point(node.position.x, node.position.y + newPos));
             }
         }
         if (key === 'N') {
@@ -141,8 +135,8 @@ bamboo.editor.StateSelect = bamboo.editor.State.extend({
         }
         if (key === 'M') {
             if (this.mode.editor.activeNode) {
-                this.mode.editor.world.width = this.mode.editor.activeNode.size.x;
-                this.mode.editor.world.height = this.mode.editor.activeNode.size.y;
+                this.mode.editor.scene.width = this.mode.editor.activeNode.size.x;
+                this.mode.editor.scene.height = this.mode.editor.activeNode.size.y;
                 this.mode.editor.boundaryLayer.resetGraphics();
             }
             return;

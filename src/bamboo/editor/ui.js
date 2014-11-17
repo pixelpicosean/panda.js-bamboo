@@ -3,7 +3,7 @@ game.module(
 )
 .body(function() {
 
-bamboo.Ui = game.Class.extend({
+game.bamboo.Ui = game.Class.extend({
     activeWindow: null,
     windows: [],
     menu: null,
@@ -16,7 +16,7 @@ bamboo.Ui = game.Class.extend({
     },
 
     loadWorkspace: function() {
-        var data = game.storage.get('workspace', game.copy(bamboo.Ui.defaultWorkspace));
+        var data = game.storage.get('workspace', game.copy(game.bamboo.Ui.defaultWorkspace));
         this.workspace = data;
     },
 
@@ -42,7 +42,7 @@ bamboo.Ui = game.Class.extend({
 
     resetWorkspace: function() {
         game.storage.remove('workspace');
-        var data = game.copy(bamboo.Ui.defaultWorkspace);
+        var data = game.copy(game.bamboo.Ui.defaultWorkspace);
 
         for (var i = 0; i < this.windows.length; i++) {
             if (data.windows[this.windows[i].id]) {
@@ -100,14 +100,14 @@ bamboo.Ui = game.Class.extend({
                 }
             }
         }
-        // settings.minY = this.menu.height;
-        var winElem = new bamboo.Ui.Window(this, settings);
+
+        var winElem = new game.bamboo.Ui.Window(this, settings);
         this.windows.push(winElem);
         return winElem;
     },
 
     addMenu: function(height) {
-        this.menu = new bamboo.Ui.Menu(height);
+        this.menu = new game.bamboo.Ui.Menu(height);
         return this.menu;
     },
 
@@ -175,7 +175,7 @@ bamboo.Ui = game.Class.extend({
     }
 });
 
-bamboo.Ui.Window = game.Class.extend({
+game.bamboo.Ui.Window = game.Class.extend({
     x: 'center',
     y: 'center',
     width: 400,
@@ -214,6 +214,8 @@ bamboo.Ui.Window = game.Class.extend({
         this.titleDiv.style.padding = this.titlePadding + 'px';
         this.titleDiv.style.height = (this.titleHeight - this.titlePadding * 2) + 'px';
 
+        if (this.title) this.setTitle(this.title);
+        
         if (this.closeable) {
             var closeButton = document.createElement('div');
             closeButton.className = 'close';
@@ -589,7 +591,7 @@ bamboo.Ui.Window = game.Class.extend({
     }
 });
 
-bamboo.Ui.Menu = game.Class.extend({
+game.bamboo.Ui.Menu = game.Class.extend({
     menus: {},
     activeMenu: null,
     height: 25,
@@ -702,7 +704,7 @@ bamboo.Ui.Menu = game.Class.extend({
     }
 });
 
-bamboo.Ui.defaultWorkspace = {
+game.bamboo.Ui.defaultWorkspace = {
     windows: {
         properties: {
             x: window.innerWidth - 210,

@@ -11,7 +11,7 @@ game.module(
     @class Audio
     @namespace bamboo.Nodes
 **/
-bamboo.createNode('Audio', {
+game.createNode('Audio', {
     trigger: function() {
         this.play();
     },
@@ -30,16 +30,16 @@ bamboo.createNode('Audio', {
     Audio file.
     @property {Audio} audio
 **/
-bamboo.addNodeProperty('Audio', 'audio', 'audio');
+game.addNodeProperty('Audio', 'audio', 'audio');
 /**
     Is audio looping.
     @property {Boolean} loop
 **/
-bamboo.addNodeProperty('Audio', 'loop', 'boolean');
+game.addNodeProperty('Audio', 'loop', 'boolean');
 /**
     Should stop previous sound, before playing new.
     @property {Boolean} oneAtTime
 **/
-bamboo.addNodeProperty('Audio', 'oneAtTime', 'boolean');
+game.addNodeProperty('Audio', 'oneAtTime', 'boolean');
 
 });
