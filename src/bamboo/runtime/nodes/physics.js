@@ -7,22 +7,20 @@ game.module(
 .body(function() {
 
 /**
-    Physics world.
     @class Physics
-    @namespace bamboo.Nodes
 **/
 bamboo.createNode('Physics', {
     init: function() {
         this.displayObject = new game.Container();
-        this.world.physics = new game.World();
+        this.scene.world = new game.World();
     },
 
     ready: function() {
-        this.world.physics.gravity.set(this.gravity.x, this.gravity.y);
+        this.scene.world.gravity.set(this.gravity.x, this.gravity.y);
     },
 
     update: function() {
-        this.world.physics.update();
+        this.scene.world.update();
     }
 });
 

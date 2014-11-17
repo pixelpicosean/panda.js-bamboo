@@ -6,11 +6,9 @@ game.module(
 )
 .body(function() {
 
-game.addAsset('../src/bamboo/editor/media/axis.png');
-game.addAsset('../src/bamboo/editor/media/axis_active.png');
+game.addAsset('../src/bamboo/editor/media/anchorbox.png');
 
 game.bamboo.Node.editor = game.Class.extend({
-    helpText: '',
     editMode: false,
     propertyChangeListeners: [],
     properties: {
@@ -53,15 +51,11 @@ game.bamboo.Node.editor = game.Class.extend({
         this.parentSelectionRect.visible = false;
         this.displayObject.addChild(this.parentSelectionRect);
 
-        this.selectionAxis = new game.Sprite('../src/bamboo/editor/media/axis.png');
-        this.selectionAxis.anchor = { x: 0.305, y: 0.305 };
-        this.selectionAxis.visible = false;
-        this.displayObject.addChild(this.selectionAxis);
-
-        this.activeAxis = new game.Sprite('../src/bamboo/editor/media/axis_active.png');
-        this.activeAxis.anchor = { x: 0.305, y: 0.305 };
-        this.activeAxis.visible = false;
-        this.displayObject.addChild(this.activeAxis);
+        this.anchorBox = new game.Sprite('../src/bamboo/editor/media/anchorbox.png');
+        this.anchorBox.anchor.set(0.5, 0.5);
+        this.anchorBox.alpha = 0.5;
+        this.anchorBox.visible = false;
+        this.displayObject.addChild(this.anchorBox);
     },
 
     ready: function() {
@@ -242,10 +236,10 @@ game.bamboo.Node.editor = game.Class.extend({
     },
 
     toJSON: function() {
-        var propDescs = this.node.getPropertyDescriptors();
+        var propClasses = this.node.getPropertyClasses();
         var jsonProperties = {};
-        for (var key in propDescs) {
-            jsonProperties[key] = game.bamboo.Property.toJSON(this.node, key, propDescs[key]);
+        for (var name in propClasses) {
+            jsonProperties[name] = propClasses[name].toJSON(this.node);
         }
         return {
             class: this.getClassName(),

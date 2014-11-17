@@ -120,8 +120,8 @@ game.bamboo.Controller = game.Class.extend({
         if (this.editor.selectedNodes.indexOf(node) !== -1) return;
 
         this.editor.selectedNodes.push(node);
-        node.editorNode.selectionAxis.visible = true;
         node.editorNode.selectionRect.visible = true;
+        node.editorNode.anchorBox.visible = true;
         this.editor.nodeSelected(node);
 
         var markChildren = function(c) {
@@ -140,8 +140,8 @@ game.bamboo.Controller = game.Class.extend({
         if (idx === -1) return;
 
         this.editor.selectedNodes.splice(idx, 1);
-        node.editorNode.selectionAxis.visible = false;
         node.editorNode.selectionRect.visible = false;
+        node.editorNode.anchorBox.visible = false;
         this.editor.nodeDeselected(node);
 
         var unmarkChildren = function(c, selectedNodes) {
@@ -201,7 +201,7 @@ game.bamboo.Controller = game.Class.extend({
 
         if (this.editor.activeNode) {
             this.editor.activeNode.editorNode.activeRect.visible = false;
-            this.editor.activeNode.editorNode.activeAxis.visible = false;
+            this.editor.activeNode.editorNode.anchorBox.visible = false;
         }
 
         this.editor.activeNode = node;
@@ -209,9 +209,8 @@ game.bamboo.Controller = game.Class.extend({
         if (node) {
             this.deselectAllNodes();
             this.selectNode(node);
-            this.editor.activeNode.editorNode.selectionAxis.visible = false;
             this.editor.activeNode.editorNode.selectionRect.visible = false;
-            this.editor.activeNode.editorNode.activeAxis.visible = true;
+            this.editor.activeNode.editorNode.anchorBox.visible = true;
             this.editor.activeNode.editorNode.activeRect.visible = true;
         }
         

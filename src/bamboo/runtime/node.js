@@ -20,10 +20,10 @@ game.bamboo.Node = game.Class.extend({
     **/
     children: [],
 
-    staticInit: function(scene, properties) {
+    staticInit: function(scene, propertyData) {
         this.scene = scene;
-        this.properties = properties;
-        this.name = properties.name;
+        this.propertyData = propertyData;
+        this.name = propertyData.name;
     },
 
     /**
@@ -37,29 +37,31 @@ game.bamboo.Node = game.Class.extend({
         @method initProperties
     **/
     initProperties: function() {
-        var propDescs = this.getPropertyDescriptors();
+        var propClasses = this.getPropertyClasses();
 
-        for (var key in propDescs) {
-            this.setProperty(key, game.bamboo.Property.parse(this.scene, this.properties, key, propDescs[key]));
+        for (var name in propClasses) {
+            this.setProperty(name, propClasses[name].parse(this));
         }
+
+        delete this.propertyData;
     },
 
     /**
-        Called, when node is ready and properties inited.
+        Called, when node is ready and properties set.
         @method ready
     **/
     ready: function() {
     },
 
     /**
-        Called, when node is removed from it's scene.
+        Called, when node is removed from scene.
         @method onRemove
     **/
     onRemove: function() {
     },
 
     /**
-        Remove node from it's scene.
+        Remove node from scene.
         @method remove
     **/
     remove: function() {
@@ -107,7 +109,7 @@ game.bamboo.Node = game.Class.extend({
         return false;
     },
 
-    getPropertyDescriptors: function() {
+    getPropertyClasses: function() {
         var properties = [];
         var proto = Object.getPrototypeOf(this);
         while (true) {

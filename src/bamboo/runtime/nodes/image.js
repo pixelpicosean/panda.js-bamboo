@@ -46,10 +46,12 @@ game.addNodeProperty('Image', 'image', 'image');
 game.addNodeProperty('Image', 'alpha', 'number', 1);
 /**
     @property {Boolean} flipX
+    @default false
 **/
 game.addNodeProperty('Image', 'flipX', 'boolean');
 /**
     @property {Boolean} flipY
+    @default false
 **/
 game.addNodeProperty('Image', 'flipY', 'boolean');
 

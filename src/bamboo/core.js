@@ -18,7 +18,7 @@ game.createNode = function(name, className, content) {
 
 game.addNodeProperty = function(node, name, type, defaultValue, hidden, options) {
     node = game.bamboo.nodes[node] || game.bamboo.Node;
-    node.properties[name] = new game.bamboo.Property(name, game.bamboo.Property.TYPE[type.toUpperCase()], defaultValue, hidden, options);
+    node.properties[name] = new game.bamboo.Property(name, type, defaultValue, hidden, options);
 };
 
 game.addBambooAssets = function(sceneName) {

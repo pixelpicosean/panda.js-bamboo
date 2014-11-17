@@ -13,88 +13,64 @@ game.bamboo.Property = game.Class.extend({
     init: function(name, type, defaultValue, hidden, options) {
         this.name = name;
         this.type = type;
-        this.defaultValue = defaultValue;
+        this.defaultValue = defaultValue || false;
         this.hidden = !!hidden;
         this.options = options || this.options;
-    }
-});
+    },
 
-game.bamboo.Property.TYPE = {
-    NUMBER: 0,
-    ANGLE: 1,
-    STRING: 2,
-    BOOLEAN: 3,
-    VECTOR: 4,
-    NODE: 5,
-    ARRAY: 6,
-    EASING: 7,
-    ENUM: 8,
-    IMAGE: 9,
-    TRIGGER: 10,
-    COLOR: 11,
-    JSON: 12,
-    AUDIO: 13,
-    OBJECT: 14
-};
-
-game.bamboo.Property.parse = function(scene, obj, name, prop) {
-    switch (prop.type) {
-        case game.bamboo.Property.TYPE.OBJECT:
-            return obj[name] || {};
-
-        case game.bamboo.Property.TYPE.VECTOR:
-            if (obj[name] instanceof Array) return new game.Point(obj[name][0], obj[name][1]);
-            return typeof obj[name] !== 'undefined' ? new game.Point(obj[name].x, obj[name].y) : prop.defaultValue ? new game.Point(prop.defaultValue[0], prop.defaultValue[1]) : new game.Point();
-
-        case game.bamboo.Property.TYPE.NODE:
-            return scene.findNode(obj[name]);
-
-        case game.bamboo.Property.TYPE.EASING:
-            return game.Tween.Easing.getByName(obj[name]);
-
-        case game.bamboo.Property.TYPE.ARRAY:
+    parse: function(node) {
+        if (this.type === 'object') {
+            return node.propertyData[this.name] || {};
+        }
+        if (this.type === 'vector') {
+            if (node.propertyData[this.name] instanceof Array) return new game.Point(node.propertyData[this.name][0], node.propertyData[this.name][1]);
+            return typeof node.propertyData[this.name] !== 'undefined' ? new game.Point(node.propertyData[this.name].x, node.propertyData[this.name].y) : this.defaultValue ? new game.Point(this.defaultValue[0], this.defaultValue[1]) : new game.Point();
+        }
+        if (this.type === 'node') {
+            return node.scene.findNode(node.propertyData[this.name]);
+        }
+        if (this.type === 'easing') {
+            return game.Tween.Easing.getByName(node.propertyData[this.name]);
+        }
+        if (this.type === 'array') {
             var a = [];
-            if (!obj[name]) return a;
-            for (var i = 0; i < obj[name].length; i++) {
-                var value = game.bamboo.Property.parse(scene, obj[name], i, prop.options);
+            if (!node.propertyData[this.name]) return a;
+            for (var i = 0; i < node.propertyData[this.name].length; i++) {
+                var value = game.bamboo.Property.parse(scene, node.propertyData[this.name], i, this.options);
                 a.push(value);
             }
             return a;
+        }
+        return typeof node.propertyData[this.name] !== 'undefined' ? this.parseOptions(node.propertyData[this.name], this.options) : this.defaultValue;
+    },
 
-        default:
-            return typeof obj[name] !== 'undefined' ? game.bamboo.Property.parseOptions(obj[name], prop.options) : prop.defaultValue;
-    }
-};
+    parseOptions: function(value) {
+        if (typeof this.options.min === 'number' && value < this.options.min) value = this.options.min;
+        if (typeof this.options.max === 'number' && value > this.options.max) value = this.options.max;
+        return value;
+    },
 
-game.bamboo.Property.parseOptions = function(value, options) {
-    if (typeof options.min === 'number' && value < options.min) value = options.min;
-    if (typeof options.max === 'number' && value > options.max) value = options.max;
-    return value;
-};
-
-game.bamboo.Property.toJSON = function(obj, name, desc) {
-    switch (desc.type) {
-        case game.bamboo.Property.TYPE.VECTOR:
-            return { x: obj[name].x, y: obj[name].y };
-
-        case game.bamboo.Property.TYPE.NODE:
-            if (!obj[name]) return '';
-            return obj[name].name;
-
-        case game.bamboo.Property.TYPE.EASING:
-            return game.Tween.Easing.getName(obj[name]);
-
-        case game.bamboo.Property.TYPE.ARRAY:
+    toJSON: function(node) {
+        if (this.type === 'vector') {
+            return { x: node[this.name].x, y: node[this.name].y };
+        }
+        if (this.type === 'node') {
+            if (!node[this.name]) return '';
+            return node[this.name].name;
+        }
+        if (this.type === 'easing') {
+            return game.Tween.Easing.getName(node[this.name]);
+        }
+        if (this.type === 'array') {
             var a = [];
-            for (var i = 0; i < obj[name].length; i++) {
-                a.push(game.bamboo.Property.toJSON(obj[name], i, desc.options));
+            for (var i = 0; i < node[this.name].length; i++) {
+                a.push(node[this.name][i].toJSON(this));
             }
             return a;
-
-        default:
-            return obj[name];
+        }
+        return node[this.name];
     }
-};
+});
 
 // Helper functions for easing
 game.Tween.Easing.getNamesList = function() {
