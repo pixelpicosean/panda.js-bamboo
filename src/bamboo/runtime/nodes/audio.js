@@ -22,7 +22,7 @@ bamboo.createNode('Audio', {
     },
 
     stop: function() {
-        if (this.audioId) game.audio.stopSound(this.audioId);
+        if (typeof this.audioId === 'number') game.audio.stopSound(this.audioId);
     }
 });
 
