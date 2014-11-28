@@ -6,16 +6,11 @@ game.module(
 )
 .body(function() {
 
-bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
-    helpText: 'Main mode: (B)oundaries, (L)ights, (P)lay, (G)rid, (V)iew nodes, (R)eset view, SPACE pan view, ESC cancel',
+game.bamboo.editor.ModeMain = game.bamboo.editor.Mode.extend({
     animationRunning: false,
     shiftDown: false,
     altDown: false,
     ctrlDown: false,
-
-    enter: function() {
-        this.editor.changeState('Select');
-    },
 
     startAnimation: function() {
         this.editor.setTempMessage('Playing');
@@ -46,7 +41,7 @@ bamboo.editor.ModeMain = bamboo.editor.Mode.extend({
         if (key === 'CTRL') this.ctrlDown = true;
 
         if (key === 'C') {
-            bamboo.ui.toggleWindow('console');
+            game.bamboo.ui.toggleWindow('console');
             return;
         }
         if (key === 'V') {

@@ -1,56 +1,50 @@
-/**
-    @namespace
-**/
-/**
-    @class bamboo
-**/
-var bamboo = {
-    version: '0.7.1',
-    scenes: [],
+pandaConfig.bamboo = pandaConfig.bamboo || {};
+
+game.bamboo = {
+    version: '0.8.0',
+    scenes: {},
     nodes: {}
 };
 
-pandaConfig.bamboo = pandaConfig.bamboo || {};
-
-/**
-    @method createNode
-    @param {String} name
-    @param {String} [className]
-    @param {Object} content
-**/
-bamboo.createNode = function(name, className, content) {
+game.createNode = function(name, className, content) {
     if (!content) {
         content = className;
         className = null;
     }
-    var extendClass = className ? bamboo.nodes[className] : bamboo.Node;
-    bamboo.nodes[name] = extendClass.extend(content);
+    var extendClass = className ? game.bamboo.nodes[className] : game.bamboo.Node;
+    game.bamboo.nodes[name] = extendClass.extend(content);
+    game.bamboo.nodes[name].properties = {};
 };
 
-/**
-    @method addNodeProperty
-    @param {String} node
-    @param {String} name
-    @param {String} type
-    @param defaultValue
-    @param {Boolean} hidden
-**/
-bamboo.addNodeProperty = function(node, name, type, defaultValue, hidden) {
-    node = bamboo.nodes[node] || bamboo.Node;
-    if (!node.props) node.props = {};
-    node.props[name] = new bamboo.Property(hidden ? false : true, name, '', bamboo.Property.TYPE[type.toUpperCase()], defaultValue);
+game.addNodeProperty = function(node, name, type, defaultValue, hidden, options) {
+    node = game.bamboo.nodes[node] || game.bamboo.Node;
+    node.properties[name] = new game.bamboo.Property(name, type, defaultValue, hidden, options);
 };
 
-/**
-    @method createScene
-    @param {String} name
-    @param {Object} content
-**/
-bamboo.createScene = function(name, content) {
-    content = content || {};
-    content.name = name;
-    game['Scene' + name] = bamboo.Scene.extend(content);
+game.addBambooAssets = function(sceneName) {
+    var sceneData = game.bamboo.getSceneData(sceneName);
+    for (var i = 0; i < sceneData.assets.length; i++) {
+        game.addAsset(sceneData.assets[i]);
+    }
 };
+
+game.removeBambooAssets = function(sceneName) {
+    var sceneData = game.bamboo.getSceneData(sceneName);
+    for (var i = 0; i < sceneData.assets.length; i++) {
+        game.removeAsset(sceneData.assets[i]);
+    }
+};
+
+game.bamboo.getSceneData = function(sceneName) {
+    var sceneData = game.bamboo.scenes[sceneName];
+    if (!sceneData) throw 'scene ' + sceneName + ' not found';
+    return sceneData;
+};
+
+// Deprecated
+bamboo = {};
+bamboo.createNode = game.createNode;
+bamboo.addNodeProperty = game.addNodeProperty;
 
 game.module(
     'bamboo.core'
@@ -60,30 +54,20 @@ game.module(
     'bamboo.runtime.point',
     'bamboo.runtime.pool',
     'bamboo.runtime.property',
-    'bamboo.runtime.world',
+    'bamboo.runtime.scene',
     'engine.scene'
 )
 .body(function() {
-'use strict';
 
-bamboo.Scene = game.Scene.extend({
-    staticInit: function() {
-        var data;
-        for (var i = 0; i < bamboo.scenes.length; i++) {
-            if (bamboo.scenes[i].name === this.name) {
-                data = bamboo.scenes[i];
-                break;
+    game.Scene.inject({
+        staticInit: function() {
+            this._super();
+            if (this.bambooScene) {
+                this.bambooScene = new game.BambooScene(this.bambooScene);
+                this.bambooScene.displayObject.addTo(this.stage);
+                this.addObject(this.bambooScene);
             }
         }
-        if (!data) throw 'Bamboo scene \'' + this.name + '\' not found';
-
-        this.backgroundColor = parseInt(data.bgcolor);
-        this._super();
-
-        this.world = new bamboo.World(data);
-        this.world.scene = this;
-        this.stage.addChild(this.world.displayObject);
-    }
-});
+    });
 
 });

@@ -1,12 +1,12 @@
 game.module(
-    'bamboo.editor.world'
+    'bamboo.editor.scene'
 )
 .require(
-    'bamboo.runtime.world'
+    'bamboo.runtime.scene'
 )
 .body(function() {
     
-bamboo.World.inject({
+game.BambooScene.inject({
     init: function(data) {
         game.merge(this, data);
         this.displayObject = new game.Container();
@@ -18,17 +18,13 @@ bamboo.World.inject({
         for (var i = 0; i < this.nodes.length; i++) {
             if (this.nodes[i].parent === node) nodes.push(this.nodes[i]);
         }
-        // nodes.sort(function(a, b) {
-        //     return a.displayObject.parent.children.indexOf(a.displayObject) - b.displayObject.parent.children.indexOf(b.displayObject);
-        // });
-
         return nodes;
     },
 
     addJSONConnections: function(node, list) {
         var nodes = this.getConnectedNodes(node);
         for (var i = 0; i < nodes.length; i++) {
-            list.push(nodes[i]._editorNode.toJSON());
+            list.push(nodes[i].editorNode.toJSON());
             this.addJSONConnections(nodes[i], list);
         }
     },
@@ -38,7 +34,6 @@ bamboo.World.inject({
             name: this.name,
             width: this.width,
             height: this.height,
-            bgcolor: this.bgcolor,
             audio: this.audio,
             assets: this.assets,
             nodes: []
@@ -48,15 +43,16 @@ bamboo.World.inject({
     }
 });
 
-bamboo.World.defaultJSON = {
-    name: 'Main',
-    bgcolor: '0x000000',
+game.BambooScene.defaultJSON = {
+    name: 'Untitled',
+    width: 1024,
+    height: 768,
     nodes: [
         {
             class: 'Layer',
             properties: {
                 name: 'main',
-                parent: 'Main'
+                parent: 'Untitled'
             }
         }
     ]

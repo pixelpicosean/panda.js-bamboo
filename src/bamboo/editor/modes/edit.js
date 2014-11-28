@@ -6,10 +6,8 @@ game.module(
 )
 .body(function() {
 
-bamboo.editor.ModeEdit = bamboo.editor.Mode.extend({
-    helpText: 'Edit mode: MOUSE confirm, ESC cancel',
-
-    enter: function() {
+game.bamboo.editor.ModeEdit = game.bamboo.editor.Mode.extend({
+    init: function() {
         this.node = this.editor.activeNode._editorNode;
         this.editor.controller.enableEditMode(this.node, true);
     },

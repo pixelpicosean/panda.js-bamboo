@@ -3,7 +3,7 @@ game.module(
 )
 .body(function() {
 
-bamboo.Editor = game.Class.extend({
+game.bamboo.Editor = game.Class.extend({
     nodes: [],
     layers: [],
     selectedNodes: [],
@@ -13,27 +13,22 @@ bamboo.Editor = game.Class.extend({
     camera: {},
 
     init: function(data) {
-        if (!data) {
-            data = bamboo.World.defaultJSON;
-            data.width = game.System.width;
-            data.height = game.System.height;
-        }
+        if (!data) data = game.BambooScene.defaultJSON;
 
-        this.world = new bamboo.World(data);
-        game.system.stage.setBackgroundColor(parseInt(this.world.bgcolor));
-
-        bamboo.console = new bamboo.Console();
+        this.config = game.bamboo.editor.config;
+        this.scene = new game.BambooScene(data);
+        this.console = new game.bamboo.Console();
 
         this.gridSize = game.storage.get('gridSize', 16);
 
         this.camera.position = new game.Point();
         this.displayObject = new game.Container();
-        this.controller = new bamboo.Controller(this);
+        this.controller = new game.bamboo.Controller(this);
         this.prevMousePos = new game.Point(game.system.width / 2, game.system.height / 2);
         
         this.worldTargetPos = new game.Point(game.system.width / 2 - game.System.width / 2, game.system.height / 2 - game.System.height / 2);
-        this.world.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);
-        this.displayObject.addChild(this.world.displayObject);
+        this.scene.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);
+        this.displayObject.addChild(this.scene.displayObject);
         
         this.overlay = new game.Container();
         this.displayObject.addChild(this.overlay);
@@ -43,16 +38,11 @@ bamboo.Editor = game.Class.extend({
 
         this.targetCameraWorldPosition = this.worldTargetPos.clone();
         
-        this.boundaryLayer = new bamboo.BoundaryLayer(this);
+        this.boundaryLayer = new game.bamboo.BoundaryLayer(this);
         this.overlay.addChild(this.boundaryLayer.displayObject);
 
-        this.menuBar = new bamboo.MenuBar(this);
-        // this.statusBar = new bamboo.StatusBar();
-        this.propertyPanel = new bamboo.PropertyPanel(this);
-
-        this.tempMessage = new game.Text('', { font: '16px Arial', fill: 'white' });
-        this.tempMessage.position.set(10, this.menuBar.height + 10);
-        this.overlay.addChild(this.tempMessage);
+        this.menuBar = new game.bamboo.MenuBar(this);
+        this.propertyPanel = new game.bamboo.PropertyPanel(this);
 
         this.changeMode('Main');
         this.cameraWorldPosition = new game.Point(
@@ -64,7 +54,7 @@ bamboo.Editor = game.Class.extend({
         this.initNodeProperties();
 
         // Error window
-        this.errorWindow = bamboo.ui.addWindow({
+        this.errorWindow = game.bamboo.ui.addWindow({
             width: 400,
             height: 120,
             closeable: true,
@@ -72,20 +62,8 @@ bamboo.Editor = game.Class.extend({
         });
         this.errorWindow.setTitle('Error');
 
-        // About window
-        this.aboutWindow = bamboo.ui.addWindow({
-            width: 400,
-            height: 125,
-            closeable: true
-        });
-        this.aboutWindow.setTitle('About');
-        this.aboutWindow.addText('Bamboo scene editor ' + bamboo.version);
-        this.aboutWindow.addText('Developed by <a href="http://github.com/ekelokorpi" target="_blank">Eemeli Kelokorpi</a> and <a href="http://github.com/ezzkoram" target="_blank">Esko Oramaa</a>.');
-        this.aboutWindow.addText('<br>');
-        this.aboutWindow.addText('Released under the <a href="http://opensource.org/licenses/MIT" target="_blank">MIT License</a>.');
-        
         // Assets window
-        var assetsWindow = bamboo.ui.addWindow({
+        var assetsWindow = game.bamboo.ui.addWindow({
             id: 'assets',
             resizable: true,
             snappable: true,
@@ -110,30 +88,30 @@ bamboo.Editor = game.Class.extend({
         this.updateAssetsList();
 
         // Nodes window
-        this.nodesWindow = bamboo.ui.addWindow({
+        this.nodesWindow = game.bamboo.ui.addWindow({
             id: 'nodes',
             closeable: true,
             resizable: true,
             snappable: true,
-            minY: this.menuBar.height
+            minY: this.menuBar.height,
+            title: 'Nodes'
         });
-        this.nodesWindow.setTitle('Nodes');
         this.nodesWindow.addInputSelect('type', 'Type');
 
-        for (var name in bamboo.nodes) {
+        for (var name in game.bamboo.nodes) {
             this.nodesWindow.addInputSelectOption('type', name, name);
         }
 
         this.nodesWindow.setInputSelectValue('type', 'Image');
 
         this.nodesWindow.addInputSelect('parent', 'Parent', 'Node that this node will follow');
-        this.buildNodeDropdown(this.nodesWindow, 'parent', this.world);
+        this.buildNodeDropdown(this.nodesWindow, 'parent', this.scene);
 
         this.nodesWindow.addButton('Add', this.addNode.bind(this));
         this.nodesWindow.show();
 
         // Camera window
-        this.cameraWindow = bamboo.ui.addWindow({
+        this.cameraWindow = game.bamboo.ui.addWindow({
             id: 'camera',
             resizable: true,
             closeable: true,
@@ -142,6 +120,7 @@ bamboo.Editor = game.Class.extend({
         this.cameraWindow.setTitle('Camera');
         this.cameraWindow.addMultiInput('position', [this.camera.position.x, this.camera.position.y], 2, 'Position', '', this.updateCameraPosition.bind(this));
 
+        // Set default active layer
         for (var i = 0; i < this.layers.length; i++) {
             if (this.layers[i].name === 'main') {
                 this.activeLayer = null;
@@ -154,7 +133,35 @@ bamboo.Editor = game.Class.extend({
         this.showSettings();
         this.initShadow();
 
-        bamboo.console.log('Scene ' + this.world.name + ' loaded');
+        this.console.log('Scene ' + this.scene.name + ' loaded');
+    },
+
+    loadScene: function() {
+        if (this.scenesWindow) this.scenesWindow.hide();
+        this.scenesWindow = game.bamboo.ui.addWindow({
+            title: 'Load scene',
+            id: 'scenes',
+            closeable: true,
+            visible: true,
+            height: 195,
+            minY: this.menuBar.height
+        });
+
+        var scenesList = document.createElement('select');
+        scenesList.style.height = '100px';
+        scenesList.size = 2;
+        for (var name in game.bamboo.scenes) {
+            var opt = document.createElement('option');
+            opt.value = name;
+            opt.innerHTML = name;
+            scenesList.appendChild(opt);
+        }
+
+        this.scenesWindow.contentDiv.appendChild(scenesList);
+
+        this.scenesWindow.addButton('Load', function() {
+            game.scene.loadScene(scenesList.value);
+        });
     },
 
     addAsset: function() {
@@ -187,15 +194,15 @@ bamboo.Editor = game.Class.extend({
         }
         game.storage.set('gridSize', this.gridSize);
 
-        if (this.gridSize > 0) this.setTempMessage('Grid ' + this.gridSize + ' x ' + this.gridSize);
-        else this.setTempMessage('Grid disabled');
+        if (this.gridSize > 0) this.console.log('Grid ' + this.gridSize + ' x ' + this.gridSize);
+        else this.console.log('Grid disabled');
 
         this.boundaryLayer.resetGraphics();
     },
 
     toggleBoundaries: function() {
         this.boundaryLayer.boundaries.visible = !this.boundaryLayer.boundaries.visible;
-        this.setTempMessage('Boundaries ' + (this.boundaryLayer.boundaries.visible ? 'on' : 'off'));
+        this.console.log('Boundaries ' + (this.boundaryLayer.boundaries.visible ? 'on' : 'off'));
     },
 
     initShadow: function() {
@@ -241,9 +248,9 @@ bamboo.Editor = game.Class.extend({
 
     removeAsset: function(assetsList) {
         if (assetsList.value && confirm('Remove ' + assetsList.value + '?')) {
-            var index = this.world.assets.indexOf(assetsList.value);
+            var index = this.scene.assets.indexOf(assetsList.value);
             if (index !== -1) {
-                this.world.assets.splice(index, 1);
+                this.scene.assets.splice(index, 1);
                 this.updateAssetsList(assetsList);
             }
         }
@@ -252,32 +259,17 @@ bamboo.Editor = game.Class.extend({
     updateAssetsList: function() {
         this.assetsList.innerHTML = '';
         this.assetsList.size = 2;
-        for (var i = 0; i < this.world.assets.length; i++) {
+        for (var i = 0; i < this.scene.assets.length; i++) {
             var opt = document.createElement('option');
-            opt.value = this.world.assets[i];
-            opt.innerHTML = this.world.assets[i];
+            opt.value = this.scene.assets[i];
+            opt.innerHTML = this.scene.assets[i];
             this.assetsList.appendChild(opt);
         }
     },
 
-    setTempMessage: function(text) {
-        bamboo.console.log(text);
-        return;
-        
-        if (this.tempMessageTween) this.tempMessageTween.stop();
-
-        this.tempMessage.alpha = 1;
-        this.tempMessage.setText(text);
-        this.tempMessage.updateTransform();
-        this.tempMessage.position.x = game.system.width / 2 - this.tempMessage.width / 2;
-        this.tempMessageTween = game.scene.addTween(this.tempMessage, {
-            alpha: 0
-        }, 2000).start();
-    },
-
     initNodes: function() {
-        var nodes = game.copy(this.world.nodes);
-        this.world.nodes.length = 0;
+        var nodes = game.copy(this.scene.nodes);
+        this.scene.nodes.length = 0;
 
         for (var i = 0; i < nodes.length; i++) {
             this.controller.createNode(nodes[i].class, nodes[i].properties);
@@ -286,9 +278,9 @@ bamboo.Editor = game.Class.extend({
     },
 
     initNodeProperties: function() {
-        for (var i = 0; i < this.world.nodes.length; i++) {
-            this.world.nodes[i].initProperties();
-            this.nodeAdded(this.world.nodes[i]);
+        for (var i = 0; i < this.scene.nodes.length; i++) {
+            this.scene.nodes[i].initProperties();
+            this.nodeAdded(this.scene.nodes[i]);
         }
     },
 
@@ -303,33 +295,33 @@ bamboo.Editor = game.Class.extend({
         });
 
         node.initProperties();
-        node._editorNode.layerChanged();
-        node._editorNode.ready();
+        node.editorNode.layerChanged();
+        node.editorNode.ready();
 
         if (node.displayObject && node.size.x === 0 && node.size.y === 0 && node.displayObject.width > 1 && node.displayObject.height > 1) {
-            node._editorNode.setProperty('size', new game.Point(node.displayObject.width, node.displayObject.height));
+            node.editorNode.setProperty('size', new game.Point(node.displayObject.width, node.displayObject.height));
         }
         if (node.size.x === 0 && node.size.y === 0) {
-            node._editorNode.setProperty('size', new game.Point(32, 32));
+            node.editorNode.setProperty('size', new game.Point(32, 32));
         }
 
         this.controller.setActiveNode(node);
         this.propertyPanel.updateLayerList();
         this.changeState('Move');
 
-        var parentPos = node.parent.getWorldPosition();
-        var pos = this.toWorldSpace(this.prevMousePos);
+        var parentPos = node.parent.getGlobalPosition();
+        var pos = this.toGlobalSpace(this.prevMousePos);
         this.mode.state.offset.x -= pos.x - parentPos.x;
         this.mode.state.offset.y -= pos.y - parentPos.y;
         this.mode.state.update(this.prevMousePos.x, this.prevMousePos.y);
 
         this.nodesWindow.inputs['parent'].innerHTML = '';
-        this.buildNodeDropdown(this.nodesWindow, 'parent', this.world);
+        this.buildNodeDropdown(this.nodesWindow, 'parent', this.scene);
     },
 
     toggleViewNodes: function() {
         this.viewNodes = !this.viewNodes;
-        this.setTempMessage('Nodes ' + (this.viewNodes ? 'visible' : 'hidden'));
+        this.console.log('Nodes ' + (this.viewNodes ? 'visible' : 'hidden'));
         for (var i = 0; i < this.nodes.length; i++) {
             this.nodes[i].parentSelectionRect.visible = this.viewNodes;
             this.nodes[i].connectedToLine.visible = this.viewNodes;
@@ -354,14 +346,14 @@ bamboo.Editor = game.Class.extend({
             layer = this.layers[i];
             if (layer.fixed) {
                 layer.displayObject.position.set(layer.position.x, layer.position.y);
-                layer._editorNode.displayObject.position.set(layer.position.x, layer.position.y);
+                layer.editorNode.displayObject.position.set(layer.position.x, layer.position.y);
                 continue;
             }
             layer.displayObject.position.set(
                 Math.round(layer.position.x + this.camera.position.x * -layer.speedFactor.x),
                 Math.round(layer.position.y + this.camera.position.y * -layer.speedFactor.y)
             );
-            layer._editorNode.displayObject.position.set(
+            layer.editorNode.displayObject.position.set(
                 layer.position.x + this.camera.position.x * -layer.speedFactor.x,
                 layer.position.y + this.camera.position.y * -layer.speedFactor.y
             );
@@ -371,14 +363,13 @@ bamboo.Editor = game.Class.extend({
     changeMode: function(mode, param) {
         if (this.mode) this.mode.exit();
         if (this.mode && this.mode.state) this.mode.state.exit();
-        this.mode = new bamboo.editor['Mode' + mode.ucfirst()](this, param);
-        this.mode.enter();
+        this.mode = new game.bamboo.editor['Mode' + mode.ucfirst()](this, param);
         this.updateStatus();
     },
 
     changeState: function(state, param) {
         if (this.mode.state) this.mode.state.exit();
-        this.mode.state = new bamboo.editor['State' + state.ucfirst()](this.mode, param);
+        this.mode.state = new game.bamboo.editor['State' + state.ucfirst()](this.mode, param);
         this.mode.state.enter();
         this.updateStatus();
     },
@@ -391,7 +382,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     exit: function() {
-        bamboo.ui.removeAll();
+        game.bamboo.ui.removeAll();
     },
 
     getUniqueName: function(name) {
@@ -402,7 +393,7 @@ bamboo.Editor = game.Class.extend({
         var i = 2;
         while (true) {
             var newName = name + i;
-            if (!this.world.findNode(newName)) return newName;
+            if (!this.scene.findNode(newName)) return newName;
             i++;
         }
     },
@@ -411,11 +402,11 @@ bamboo.Editor = game.Class.extend({
         var nodes = [];
         for (var i = 0; i < this.nodes.length; i++) {
             var n = this.nodes[i];
-            if (n.layer !== layer || n.node instanceof bamboo.nodes.Layer) continue;
+            if (n.layer !== layer || n.node instanceof game.bamboo.nodes.Layer) continue;
             n = n.node;
 
             var a = [];
-            var pos = n.getWorldPosition();
+            var pos = n.getGlobalPosition();
             pos.x -= n.anchor.x * n.size.x;
             pos.y -= n.anchor.y * n.size.y;
             a.push(new game.Point(pos.x, pos.y));
@@ -435,10 +426,10 @@ bamboo.Editor = game.Class.extend({
     },
 
     nodeAdded: function(node) {
-        node._editorNode.updateRect();
-        node._editorNode.layerChanged();
-        node._editorNode.ready();
-        if (node instanceof bamboo.nodes.Layer) {
+        node.editorNode.updateRect();
+        node.editorNode.layerChanged();
+        node.editorNode.ready();
+        if (node instanceof game.bamboo.nodes.Layer) {
             this.layers.push(node);
             this.layerAdded(node);
         }
@@ -449,7 +440,7 @@ bamboo.Editor = game.Class.extend({
     },
 
     nodeRemoved: function(node) {
-        if (node instanceof bamboo.nodes.Layer) {
+        if (node instanceof game.bamboo.nodes.Layer) {
             var idx = this.layers.indexOf(node);
             this.layers.splice(idx, 1);
             this.layerRemoved(node);
@@ -459,7 +450,7 @@ bamboo.Editor = game.Class.extend({
             this.propertyPanel.activeLayerChanged(this.activeLayer);
         }
         this.nodesWindow.inputs['parent'].innerHTML = '';
-        this.buildNodeDropdown(this.nodesWindow, 'parent', this.world);
+        this.buildNodeDropdown(this.nodesWindow, 'parent', this.scene);
     },
 
     nodeSelected: function(node) {
@@ -508,18 +499,18 @@ bamboo.Editor = game.Class.extend({
     },
 
     getNodeAt: function(point, layer) {
-        var pos = this.toWorldSpace(point);
+        var pos = this.toGlobalSpace(point);
 
         for (var i = this.nodes.length - 1; i >= 0; i--) {
-            var _editorNode = this.nodes[i];
+            var editorNode = this.nodes[i];
             
-            if (!_editorNode.layer) continue;
-            if (layer && _editorNode.layer !== layer) continue;
+            if (!editorNode.layer) continue;
+            if (layer && editorNode.layer !== layer) continue;
 
-            var node = _editorNode.node;
-            if (node instanceof bamboo.nodes.Layer) continue;
+            var node = editorNode.node;
+            if (node instanceof game.bamboo.nodes.Layer) continue;
             
-            var loc = node.getWorldPosition();
+            var loc = node.getGlobalPosition();
             loc.x -= node.size.x * node.anchor.x;
             loc.y -= node.size.y * node.anchor.y;
 
@@ -568,15 +559,15 @@ bamboo.Editor = game.Class.extend({
     },
 
     findNode: function(name) {
-        for (var i = 0; i < this.world.nodes.length; i++) {
-            if (this.world.nodes[i].name === name) return this.world.nodes[i];
+        for (var i = 0; i < this.scene.nodes.length; i++) {
+            if (this.scene.nodes[i].name === name) return this.scene.nodes[i];
         }
     },
 
     buildNodeDropdown: function(window, key, node) {
         var self = this;
         var addNodeInputOption = function(window, key, node, prefix) {
-            var nodes = self.world.getConnectedNodes(node);
+            var nodes = self.scene.getConnectedNodes(node);
             for(var i = 0; i < nodes.length; i++) {
                 var p = prefix;
                 var np = prefix;
@@ -587,21 +578,21 @@ bamboo.Editor = game.Class.extend({
                     p +=  '┣ ';
                     np += '┃ ';
                 }
-                window.addInputSelectOption(key, nodes[i].name, p + '[' + nodes[i]._editorNode.getClassName() + '] - ' + nodes[i].name);
+                window.addInputSelectOption(key, nodes[i].name, p + '[' + nodes[i].editorNode.getClassName() + '] - ' + nodes[i].name);
                 addNodeInputOption(window, key, nodes[i], np);
             }
         };
 
-        var nodes = this.world.getConnectedNodes(node);
+        var nodes = this.scene.getConnectedNodes(node);
         for (var i = 0; i < nodes.length; i++) {
-            window.addInputSelectOption(key, nodes[i].name, '[' + nodes[i]._editorNode.getClassName() + '] - ' + nodes[i].name);
+            window.addInputSelectOption(key, nodes[i].name, '[' + nodes[i].editorNode.getClassName() + '] - ' + nodes[i].name);
             addNodeInputOption(window, key, nodes[i], ' ');
         }
     },
 
-    toWorldSpace: function(point) {
-        var x = point.x - this.world.position.x + this.camera.position.x - this.worldTargetPos.x;
-        var y = point.y - this.world.position.y + this.camera.position.y - this.worldTargetPos.y;
+    toGlobalSpace: function(point) {
+        var x = point.x - this.scene.position.x + this.camera.position.x - this.worldTargetPos.x;
+        var y = point.y - this.scene.position.y + this.camera.position.y - this.worldTargetPos.y;
         return new game.Point(x, y);
     },
 
@@ -661,9 +652,9 @@ bamboo.Editor = game.Class.extend({
                 var ext = game.Audio.formats[f].ext;
                 if (file.name.indexOf('.' + ext) !== -1) {
                     var filename = 'audio/' + file.name;
-                    if (this.world.audio.indexOf(filename) === -1) {
-                        this.world.audio.push(filename);
-                        this.world.audio.sort();
+                    if (this.scene.audio.indexOf(filename) === -1) {
+                        this.scene.audio.push(filename);
+                        this.scene.audio.sort();
                         audioFilesAdded++;
                     }
                     isAudio = true;
@@ -672,12 +663,12 @@ bamboo.Editor = game.Class.extend({
             }
             if (isAudio) continue;
 
-            assets.push(game.config.mediaFolder + '/' + file.name);
+            assets.push(game.getMediaPath(file.name));
         }
 
         if (audioFilesAdded > 0) {
             var word = audioFilesAdded === 1 ? 'file' : 'files';
-            this.setTempMessage(audioFilesAdded + ' audio ' + word + ' added');
+            this.console.log(audioFilesAdded + ' audio ' + word + ' added');
         }
 
         if (assets.length > 0) {
@@ -702,14 +693,14 @@ bamboo.Editor = game.Class.extend({
         var count = 0;
         for (var i = 0; i < loader.assetURLs.length; i++) {
             filename = loader.assetURLs[i].replace(game.config.mediaFolder + '/', '');
-            if (this.world.assets.indexOf(filename) === -1) {
-                this.world.assets.push(filename);
+            if (this.scene.assets.indexOf(filename) === -1) {
+                this.scene.assets.push(filename);
                 count++;
             }
         }
-        this.world.assets.sort();
+        this.scene.assets.sort();
         var word = count === 1 ? 'asset' : 'assets';
-        this.setTempMessage(count + ' ' + word + ' added');
+        this.console.log(count + ' ' + word + ' added');
         if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
 
         this.updateAssetsList();
@@ -721,7 +712,7 @@ bamboo.Editor = game.Class.extend({
 
     downloadAsJSON: function() {
         if (this.mode.animationRunning) this.mode.stopAnimation();
-        var json = this.world.toJSON();
+        var json = this.scene.toJSON();
         var filename = json.name.toLowerCase() + '.json';
         var data = JSON.stringify(json, null, '    ');
 
@@ -731,16 +722,16 @@ bamboo.Editor = game.Class.extend({
 
     saveAsJSON: function() {
         if (this.mode.animationRunning) this.mode.stopAnimation();
-        var json = this.world.toJSON();
+        var json = this.scene.toJSON();
         var filename = json.name.toLowerCase() + '.json';
         var content = JSON.stringify(json, null, '    ');
 
-        this.saveToFile(bamboo.editor.config.JSONSaveDir || '../../../media/', filename, content);
+        this.saveToFile(this.config.JSONSaveDir, filename, content);
     },
 
     downloadAsModule: function() {
         if (this.mode.animationRunning) this.mode.stopAnimation();
-        var json = this.world.toJSON();
+        var json = this.scene.toJSON();
         var name = json.name.toLowerCase();
         if (!name) return this.showError('Scene must have name');
         var filename = json.name.toLowerCase() + '.js';
@@ -752,12 +743,12 @@ bamboo.Editor = game.Class.extend({
 
     saveAsModule: function() {
         if (this.mode.animationRunning) this.mode.stopAnimation();
-        var json = this.world.toJSON();
+        var json = this.scene.toJSON();
         var name = json.name.toLowerCase();
         if (!name) return this.showError('Scene must have name');
         var content = this.buildModuleFromJSON(json);
 
-        this.saveToFile(bamboo.editor.config.moduleSaveDir || '../../game/scenes/', name + '.js', content);
+        this.saveToFile(this.config.moduleSaveDir, name + '.js', content);
     },
 
     buildModuleFromJSON: function(json) {
@@ -782,17 +773,7 @@ bamboo.Editor = game.Class.extend({
         content += '\n)\n';
         content += '.body(function() {\n\n';
         content += 'var json = ' + JSON.stringify(json, null, '    ');
-        content += ';\n\nbamboo.scenes.push(json);\n';
-        if (json.assets.length > 0) {
-           content += 'for (var i = 0; i < json.assets.length; i++) {\n';
-           content += '    game.addAsset(json.assets[i]);\n';
-           content += '}\n'; 
-        }
-        if (json.audio.length > 0) {
-            content += 'for (var i = 0; i < json.audio.length; i++) {\n';
-            content += '    game.addAudio(json.audio[i]);\n';
-            content += '}\n';
-        }
+        content += ';\n\ngame.bamboo.scenes[json.name] = json;\n';
         content += '\n});\n';
 
         return content;
@@ -814,7 +795,7 @@ bamboo.Editor = game.Class.extend({
     saveToFileComplete: function(request, filename) {
         if (request.readyState === 4) {
             if (request.responseText === 'success') {
-                this.setTempMessage('File saved');
+                this.console.log('File saved');
             }
             else this.showError('Failed to write file ' + filename);
         }
@@ -823,18 +804,14 @@ bamboo.Editor = game.Class.extend({
     onResize: function() {
         this.boundaryLayer.resetGraphics();
         this.worldTargetPos.set(game.system.width / 2 - game.System.width / 2, game.system.height / 2 - game.System.height / 2);
-        this.world.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);
+        this.scene.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);
         this.nodeLayer.position.x = game.system.width / 2 - game.System.width / 2;
         this.nodeLayer.position.y = game.system.height / 2 - game.System.height / 2;
         this.shadow.style.lineHeight = window.innerHeight + 'px';
-    },
-
-    showAbout: function() {
-        this.aboutWindow.show();
     }
 });
 
-Object.defineProperty(bamboo.Editor.prototype, 'cameraWorldPosition', {
+Object.defineProperty(game.bamboo.Editor.prototype, 'cameraWorldPosition', {
     get: function() {
         var point = new game.Point(
             this.camera.position.x * -1 + this.worldTargetPos.x,

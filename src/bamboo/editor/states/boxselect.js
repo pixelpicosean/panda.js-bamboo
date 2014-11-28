@@ -6,13 +6,11 @@ game.module(
 )
 .body(function() {
 
-bamboo.editor.StateBoxSelect = bamboo.editor.State.extend({
-    helpText: 'Box select',
-
+game.bamboo.editor.createState('BoxSelect', {
     enter: function() {
         this.box = new game.Graphics();
         this.size = new game.Point();
-        var pos = this.mode.editor.toWorldSpace(this.mode.editor.prevMousePos);
+        var pos = this.mode.editor.toGlobalSpace(this.mode.editor.prevMousePos);
         this.mode.editor.activeLayer.toLocalSpace(pos, pos);
         this.box.position.set(pos.x, pos.y);
         this.mode.editor.activeLayer.displayObject.addChild(this.box);
@@ -25,8 +23,8 @@ bamboo.editor.StateBoxSelect = bamboo.editor.State.extend({
     },
 
     click: function() {
-        var tl = this.mode.editor.activeLayer.toWorldSpace(this.box.position);
-        var br = this.mode.editor.activeLayer.toWorldSpace(this.size.add(this.box.position));
+        var tl = this.mode.editor.activeLayer.toGlobalSpace(this.box.position);
+        var br = this.mode.editor.activeLayer.toGlobalSpace(this.size.add(this.box.position));
 
         if (tl.x > br.x) {
             var h = tl.x;
@@ -63,7 +61,7 @@ bamboo.editor.StateBoxSelect = bamboo.editor.State.extend({
         else {
             var node = this.mode.editor.getNodeAt(this.mode.editor.prevMousePos, this.mode.editor.activeLayer);
             if (node) {
-                this.mode.editor.controller.setActiveLayer(node._editorNode.layer);
+                this.mode.editor.controller.setActiveLayer(node.editorNode.layer);
                 this.mode.editor.controller.setActiveNode(node);
             }
             else {
@@ -78,7 +76,7 @@ bamboo.editor.StateBoxSelect = bamboo.editor.State.extend({
 
     mousemove: function(event) {
         var mousePos = new game.Point(event.global.x, event.global.y);
-        mousePos = this.mode.editor.toWorldSpace(mousePos);
+        mousePos = this.mode.editor.toGlobalSpace(mousePos);
         this.mode.editor.activeLayer.toLocalSpace(mousePos, mousePos);
 
         this.box.clear();

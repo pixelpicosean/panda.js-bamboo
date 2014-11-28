@@ -7,7 +7,7 @@ game.module(
 )
 .body(function() {
 
-bamboo.nodes.Layer.editor = bamboo.Node.editor.extend({
+game.createEditorNode('Layer', {
     visible: true,
 
     ready: function() {

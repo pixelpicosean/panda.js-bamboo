@@ -3,14 +3,16 @@ game.module(
 )
 .body(function() {
 
-bamboo.editor.Mode = game.Class.extend({
-    helpText: '',
-    
-    init: function(editor) {
+game.bamboo.editor.Mode = game.Class.extend({
+    staticInit: function(editor) {
         this.editor = editor;
+        this.editor.mode = this;
     },
 
-    enter: function() {},
+    init: function() {
+        this.editor.changeState('Select');
+    },
+
     exit: function() {},
     update: function() {},
 
@@ -34,8 +36,11 @@ bamboo.editor.Mode = game.Class.extend({
         this.state.keydown(key);
     },
 
-    keyup: function() {
-    }
+    keyup: function() {}
 });
+
+game.bamboo.editor.createMode = function(name, content) {
+    game.bamboo.editor['Mode' + name] = game.bamboo.editor.Mode.extend(content);
+};
 
 });

@@ -1,5 +1,5 @@
 game.module(
-    'game.scenes.main'
+    'game.scenes.scene1'
 )
 .require(
     'bamboo.core',
@@ -10,10 +10,9 @@ game.module(
 .body(function() {
 
 var json = {
-    "name": "Main",
+    "name": "Scene1",
     "width": 1024,
     "height": 768,
-    "bgcolor": "0xb7bdc5",
     "assets": [
         "panda.png"
     ],
@@ -21,7 +20,7 @@ var json = {
         {
             "class": "Layer",
             "properties": {
-                "parent": "Main",
+                "parent": "Scene1",
                 "name": "main",
                 "position": {
                     "x": 0,
@@ -89,9 +88,6 @@ var json = {
     ]
 };
 
-bamboo.scenes.push(json);
-for (var i = 0; i < json.assets.length; i++) {
-    game.addAsset(json.assets[i]);
-}
+game.bamboo.scenes[json.name] = json;
 
 });

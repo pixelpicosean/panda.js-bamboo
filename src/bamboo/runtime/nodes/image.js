@@ -12,7 +12,7 @@ game.module(
     @class Image
     @namespace bamboo.Nodes
 **/
-bamboo.createNode('Image', {
+game.createNode('Image', {
     init: function() {
         this.displayObject = new game.Sprite(new game.Texture(new game.BaseTexture()));
     },
@@ -20,9 +20,7 @@ bamboo.createNode('Image', {
     setProperty: function(name, value) {
         this._super(name, value);
         if (name === 'image' && this.image) {
-            var path = this.image;
-            if (game.config.mediaFolder) path = game.config.mediaFolder + '/' + path;
-            this.displayObject.setTexture(path);
+            this.displayObject.setTexture(game.getMediaPath(this.image));
             this.displayObject.width = this.size.x;
             this.displayObject.height = this.size.y;
         }
@@ -40,19 +38,21 @@ bamboo.createNode('Image', {
 /**
     @property {Image} image
 **/
-bamboo.addNodeProperty('Image', 'image', 'image');
+game.addNodeProperty('Image', 'image', 'image');
 /**
     @property {Number} alpha
     @default 1
 **/
-bamboo.addNodeProperty('Image', 'alpha', 'number', 1);
+game.addNodeProperty('Image', 'alpha', 'number', 1);
 /**
     @property {Boolean} flipX
+    @default false
 **/
-bamboo.addNodeProperty('Image', 'flipX', 'boolean');
+game.addNodeProperty('Image', 'flipX', 'boolean');
 /**
     @property {Boolean} flipY
+    @default false
 **/
-bamboo.addNodeProperty('Image', 'flipY', 'boolean');
+game.addNodeProperty('Image', 'flipY', 'boolean');
 
 });

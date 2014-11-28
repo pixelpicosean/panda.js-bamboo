@@ -1,5 +1,8 @@
+/**
+    @namespace game
+**/
 game.module(
-    'bamboo.runtime.world'
+    'bamboo.runtime.scene'
 )
 .require(
     'bamboo.runtime.node'
@@ -8,52 +11,66 @@ game.module(
 'use strict';
 
 /**
-    @class World
-    @namespace bamboo
+    @class BambooScene
+    @extends game.Class
+    @constructor
+    @param {String} sceneName
 **/
-bamboo.World = game.Class.extend({
+game.createClass('BambooScene', {
+    /**
+        List of active nodes.
+        @property {Array} activeNodes
+    **/
+    activeNodes: [],
     /**
         List of audio files.
-        @property audio
+        @property {Array} audio
     **/
     audio: [],
     /**
         List of assets.
-        @property assets
+        @property {Array} assets
     **/
     assets: [],
     /**
         List of nodes.
-        @property nodes
+        @property {Array} nodes
     **/
     nodes: [],
     /**
         List of layers.
-        @property layers
+        @property {Array} layers
     **/
     layers: [],
     /**
-        List of updateable nodes.
-        @property updateable nodes
-    **/
-    updateableNodes: [],
-    /**
-        Current world time.
-        @property time
+        Current scene time.
+        @property {Number} time
     **/
     time: 0,
-    /**
-        Scene for the world.
-        @property scene
-    **/
-    scene: null,
 
-    init: function(data) {
-        game.merge(this, data);
+    init: function(sceneName) {
+        game.merge(this, game.bamboo.getSceneData(sceneName));
+        
         this.displayObject = new game.Container();
+        
         this.initNodes();
         this.initNodeProperties();
         this.ready();
+    },
+
+    initNodes: function() {
+        for (var i = 0; i < this.nodes.length; i++) {
+            if (!game.bamboo.nodes[this.nodes[i].class]) throw 'node ' + this.nodes[i].class + ' not found';
+            var node = new game.bamboo.nodes[this.nodes[i].class](this, this.nodes[i].properties);
+            this.nodes[i] = node;
+            this.addNode(node);
+        }
+    },
+
+    initNodeProperties: function() {
+        for (var i = 0; i < this.nodes.length; i++) {
+            this.nodes[i].initProperties();
+        }
     },
 
     ready: function() {
@@ -66,19 +83,8 @@ bamboo.World = game.Class.extend({
         this.displayObject.addChild(node.displayObject);
     },
 
-    initNodes: function() {
-        for (var i = 0; i < this.nodes.length; i++) {
-            if (!bamboo.nodes[this.nodes[i].class]) throw 'Node \'' + this.nodes[i].class + '\' not found';
-            var node = new bamboo.nodes[this.nodes[i].class](this, this.nodes[i].properties);
-            this.nodes[i] = node;
-            this.addNode(node);
-        }
-    },
-
-    initNodeProperties: function() {
-        for (var i = 0; i < this.nodes.length; i++) {
-            this.nodes[i].initProperties();
-        }
+    removeChild: function(node) {
+        this.displayObject.removeChild(node.displayObject);
     },
 
     /**
@@ -94,24 +100,24 @@ bamboo.World = game.Class.extend({
     },
 
     /**
-        Add node to world.
+        Add node to scene.
         @method addNode
         @param {Node} node
     **/
     addNode: function(node) {
         if (this.nodes.indexOf(node) === -1) this.nodes.push(node);
-        if (typeof node.update === 'function') this.updateableNodes.push(node);
-        if (node instanceof bamboo.nodes.Layer) this.layers.push(node);
+        if (typeof node.update === 'function') this.activeNodes.push(node);
+        if (node instanceof game.bamboo.nodes.Layer) this.layers.push(node);
         this.nodeAdded(node);
     },
 
     /**
-        Remove node from world.
+        Remove node from scene.
         @method removeNode
         @param {Node} node
     **/
     removeNode: function(node) {
-        var index = this.updateableNodes.indexOf(node);
+        var index = this.activeNodes.indexOf(node);
         if (index !== -1) return node._remove = true;
 
         index = this.nodes.indexOf(node);
@@ -126,7 +132,7 @@ bamboo.World = game.Class.extend({
     },
 
     /**
-        Called, when node is added to world.
+        Called, when node is added to scene.
         @method nodeAdded
         @param {Node} node
     **/
@@ -134,7 +140,7 @@ bamboo.World = game.Class.extend({
     },
 
     /**
-        Called, when node is removed from world.
+        Called, when node is removed from scene.
         @method nodeRemoved
         @param {Node} node
     **/
@@ -142,11 +148,11 @@ bamboo.World = game.Class.extend({
     },
 
     update: function() {
-        for (var i = this.updateableNodes.length - 1; i >= 0; i--) {
-            this.updateableNodes[i].update();
-            if (this.updateableNodes[i]._remove) {
-                var node = this.updateableNodes[i];
-                this.updateableNodes.splice(i, 1);
+        for (var i = this.activeNodes.length - 1; i >= 0; i--) {
+            this.activeNodes[i].update();
+            if (this.activeNodes[i]._remove) {
+                var node = this.activeNodes[i];
+                this.activeNodes.splice(i, 1);
                 this.removeNode(node);
             }
         }

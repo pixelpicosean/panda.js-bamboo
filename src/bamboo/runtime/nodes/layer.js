@@ -8,11 +8,7 @@ game.module(
 .body(function() {
 'use strict';
 
-/**
-    @class Layer
-    @namespace bamboo.Nodes
-**/
-bamboo.createNode('Layer', {
+game.createNode('Layer', {
     ready: function() {
         if (this.cacheAsBitmap) {
             var size = game.config.bamboo.maxTextureSize || 2048;
@@ -51,12 +47,12 @@ bamboo.createNode('Layer', {
     @property {Vector} speedFactor
     @default 1,1
 **/
-bamboo.addNodeProperty('Layer', 'speedFactor', 'vector', [1, 1]);
-bamboo.addNodeProperty('Layer', 'cacheAsBitmap', 'boolean');
+game.addNodeProperty('Layer', 'speedFactor', 'vector', [1, 1]);
+game.addNodeProperty('Layer', 'cacheAsBitmap', 'boolean');
 /**
     Does layer use fixed position.
     @property {Boolean} fixed
 **/
-bamboo.addNodeProperty('Layer', 'fixed', 'boolean');
+game.addNodeProperty('Layer', 'fixed', 'boolean');
 
 });

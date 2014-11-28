@@ -3,9 +3,7 @@ game.module(
 )
 .body(function() {
 
-bamboo.editor.State = game.Class.extend({
-    helpText: '',
-    
+game.bamboo.editor.State = game.Class.extend({    
     init: function(mode) {
         this.mode = mode;
     },
@@ -21,5 +19,9 @@ bamboo.editor.State = game.Class.extend({
     keydown: function() {},
     keyup: function() {}
 });
+
+game.bamboo.editor.createState = function(name, content) {
+    game.bamboo.editor['State' + name] = game.bamboo.editor.State.extend(content);
+};
 
 });

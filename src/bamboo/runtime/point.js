@@ -6,7 +6,6 @@ game.module(
 )
 .body(function () {
 
-// Replace this with game.Vector ?
 game.Point = game.Class.extend({
     x: 0,
     y: 0,
@@ -28,7 +27,7 @@ game.Point = game.Class.extend({
     },
 
     clone: function() {
-        var point = bamboo.pool.get();
+        var point = game.bamboo.pool.get();
         point.set(this.x, this.y);
         return point;
     },
@@ -40,7 +39,7 @@ game.Point = game.Class.extend({
     },
 
     addc: function(v) {
-        var point = bamboo.pool.get();
+        var point = game.bamboo.pool.get();
         point.set(this.x + v.x, this.y + v.y);
         return point;
     },
@@ -52,7 +51,7 @@ game.Point = game.Class.extend({
     },
 
     subtractc: function(v) {
-        var point = bamboo.pool.get();
+        var point = game.bamboo.pool.get();
         point.set(this.x - v.x, this.y - v.y);
         return point;
     },
@@ -89,7 +88,7 @@ game.Point = game.Class.extend({
     },
 
     multiplyc: function(f) {
-        var point = bamboo.pool.get();
+        var point = game.bamboo.pool.get();
         point.set(this.x * f, this.y * f);
         return point;
     },
@@ -101,7 +100,7 @@ game.Point = game.Class.extend({
     },
 
     multiplyAddc: function(v, f) {
-        var point = bamboo.pool.get();
+        var point = game.bamboo.pool.get();
         point.set(this.x + v.x * f, this.y + v.y * f);
         return point;
     },

@@ -12,12 +12,12 @@ game.module(
     @class Rotator
     @namespace bamboo.Nodes
 **/
-bamboo.createNode('Rotator', {
+game.createNode('Rotator', {
     active: true,
     offset: 0,
 
     trigger: function() {
-        this.offset = this.world.time;
+        this.offset = this.scene.time;
         this.active = true;
     },
 
@@ -33,14 +33,14 @@ bamboo.createNode('Rotator', {
     update: function() {
         if (!this.active) return;
 
-        var elapsed = ((this.world.time - this.offset) % this.duration) / this.duration;
+        var elapsed = ((this.scene.time - this.offset) % this.duration) / this.duration;
 
-        if (!this.loop && this.world.time - this.offset >= this.duration) {
+        if (!this.loop && this.scene.time - this.offset >= this.duration) {
             elapsed = 1;
         }
 
         if (this.yoyo) {
-            var rounds = Math.floor((this.world.time - this.offset) / this.duration);
+            var rounds = Math.floor((this.scene.time - this.offset) / this.duration);
             if (rounds % 2 === 1) elapsed = 1.0 - elapsed;
         }
 
@@ -54,38 +54,38 @@ bamboo.createNode('Rotator', {
     @property {Number} rotation
     @default 0
 **/
-bamboo.addNodeProperty('Rotator', 'rotation', 'number', 0);
+game.addNodeProperty('Rotator', 'rotation', 'number', 0);
 /**
     Duration of rotation in seconds.
     @property {Number} duration
     @default 3
 **/
-bamboo.addNodeProperty('Rotator', 'duration', 'number', 3);
+game.addNodeProperty('Rotator', 'duration', 'number', 3);
 /**
     How much to rotate in degrees.
     @property {Number} degrees
     @default 360
 **/
-bamboo.addNodeProperty('Rotator', 'degrees', 'number', 360);
+game.addNodeProperty('Rotator', 'degrees', 'number', 360);
 /**
     Easing function for rotation.
     @property {Easing} easing
 **/
-bamboo.addNodeProperty('Rotator', 'easing', 'easing');
+game.addNodeProperty('Rotator', 'easing', 'easing');
 /**
     Should rotator loop.
     @property {Boolean} loop
 **/
-bamboo.addNodeProperty('Rotator', 'loop', 'boolean');
+game.addNodeProperty('Rotator', 'loop', 'boolean');
 /**
     Should rotator go back and forth.
     @property {Boolean} yoyo
 **/
-bamboo.addNodeProperty('Rotator', 'yoyo', 'boolean');
+game.addNodeProperty('Rotator', 'yoyo', 'boolean');
 /**
     Is rotator started from trigger.
     @property {Boolean} triggered
 **/
-bamboo.addNodeProperty('Rotator', 'triggered', 'boolean');
+game.addNodeProperty('Rotator', 'triggered', 'boolean');
 
 });

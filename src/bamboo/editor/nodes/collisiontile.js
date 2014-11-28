@@ -7,7 +7,7 @@ game.module(
 )
 .body(function() {
 
-bamboo.nodes.CollisionTile.editor = bamboo.Node.editor.extend({
+game.bamboo.nodes.CollisionTile.editor = game.bamboo.Node.editor.extend({
     helpText: 'LEFT prev tile, RIGHT next tile',
     frames: [],
     currentFrame: 0,
@@ -57,6 +57,6 @@ bamboo.nodes.CollisionTile.editor = bamboo.Node.editor.extend({
     }
 });
 
-bamboo.addNodeProperty('CollisionTile', 'tileset', 'json');
+game.addNodeProperty('CollisionTile', 'tileset', 'json');
 
 });

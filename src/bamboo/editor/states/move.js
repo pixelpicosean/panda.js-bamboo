@@ -6,8 +6,7 @@ game.module(
 )
 .body(function() {
 
-bamboo.editor.StateMove = bamboo.editor.State.extend({
-    helpText: 'Move state: X/Y lock axis, (D)uplicate, MOUSE apply',
+game.bamboo.editor.createState('Move', {
     nodes: [],
     startValues: [],
 
@@ -32,7 +31,7 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
     cancel: function() {
         for (var i = 0; i < this.nodes.length; i++) {
             var node = this.nodes[i];
-            node._editorNode.setProperty('position', this.startValues[i]);
+            node.editorNode.setProperty('position', this.startValues[i]);
         }
     },
 
@@ -77,7 +76,7 @@ bamboo.editor.StateMove = bamboo.editor.State.extend({
                 newPos.y = Math.round(newPos.y / this.mode.editor.gridSize) * this.mode.editor.gridSize;
             }
 
-            node._editorNode.setProperty('position', newPos);
+            node.editorNode.setProperty('position', newPos);
         }
     }
 });

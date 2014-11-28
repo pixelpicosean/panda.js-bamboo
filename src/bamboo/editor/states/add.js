@@ -6,12 +6,12 @@ game.module(
 )
 .body(function() {
 
-bamboo.editor.StateAdd = bamboo.editor.State.extend({
+game.bamboo.editor.StateAdd = game.bamboo.editor.State.extend({
     helpText: 'Add node',
     nameHasChanged: false,
 
     enter: function() {
-        this.addWindow = bamboo.ui.addWindow({
+        this.addWindow = game.bamboo.ui.addWindow({
             x: 'center',
             y: 'center',
             width: 400,
@@ -24,7 +24,7 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
         this.addWindow.setTitle('Add Node');
         this.addWindow.addInputSelect('type', 'Node Type', 'Type of the node', this.nodeTypeChanged.bind(this));
 
-        for (var name in bamboo.nodes) {
+        for (var name in game.bamboo.nodes) {
             this.addWindow.addInputSelectOption('type', name, name);
         }
 
@@ -52,7 +52,7 @@ bamboo.editor.StateAdd = bamboo.editor.State.extend({
     },
 
     exit: function() {
-        bamboo.ui.removeWindow(this.addWindow);
+        game.bamboo.ui.removeWindow(this.addWindow);
     },
 
     cancel: function() {
