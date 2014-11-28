@@ -14,9 +14,7 @@ game.bamboo.MenuBar = game.Class.extend({
         this.menuElem.addMenuItem('Scene', 'New scene', function() {
             // game.scene.loadScene();
         });
-        for (var name in game.bamboo.scenes) {
-            this.menuElem.addMenuItem('Scene', 'Load ' + name, game.scene.loadScene.bind(game.scene, name));
-        }
+        this.menuElem.addMenuItem('Scene', 'Load scene...', this.editor.loadScene.bind(this.editor));
         this.menuElem.addMenuItem('Scene', 'Save module', this.editor.saveAsModule.bind(this.editor));
         this.menuElem.addMenuItem('Scene', 'Save JSON', this.editor.saveAsJSON.bind(this.editor));
         this.menuElem.addMenuItem('Scene', 'Download module', this.editor.downloadAsModule.bind(this.editor));

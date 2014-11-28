@@ -136,6 +136,34 @@ game.bamboo.Editor = game.Class.extend({
         this.console.log('Scene ' + this.scene.name + ' loaded');
     },
 
+    loadScene: function() {
+        if (this.scenesWindow) this.scenesWindow.hide();
+        this.scenesWindow = game.bamboo.ui.addWindow({
+            title: 'Load scene',
+            id: 'scenes',
+            closeable: true,
+            visible: true,
+            height: 195,
+            minY: this.menuBar.height
+        });
+
+        var scenesList = document.createElement('select');
+        scenesList.style.height = '100px';
+        scenesList.size = 2;
+        for (var name in game.bamboo.scenes) {
+            var opt = document.createElement('option');
+            opt.value = name;
+            opt.innerHTML = name;
+            scenesList.appendChild(opt);
+        }
+
+        this.scenesWindow.contentDiv.appendChild(scenesList);
+
+        this.scenesWindow.addButton('Load', function() {
+            game.scene.loadScene(scenesList.value);
+        });
+    },
+
     addAsset: function() {
         var input = document.createElement('input');
         input.type = 'file';

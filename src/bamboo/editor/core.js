@@ -78,6 +78,8 @@ game.createScene('BambooEditor', {
         game.addBambooAssets(name);
         game.bamboo.editor.currentScene = name;
 
+        game.bamboo.ui.removeAll();
+
         var loader = new game.Loader('BambooEditor');
         loader.start();
     },
