@@ -25,6 +25,7 @@ bamboo.createNode('Button', 'Image', {
     },
 
     activate: function() {
+        if (!this.active) return;
         this.displayObject.interactive = true;
         this.displayObject.buttonMode = !!this.buttonMode;
         this.displayObject.mousedown = this.displayObject.touchstart = this.mousedown.bind(this);
@@ -35,19 +36,19 @@ bamboo.createNode('Button', 'Image', {
     },
 
     mousedown: function() {
-        if (this.downImage) this.displayObject.setTexture(game.getMediaPath(this.downImage));
+        if (this.downImage) this.displayObject.setTexture(game.config.mediaFolder + this.downImage);
     },
 
     mouseover: function() {
-        if (this.overImage) this.displayObject.setTexture(game.getMediaPath(this.overImage));
+        if (this.overImage) this.displayObject.setTexture(game.config.mediaFolder + this.overImage);
     },
 
     mouseup: function() {
-        this.displayObject.setTexture(game.getMediaPath(this.image));
+        this.displayObject.setTexture(game.config.mediaFolder + this.image);
     },
 
     mouseout: function() {
-        this.displayObject.setTexture(game.getMediaPath(this.image));
+        this.displayObject.setTexture(game.config.mediaFolder + this.image);
     },
 
     click: function() {
@@ -56,7 +57,7 @@ bamboo.createNode('Button', 'Image', {
 
     setProperty: function(name, value) {
         this._super(name, value);
-        if (name === 'image' && this.image) this.displayObject.setTexture(game.getMediaPath(this.image));
+        if (name === 'image' && this.image) this.displayObject.setTexture(game.config.mediaFolder + this.image);
     }
 });
 

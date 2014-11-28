@@ -22,7 +22,7 @@ game.createNode('Audio', {
     },
 
     stop: function() {
-        if (typeof this.audioId === 'number') game.audio.stopSound(this.audioId);
+        if (this.audioId) game.audio.stopSound(this.audioId);
     }
 });
 

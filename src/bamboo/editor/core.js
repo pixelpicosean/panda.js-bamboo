@@ -1,5 +1,12 @@
-bamboo.editor = {
-    config: {}
+game.bamboo.editor = {
+    config: {
+        moduleSaveDir: '../../game/scenes/',
+        JSONSaveDir: '../../../media/'
+    }
+};
+
+game.createEditorNode = function(node, content) {
+    game.bamboo.nodes[node].editor = game.bamboo.Node.editor.extend(content);
 };
 
 game.module(
@@ -15,36 +22,28 @@ game.module(
     'bamboo.editor.node',
     'bamboo.editor.propertypanel',
     'bamboo.editor.state',
-    'bamboo.editor.statusbar',
     'bamboo.editor.menubar',
     'bamboo.editor.ui',
-    'bamboo.editor.world',
-    
+    'bamboo.editor.scene',
     'bamboo.editor.modes.edit',
-    'bamboo.editor.modes.game',
     'bamboo.editor.modes.main',
-
     'bamboo.editor.states.boxselect',
     'bamboo.editor.states.add',
     'bamboo.editor.states.move',
     'bamboo.editor.states.resize',
     'bamboo.editor.states.select',
-
     'bamboo.editor.nodes.animation',
-    'bamboo.editor.nodes.null',
-    'bamboo.editor.nodes.camera',
     'bamboo.editor.nodes.image',
     'bamboo.editor.nodes.layer',
     'bamboo.editor.nodes.path',
     'bamboo.editor.nodes.pathfollower',
     'bamboo.editor.nodes.rotator',
-    'bamboo.editor.nodes.emitter',
-    'bamboo.editor.nodes.trigger',
     'bamboo.editor.nodes.tile',
     'bamboo.editor.nodes.spine',
     'bamboo.editor.nodes.collisiontile',
     'bamboo.editor.nodes.triggerimage',
     'bamboo.editor.nodes.tween',
+    'bamboo.runtime.nodes.trigger',
     'bamboo.runtime.nodes.audio',
     'bamboo.runtime.nodes.physics',
     'bamboo.runtime.nodes.button',
@@ -54,12 +53,7 @@ game.module(
 
 game.addAsset('../src/bamboo/editor/media/hourglass.png');
 
-game.Loader.logo = 'src/bamboo/editor/media/logo.png';
-game.Loader.barWidth = 150;
-pandaConfig.system.startScene = 'Editor';
-game.System.startScene = 'Editor';
-
-game.SceneEditor = game.Scene.extend({
+game.createScene('BambooEditor', {
     init: function() {
         // Disable right click
         document.oncontextmenu = document.body.oncontextmenu = function() {
@@ -73,31 +67,21 @@ game.SceneEditor = game.Scene.extend({
         canvas.ondragleave = this.dragleave.bind(this);
         canvas.ondrop = this.filedrop.bind(this);
 
-        bamboo.nodes = game.ksort(bamboo.nodes);
-        this.loadEditor();
-    },
-
-    loadEditor: function(data) {
-        if (this.editor) {
-            this.editor.exit();
-            this.stage.removeChild(this.editor.displayObject);
-            this.removeObject(this.editor);
-        }
-
-        if (data) {
-            this.loader = new game.Sprite('../src/bamboo/editor/media/hourglass.png');
-            this.loader.center();
-            this.loader.addTo(this.stage);
-            this.addTimer(50, this.startLoading.bind(this, data));
-        }
-        else this.startLoading();
-    },
-
-    startLoading: function(data) {
-        if (this.loader) this.loader.remove();
-        this.editor = new bamboo.Editor(data);
+        var data = game.bamboo.editor.currentScene ? game.bamboo.getSceneData(game.bamboo.editor.currentScene) : null;
+        this.editor = new game.bamboo.Editor(data);
         this.stage.addChild(this.editor.displayObject);
         this.addObject(this.editor);
+    },
+
+    loadScene: function(name) {
+        if (game.bamboo.editor.currentScene) game.removeBambooAssets(game.bamboo.editor.currentScene);
+        game.addBambooAssets(name);
+        game.bamboo.editor.currentScene = name;
+
+        game.bamboo.ui.removeAll();
+
+        var loader = new game.Loader('BambooEditor');
+        loader.start();
     },
 
     click: function(event) {
@@ -167,36 +151,32 @@ game.start = function() {
     game.System.center = false;
     game.System.left = 0;
     game.System.top = 0;
-    game.Storage.id = 'bamboo';
+    game.Storage.id = 'net.pandajs.bamboo';
+    game.System.startScene = 'BambooEditor';
 
     var style = document.createElement('link');
     style.rel = 'stylesheet';
     style.type = 'text/css';
     style.href = 'src/bamboo/editor/style.css';
+
+    game.bamboo.nodes = game.ksort(game.bamboo.nodes);
+    game.bamboo.scenes = game.ksort(game.bamboo.scenes);
+
+    style.onload = function() {
+        game._start(null, window.innerWidth, window.innerHeight);
+        game.bamboo.ui = new game.bamboo.Ui();
+    };
     document.getElementsByTagName('head')[0].appendChild(style);
-
-    var favicon = document.createElement('link');
-    favicon.type = 'image/x-icon';
-    favicon.rel = 'shortcut icon';
-    favicon.href = 'src/bamboo/editor/media/favicon.png?';
-    document.getElementsByTagName('head')[0].appendChild(favicon);
-
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-    width += width % 2 === 0 ? 1 : 0;
-    height += height % 2 === 0 ? 1 : 0;
-    game._start(null, width, height);
-    bamboo.ui = new bamboo.Ui();
 };
 
 window.addEventListener('resize', function() {
     if (game.system) game.system.resize(window.innerWidth, window.innerHeight);
     if (game.scene && game.scene.editor) game.scene.editor.onResize();
-    if (bamboo.ui) bamboo.ui.onResize();
+    if (game.bamboo.ui) game.bamboo.ui.onResize();
 });
 
 window.addEventListener('keydown', function(event) {
-    // Prevent backspace
+    // Disable backspace
     if (event.keyCode === 8 && document.activeElement.type !== 'text') {
         event.preventDefault();
     }
