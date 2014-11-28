@@ -8,11 +8,6 @@ game.module(
 .body(function() {
 'use strict';
 
-/**
-    Camera that follows it's target.
-    @class Camera
-    @namespace bamboo.Nodes
-**/
 bamboo.createNode('Camera', {
     ready: function() {
         this.camera = new game.Camera();
@@ -40,19 +35,8 @@ bamboo.createNode('Camera', {
     }
 });
 
-/**
-    @property {Node} target
-**/
 bamboo.addNodeProperty('Camera', 'target', 'node');
-/**
-    Camera offset from center of screen.
-    @property {Vector} offset
-**/
 bamboo.addNodeProperty('Camera', 'offset', 'vector');
-/**
-    Should camera start from it's target's position.
-    @property {Boolean} startFromTarget
-**/
 bamboo.addNodeProperty('Camera', 'startFromTarget', 'boolean');
 
 });

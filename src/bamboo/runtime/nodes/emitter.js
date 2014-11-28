@@ -8,18 +8,9 @@ game.module(
 .body(function() {
 'use strict';
 
-/**
-    Emitter calls targets emit function.
-    @class Emitter
-    @namespace bamboo.Nodes
-**/
 bamboo.createNode('Emitter', {
     active: true,
     time: 0,
-    /**
-        Number of times emitted.
-        @property {Number} count
-    **/
     count: 0,
 
     ready: function() {
@@ -43,20 +34,8 @@ bamboo.createNode('Emitter', {
     }
 });
 
-/**
-    @property {Node} target
-**/
 bamboo.addNodeProperty('Emitter', 'target', 'node');
-/**
-    How often to emit.
-    @property {Number} interval
-    @default 1
-**/
 bamboo.addNodeProperty('Emitter', 'interval', 'number', 1);
-/**
-    Is emitter activated from trigger.
-    @property {Boolean} triggered
-**/
 bamboo.addNodeProperty('Emitter', 'triggered', 'boolean');
 
 });

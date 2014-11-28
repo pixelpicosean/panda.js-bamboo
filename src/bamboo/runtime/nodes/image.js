@@ -7,11 +7,6 @@ game.module(
 )
 .body(function() {
 
-/**
-    Basic image node.
-    @class Image
-    @namespace bamboo.Nodes
-**/
 game.createNode('Image', {
     init: function() {
         this.displayObject = new game.Sprite(new game.Texture(new game.BaseTexture()));
@@ -35,24 +30,9 @@ game.createNode('Image', {
     }
 });
 
-/**
-    @property {Image} image
-**/
 game.addNodeProperty('Image', 'image', 'image');
-/**
-    @property {Number} alpha
-    @default 1
-**/
 game.addNodeProperty('Image', 'alpha', 'number', 1);
-/**
-    @property {Boolean} flipX
-    @default false
-**/
 game.addNodeProperty('Image', 'flipX', 'boolean');
-/**
-    @property {Boolean} flipY
-    @default false
-**/
 game.addNodeProperty('Image', 'flipY', 'boolean');
 
 });

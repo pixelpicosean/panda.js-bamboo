@@ -1,6 +1,3 @@
-/**
-    @namespace game
-**/
 game.module(
     'bamboo.runtime.scene'
 )
@@ -10,42 +7,12 @@ game.module(
 .body(function() {
 'use strict';
 
-/**
-    @class BambooScene
-    @extends game.Class
-    @constructor
-    @param {String} sceneName
-**/
 game.createClass('BambooScene', {
-    /**
-        List of active nodes.
-        @property {Array} activeNodes
-    **/
     activeNodes: [],
-    /**
-        List of audio files.
-        @property {Array} audio
-    **/
     audio: [],
-    /**
-        List of assets.
-        @property {Array} assets
-    **/
     assets: [],
-    /**
-        List of nodes.
-        @property {Array} nodes
-    **/
     nodes: [],
-    /**
-        List of layers.
-        @property {Array} layers
-    **/
     layers: [],
-    /**
-        Current scene time.
-        @property {Number} time
-    **/
     time: 0,
 
     init: function(sceneName) {
@@ -87,11 +54,6 @@ game.createClass('BambooScene', {
         this.displayObject.removeChild(node.displayObject);
     },
 
-    /**
-        Find node by name.
-        @method findNode
-        @param {String} name
-    **/
     findNode: function(name) {
         if (this.name === name) return this;
         for (var i = 0; i < this.nodes.length; i++) {
@@ -99,11 +61,6 @@ game.createClass('BambooScene', {
         }
     },
 
-    /**
-        Add node to scene.
-        @method addNode
-        @param {Node} node
-    **/
     addNode: function(node) {
         if (this.nodes.indexOf(node) === -1) this.nodes.push(node);
         if (typeof node.update === 'function') this.activeNodes.push(node);
@@ -111,11 +68,6 @@ game.createClass('BambooScene', {
         this.nodeAdded(node);
     },
 
-    /**
-        Remove node from scene.
-        @method removeNode
-        @param {Node} node
-    **/
     removeNode: function(node) {
         var index = this.activeNodes.indexOf(node);
         if (index !== -1) return node._remove = true;
@@ -131,19 +83,9 @@ game.createClass('BambooScene', {
         return true;
     },
 
-    /**
-        Called, when node is added to scene.
-        @method nodeAdded
-        @param {Node} node
-    **/
     nodeAdded: function(node) {
     },
 
-    /**
-        Called, when node is removed from scene.
-        @method nodeRemoved
-        @param {Node} node
-    **/
     nodeRemoved: function(node) {
     },
 

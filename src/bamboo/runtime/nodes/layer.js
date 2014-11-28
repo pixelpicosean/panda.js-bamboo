@@ -42,17 +42,8 @@ game.createNode('Layer', {
     }
 });
 
-/**
-    How fast layer should move.
-    @property {Vector} speedFactor
-    @default 1,1
-**/
 game.addNodeProperty('Layer', 'speedFactor', 'vector', [1, 1]);
 game.addNodeProperty('Layer', 'cacheAsBitmap', 'boolean');
-/**
-    Does layer use fixed position.
-    @property {Boolean} fixed
-**/
 game.addNodeProperty('Layer', 'fixed', 'boolean');
 
 });
