@@ -794,7 +794,7 @@ game.bamboo.Editor = game.Class.extend({
     saveToFileComplete: function(request, filename) {
         if (request.readyState === 4) {
             if (request.responseText === 'success') {
-                console.log('File saved');
+                console.log('Scene saved');
             }
             else this.showError('Failed to write file ' + filename);
         }

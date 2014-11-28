@@ -255,7 +255,7 @@ game.bamboo.PropertyPanel = game.Class.extend({
             if (props[key].hidden) continue;
 
             if (props[key].type === 'number') {
-                this.settingsWindow.addInputText(key, parseFloat(node[key]), props[key].name, null, this.numberPropertyChanged.bind(this));
+                this.settingsWindow.addInputText(key, parseFloat(node[key]) || 0, props[key].name, null, this.numberPropertyChanged.bind(this));
             }                
             else if (props[key].type === 'string') {
                 this.settingsWindow.addInputText(key, node[key], props[key].name, null, this.textPropertyChanged.bind(this));
