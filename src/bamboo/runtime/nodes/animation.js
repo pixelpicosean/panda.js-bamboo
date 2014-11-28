@@ -6,7 +6,7 @@ game.module(
 )
 .body(function() {
 
-bamboo.createNode('Animation', {
+game.createNode('Animation', {
     init: function() {
         this.displayObject = new game.Animation([new game.Texture(new game.BaseTexture())]);
     },
@@ -38,11 +38,11 @@ bamboo.createNode('Animation', {
     }
 });
 
-bamboo.addNodeProperty('Animation', 'startFrame', 'number', 0);
-bamboo.addNodeProperty('Animation', 'frameCount', 'number', 0);
-bamboo.addNodeProperty('Animation', 'spritesheet', 'json');
-bamboo.addNodeProperty('Animation', 'speed', 'number', 1);
-bamboo.addNodeProperty('Animation', 'loop', 'boolean', true);
-bamboo.addNodeProperty('Animation', 'triggered', 'boolean');
+game.addNodeProperty('Animation', 'startFrame', 'number', 0);
+game.addNodeProperty('Animation', 'frameCount', 'number', 0);
+game.addNodeProperty('Animation', 'spritesheet', 'json');
+game.addNodeProperty('Animation', 'speed', 'number', 1);
+game.addNodeProperty('Animation', 'loop', 'boolean', true);
+game.addNodeProperty('Animation', 'triggered', 'boolean');
 
 });

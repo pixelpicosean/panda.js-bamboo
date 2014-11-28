@@ -7,11 +7,7 @@ game.module(
 )
 .body(function() {
 
-/**
-    @class Tile
-    @namespace bamboo.Nodes
-**/
-bamboo.createNode('Tile', {
+game.createNode('Tile', {
     init: function() {
         this.displayObject = new game.Sprite(new game.Texture(new game.BaseTexture()));
     },
@@ -22,6 +18,6 @@ bamboo.createNode('Tile', {
     }
 });
 
-bamboo.addNodeProperty('Tile', 'frame', 'string', '', true);
+game.addNodeProperty('Tile', 'frame', 'string', '', true);
 
 });

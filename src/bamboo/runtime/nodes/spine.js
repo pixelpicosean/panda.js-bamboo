@@ -6,12 +6,7 @@ game.module(
 )
 .body(function() {
 
-/**
-    Spine animation.
-    @class Spine
-    @namespace bamboo.Nodes
-**/
-bamboo.createNode('Spine', {
+game.createNode('Spine', {
     ready: function() {
         if (!this.triggered) this.play();
     },
@@ -34,37 +29,11 @@ bamboo.createNode('Spine', {
     }
 });
 
-/**
-    Spine animation data.
-    @property {JSON} spineData
-**/
-bamboo.addNodeProperty('Spine', 'spineData', 'json');
-/**
-    Spritesheet for animation.
-    @property {JSON} spritesheet
-**/
-bamboo.addNodeProperty('Spine', 'spritesheet', 'json');
-/**
-    Name of animation.
-    @property {String} animation
-**/
-bamboo.addNodeProperty('Spine', 'animation', 'string');
-/**
-    Speed of animation.
-    @property {Number} speed
-    @default 1
-**/
-bamboo.addNodeProperty('Spine', 'speed', 'number', 1);
-/**
-    Is animation looping.
-    @property {Boolean} loop
-    @default true
-**/
-bamboo.addNodeProperty('Spine', 'loop', 'boolean', true);
-/**
-    Is animation started from trigger.
-    @property {Boolean} triggered
-**/
-bamboo.addNodeProperty('Spine', 'triggered', 'boolean');
+game.addNodeProperty('Spine', 'spineData', 'json');
+game.addNodeProperty('Spine', 'spritesheet', 'json');
+game.addNodeProperty('Spine', 'animation', 'string');
+game.addNodeProperty('Spine', 'speed', 'number', 1);
+game.addNodeProperty('Spine', 'loop', 'boolean', true);
+game.addNodeProperty('Spine', 'triggered', 'boolean');
 
 });

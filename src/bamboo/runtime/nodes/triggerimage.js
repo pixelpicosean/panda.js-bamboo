@@ -6,12 +6,7 @@ game.module(
 )
 .body(function() {
 
-/**
-    Trigger that uses image.
-    @class TriggerImage
-    @namespace bamboo.Nodes
-**/
-bamboo.createNode('TriggerImage', 'Trigger', {
+game.createNode('TriggerImage', 'Trigger', {
     init: function() {
         this.displayObject = new game.Sprite(new game.Texture(new game.BaseTexture()));
     },
@@ -26,6 +21,6 @@ bamboo.createNode('TriggerImage', 'Trigger', {
     }
 });
 
-bamboo.addNodeProperty('TriggerImage', 'image', 'image');
+game.addNodeProperty('TriggerImage', 'image', 'image');
 
 });

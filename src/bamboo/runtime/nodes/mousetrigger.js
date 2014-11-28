@@ -7,16 +7,16 @@ game.module(
 )
 .body(function() {
 
-/**
-    Calls children's trigger function, when trigger is clicked.
-    @class Trigger
-    @namespace bamboo.Nodes
-**/
-bamboo.createNode('MouseTrigger', {
+game.createNode('MouseTrigger', {
     ready: function() {
         this.displayObject.interactive = true;
         this.displayObject.buttonMode = !!this.buttonMode;
-        this.displayObject.click = this.displayObject.tap = this.click.bind(this);
+        if (this.useMouseDown) {
+            this.displayObject.mousedown = this.displayObject.touchstart = this.click.bind(this);
+        }
+        else {
+            this.displayObject.click = this.displayObject.tap = this.click.bind(this);
+        }
         this.displayObject.hitArea = new game.HitRectangle(0, 0, this.size.x, this.size.y);
     },
 
@@ -28,11 +28,8 @@ bamboo.createNode('MouseTrigger', {
     }
 });
 
-/**
-    Disable trigger, after clicked.
-    @property {Boolean} onetime
-**/
-bamboo.addNodeProperty('MouseTrigger', 'onetime', 'boolean');
-bamboo.addNodeProperty('MouseTrigger', 'buttonMode', 'boolean');
+game.addNodeProperty('MouseTrigger', 'onetime', 'boolean');
+game.addNodeProperty('MouseTrigger', 'buttonMode', 'boolean');
+game.addNodeProperty('MouseTrigger', 'useMouseDown', 'boolean');
 
 });

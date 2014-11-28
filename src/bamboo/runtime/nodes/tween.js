@@ -6,11 +6,7 @@ game.module(
 )
 .body(function() {
 
-/**
-    @class Tween
-    @namespace bamboo.Nodes
-**/
-bamboo.createNode('Tween', {
+game.createNode('Tween', {
     tweens: [],
 
     ready: function() {
@@ -65,15 +61,15 @@ bamboo.createNode('Tween', {
     }
 });
 
-bamboo.addNodeProperty('Tween', 'tweenData', 'object');
-bamboo.addNodeProperty('Tween', 'duration', 'number', 1000);
-bamboo.addNodeProperty('Tween', 'repeat', 'number', 0);
-bamboo.addNodeProperty('Tween', 'delay', 'number', 0);
-bamboo.addNodeProperty('Tween', 'yoyo', 'boolean');
-bamboo.addNodeProperty('Tween', 'easing', 'easing');
-bamboo.addNodeProperty('Tween', 'triggered', 'boolean');
-bamboo.addNodeProperty('Tween', 'triggerOnStart', 'boolean');
-bamboo.addNodeProperty('Tween', 'triggerOnComplete', 'boolean');
-bamboo.addNodeProperty('Tween', 'startSound', 'audio');
+game.addNodeProperty('Tween', 'tweenData', 'object');
+game.addNodeProperty('Tween', 'duration', 'number', 1000);
+game.addNodeProperty('Tween', 'repeat', 'number', 0);
+game.addNodeProperty('Tween', 'delay', 'number', 0);
+game.addNodeProperty('Tween', 'yoyo', 'boolean');
+game.addNodeProperty('Tween', 'easing', 'easing');
+game.addNodeProperty('Tween', 'triggered', 'boolean');
+game.addNodeProperty('Tween', 'triggerOnStart', 'boolean');
+game.addNodeProperty('Tween', 'triggerOnComplete', 'boolean');
+game.addNodeProperty('Tween', 'startSound', 'audio');
 
 });

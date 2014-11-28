@@ -41,11 +41,6 @@ game.bamboo.getSceneData = function(sceneName) {
     return sceneData;
 };
 
-// Deprecated
-bamboo = {};
-bamboo.createNode = game.createNode;
-bamboo.addNodeProperty = game.addNodeProperty;
-
 game.module(
     'bamboo.core'
 )

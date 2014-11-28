@@ -7,11 +7,7 @@ game.module(
 )
 .body(function() {
 
-/**
-    @class Path
-    @namespace bamboo.Nodes
-**/
-bamboo.createNode('Path', {
+game.createNode('Path', {
     points: [],
     segmentDistances: [],
     splineSegmentDistances: [],
@@ -73,11 +69,6 @@ bamboo.createNode('Path', {
         return segmentIndex;
     },
 
-    /**
-        Get closest position on path from point.
-        @method getClosestPosition
-        @param {Vector} point
-    **/
     getClosestPosition: function(point) {
         var closestDistance = Number.MAX_VALUE;
         var closestPoint = bamboo.pool.get();
@@ -194,11 +185,6 @@ bamboo.createNode('Path', {
         }
     },
 
-    /**
-        Get position on path, based on distance.
-        @method getPositionAtDistance
-        @param {Number} dist
-    **/
     getPositionAtDistance: function(dist) {
         if (dist < 0) dist = this.length + (dist % this.length);
         if (dist > this.length) dist = dist % this.length;
@@ -271,20 +257,10 @@ bamboo.createNode('Path', {
     }
 });
 
-/**
-    Is path looping.
-    @property {Boolean} loop
-**/
-bamboo.addNodeProperty('Path', 'loop', 'boolean');
-/**
-    Is path spline.
-    @property {Boolean} spline
-**/
-bamboo.addNodeProperty('Path', 'spline', 'boolean');
-/**
-    List of points in path.
-    @property {Array} points
-**/
+game.addNodeProperty('Path', 'loop', 'boolean');
+game.addNodeProperty('Path', 'spline', 'boolean');
+
+// TODO fix this
 game.bamboo.nodes.Path.properties.points = new game.bamboo.Property('', '', 'array', [], new game.bamboo.Property('', 'vector'));
 
 });

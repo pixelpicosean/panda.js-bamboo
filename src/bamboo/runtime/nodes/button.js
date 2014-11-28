@@ -7,11 +7,7 @@ game.module(
 )
 .body(function() {
 
-/**
-    @class Button
-    @namespace bamboo.Nodes
-**/
-bamboo.createNode('Button', 'Image', {
+game.createNode('Button', 'Image', {
     init: function() {
         this.displayObject = new game.Sprite(new game.Texture(new game.BaseTexture()));
     },
@@ -61,10 +57,10 @@ bamboo.createNode('Button', 'Image', {
     }
 });
 
-bamboo.addNodeProperty('Button', 'downImage', 'image');
-bamboo.addNodeProperty('Button', 'overImage', 'image');
-bamboo.addNodeProperty('Button', 'callback', 'string');
-bamboo.addNodeProperty('Button', 'buttonMode', 'boolean');
-bamboo.addNodeProperty('Button', 'activateFromTrigger', 'boolean');
+game.addNodeProperty('Button', 'downImage', 'image');
+game.addNodeProperty('Button', 'overImage', 'image');
+game.addNodeProperty('Button', 'callback', 'string');
+game.addNodeProperty('Button', 'buttonMode', 'boolean');
+game.addNodeProperty('Button', 'activateFromTrigger', 'boolean');
 
 });

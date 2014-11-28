@@ -7,12 +7,7 @@ game.module(
 )
 .body(function() {
 
-/**
-    Tile with physics body.
-    @class CollisionTile
-    @namespace bamboo.Nodes
-**/
-bamboo.createNode('CollisionTile', {
+game.createNode('CollisionTile', {
     init: function() {
         this.displayObject = new game.Sprite(new game.Texture(new game.BaseTexture()));
     },
@@ -38,11 +33,7 @@ bamboo.createNode('CollisionTile', {
     }
 });
 
-bamboo.addNodeProperty('CollisionTile', 'frame', 'string', '', true);
-/**
-    Collision group for tile's physics body.
-    @property {Number} collisionGroup
-**/
-bamboo.addNodeProperty('CollisionTile', 'collisionGroup', 'number', 0);
+game.addNodeProperty('CollisionTile', 'frame', 'string', '', true);
+game.addNodeProperty('CollisionTile', 'collisionGroup', 'number', 0);
 
 });

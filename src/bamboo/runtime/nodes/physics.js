@@ -6,10 +6,7 @@ game.module(
 )
 .body(function() {
 
-/**
-    @class Physics
-**/
-bamboo.createNode('Physics', {
+game.createNode('Physics', {
     init: function() {
         this.displayObject = new game.Container();
         this.scene.world = new game.World();
@@ -24,11 +21,6 @@ bamboo.createNode('Physics', {
     }
 });
 
-/**
-    Gravity for physics world.
-    @property {Vector} gravity
-    @default 0, 980
-**/
-bamboo.addNodeProperty('Physics', 'gravity', 'vector', [0, 980]);
+game.addNodeProperty('Physics', 'gravity', 'vector', [0, 980]);
 
 });
