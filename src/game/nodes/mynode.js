@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 
 // Example of custom node
-bamboo.createNode('MyNode', {
+game.createNode('MyNode', {
     ready: function() {
         // This is called, when node is ready and all properties are set
     },
@@ -17,7 +17,7 @@ bamboo.createNode('MyNode', {
     },
 
     update: function() {
-        // This is called every frame
+        // This is called every frame (optional)
     }
 });
 

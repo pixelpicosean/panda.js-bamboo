@@ -17,7 +17,6 @@ game.bamboo.Editor = game.Class.extend({
 
         this.config = game.bamboo.editor.config;
         this.scene = new game.BambooScene(data);
-        this.console = new game.bamboo.Console();
 
         this.gridSize = game.storage.get('gridSize', 16);
 
@@ -133,7 +132,7 @@ game.bamboo.Editor = game.Class.extend({
         this.showSettings();
         this.initShadow();
 
-        this.console.log('Scene ' + this.scene.name + ' loaded');
+        console.log('Scene ' + this.scene.name + ' loaded');
     },
 
     loadScene: function() {
@@ -194,15 +193,15 @@ game.bamboo.Editor = game.Class.extend({
         }
         game.storage.set('gridSize', this.gridSize);
 
-        if (this.gridSize > 0) this.console.log('Grid ' + this.gridSize + ' x ' + this.gridSize);
-        else this.console.log('Grid disabled');
+        if (this.gridSize > 0) console.log('Grid ' + this.gridSize + ' x ' + this.gridSize);
+        else console.log('Grid disabled');
 
         this.boundaryLayer.resetGraphics();
     },
 
     toggleBoundaries: function() {
         this.boundaryLayer.boundaries.visible = !this.boundaryLayer.boundaries.visible;
-        this.console.log('Boundaries ' + (this.boundaryLayer.boundaries.visible ? 'on' : 'off'));
+        console.log('Boundaries ' + (this.boundaryLayer.boundaries.visible ? 'on' : 'off'));
     },
 
     initShadow: function() {
@@ -321,7 +320,7 @@ game.bamboo.Editor = game.Class.extend({
 
     toggleViewNodes: function() {
         this.viewNodes = !this.viewNodes;
-        this.console.log('Nodes ' + (this.viewNodes ? 'visible' : 'hidden'));
+        console.log('Nodes ' + (this.viewNodes ? 'visible' : 'hidden'));
         for (var i = 0; i < this.nodes.length; i++) {
             this.nodes[i].parentSelectionRect.visible = this.viewNodes;
             this.nodes[i].connectedToLine.visible = this.viewNodes;
@@ -668,7 +667,7 @@ game.bamboo.Editor = game.Class.extend({
 
         if (audioFilesAdded > 0) {
             var word = audioFilesAdded === 1 ? 'file' : 'files';
-            this.console.log(audioFilesAdded + ' audio ' + word + ' added');
+            console.log(audioFilesAdded + ' audio ' + word + ' added');
         }
 
         if (assets.length > 0) {
@@ -700,7 +699,7 @@ game.bamboo.Editor = game.Class.extend({
         }
         this.scene.assets.sort();
         var word = count === 1 ? 'asset' : 'assets';
-        this.console.log(count + ' ' + word + ' added');
+        console.log(count + ' ' + word + ' added');
         if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
 
         this.updateAssetsList();
@@ -795,7 +794,7 @@ game.bamboo.Editor = game.Class.extend({
     saveToFileComplete: function(request, filename) {
         if (request.readyState === 4) {
             if (request.responseText === 'success') {
-                this.console.log('File saved');
+                console.log('File saved');
             }
             else this.showError('Failed to write file ' + filename);
         }

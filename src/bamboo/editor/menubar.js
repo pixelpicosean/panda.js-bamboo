@@ -34,9 +34,6 @@ game.bamboo.MenuBar = game.Class.extend({
         this.menuElem.addMenuItem('Window', 'Camera', function() {
             game.bamboo.ui.toggleWindow('camera');
         });
-        this.menuElem.addMenuItem('Window', 'Console', function() {
-            game.bamboo.ui.toggleWindow('console');
-        });
         this.menuElem.addMenuItem('Window', 'Layers', function() {
             game.bamboo.ui.toggleWindow('layers');
         });

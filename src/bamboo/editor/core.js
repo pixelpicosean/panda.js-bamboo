@@ -15,7 +15,6 @@ game.module(
 .require(
     'bamboo.editor.boundarylayer',
     'bamboo.editor.editor',
-    'bamboo.editor.console',
     'bamboo.editor.controller',
     'bamboo.editor.filesaver',
     'bamboo.editor.mode',
@@ -163,6 +162,7 @@ game.start = function() {
     game.bamboo.scenes = game.ksort(game.bamboo.scenes);
 
     style.onload = function() {
+        console.log('Bamboo ' + game.bamboo.version);
         game._start(null, window.innerWidth, window.innerHeight);
         game.bamboo.ui = new game.bamboo.Ui();
     };

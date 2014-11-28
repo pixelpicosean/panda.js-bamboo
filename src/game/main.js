@@ -6,7 +6,9 @@ game.module(
     'bamboo.core',
     // Load Bamboo scene modules
     'game.scenes.scene1',
-    'game.scenes.scene2'
+    'game.scenes.scene2',
+    // Load custom node
+    'game.nodes.mynode'
 )
 .body(function() {
 
