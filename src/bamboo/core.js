@@ -3,7 +3,7 @@
 pandaConfig.bamboo = pandaConfig.bamboo || {};
 
 game.bamboo = {
-    version: '0.8.0'
+    version: '0.9.0'
 };
 
 game.scenes = {};
