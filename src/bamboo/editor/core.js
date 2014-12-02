@@ -6,7 +6,7 @@ game.bamboo.editor = {
 };
 
 game.createEditorNode = function(node, content) {
-    game.bamboo.nodes[node].editor = game.bamboo.Node.editor.extend(content);
+    game.nodes[node].editor = game.Node.editor.extend(content);
 };
 
 game.module(
@@ -66,7 +66,7 @@ game.createScene('BambooEditor', {
         canvas.ondragleave = this.dragleave.bind(this);
         canvas.ondrop = this.filedrop.bind(this);
 
-        var data = game.bamboo.editor.currentScene ? game.bamboo.getSceneData(game.bamboo.editor.currentScene) : null;
+        var data = game.bamboo.editor.currentScene ? game.getSceneData(game.bamboo.editor.currentScene) : null;
         this.editor = new game.bamboo.Editor(data);
         this.stage.addChild(this.editor.displayObject);
         this.addObject(this.editor);
@@ -158,8 +158,8 @@ game.start = function() {
     style.type = 'text/css';
     style.href = 'src/bamboo/editor/style.css';
 
-    game.bamboo.nodes = game.ksort(game.bamboo.nodes);
-    game.bamboo.scenes = game.ksort(game.bamboo.scenes);
+    game.nodes = game.ksort(game.nodes);
+    game.scenes = game.ksort(game.scenes);
 
     style.onload = function() {
         console.log('Bamboo ' + game.bamboo.version);

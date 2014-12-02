@@ -97,7 +97,7 @@ game.bamboo.Editor = game.Class.extend({
         });
         this.nodesWindow.addInputSelect('type', 'Type');
 
-        for (var name in game.bamboo.nodes) {
+        for (var name in game.nodes) {
             this.nodesWindow.addInputSelectOption('type', name, name);
         }
 
@@ -149,7 +149,7 @@ game.bamboo.Editor = game.Class.extend({
         var scenesList = document.createElement('select');
         scenesList.style.height = '100px';
         scenesList.size = 2;
-        for (var name in game.bamboo.scenes) {
+        for (var name in game.scenes) {
             var opt = document.createElement('option');
             opt.value = name;
             opt.innerHTML = name;
@@ -401,7 +401,7 @@ game.bamboo.Editor = game.Class.extend({
         var nodes = [];
         for (var i = 0; i < this.nodes.length; i++) {
             var n = this.nodes[i];
-            if (n.layer !== layer || n.node instanceof game.bamboo.nodes.Layer) continue;
+            if (n.layer !== layer || n.node instanceof game.nodes.Layer) continue;
             n = n.node;
 
             var a = [];
@@ -428,7 +428,7 @@ game.bamboo.Editor = game.Class.extend({
         node.editorNode.updateRect();
         node.editorNode.layerChanged();
         node.editorNode.ready();
-        if (node instanceof game.bamboo.nodes.Layer) {
+        if (node instanceof game.nodes.Layer) {
             this.layers.push(node);
             this.layerAdded(node);
         }
@@ -439,7 +439,7 @@ game.bamboo.Editor = game.Class.extend({
     },
 
     nodeRemoved: function(node) {
-        if (node instanceof game.bamboo.nodes.Layer) {
+        if (node instanceof game.nodes.Layer) {
             var idx = this.layers.indexOf(node);
             this.layers.splice(idx, 1);
             this.layerRemoved(node);
@@ -507,7 +507,7 @@ game.bamboo.Editor = game.Class.extend({
             if (layer && editorNode.layer !== layer) continue;
 
             var node = editorNode.node;
-            if (node instanceof game.bamboo.nodes.Layer) continue;
+            if (node instanceof game.nodes.Layer) continue;
             
             var loc = node.getGlobalPosition();
             loc.x -= node.size.x * node.anchor.x;
@@ -772,7 +772,7 @@ game.bamboo.Editor = game.Class.extend({
         content += '\n)\n';
         content += '.body(function() {\n\n';
         content += 'var json = ' + JSON.stringify(json, null, '    ');
-        content += ';\n\ngame.bamboo.scenes[json.name] = json;\n';
+        content += ';\n\ngame.scenes[json.name] = json;\n';
         content += '\n});\n';
 
         return content;

@@ -8,7 +8,7 @@ game.module(
 
 game.bamboo.editor.ModeEdit = game.bamboo.editor.Mode.extend({
     init: function() {
-        this.node = this.editor.activeNode._editorNode;
+        this.node = this.editor.activeNode.editorNode;
         this.editor.controller.enableEditMode(this.node, true);
     },
     
@@ -18,25 +18,25 @@ game.bamboo.editor.ModeEdit = game.bamboo.editor.Mode.extend({
 
     click: function(event) {
         var pos = new game.Point(event.global.x, event.global.y);
-        pos = this.editor.toWorldSpace(pos);
+        pos = this.editor.toGlobalSpace(pos);
         this.node.click(pos);
     },
 
     mousedown: function(event) {
         var pos = new game.Point(event.global.x, event.global.y);
-        pos = this.editor.toWorldSpace(pos);
+        pos = this.editor.toGlobalSpace(pos);
         this.node.mousedown(pos);
     },
 
     mousemove: function(event) {
         var pos = new game.Point(event.global.x, event.global.y);
-        pos = this.editor.toWorldSpace(pos);
+        pos = this.editor.toGlobalSpace(pos);
         this.node.mousemove(pos);
     },
 
     mouseup: function(event) {
         var pos = new game.Point(event.global.x, event.global.y);
-        pos = this.editor.toWorldSpace(pos);
+        pos = this.editor.toGlobalSpace(pos);
         this.node.mouseup(pos);
     },
 

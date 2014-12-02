@@ -5,6 +5,7 @@ game.module(
     'engine.renderer'
 )
 .body(function () {
+'use strict';
 
 game.Point = game.Class.extend({
     x: 0,

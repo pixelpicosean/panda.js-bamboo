@@ -7,8 +7,7 @@ game.module(
 )
 .body(function() {
 
-game.bamboo.nodes.Path.editor = game.bamboo.Node.editor.extend({
-    helpText: 'Path: (A)dd point, (G)rab point, (D)elete point',
+game.createEditorNode('Path', {
     color: 0x0000ee,
     selectedPointIndex: -1,
     moving: -1,

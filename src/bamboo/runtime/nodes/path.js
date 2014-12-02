@@ -261,6 +261,6 @@ game.addNodeProperty('Path', 'loop', 'boolean');
 game.addNodeProperty('Path', 'spline', 'boolean');
 
 // TODO fix this
-game.bamboo.nodes.Path.properties.points = new game.bamboo.Property('', '', 'array', [], new game.bamboo.Property('', 'vector'));
+game.nodes.Path.properties.points = new game.Property('', '', 'array', [], new game.Property('', 'vector'));
 
 });

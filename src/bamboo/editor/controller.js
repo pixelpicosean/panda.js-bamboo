@@ -11,21 +11,21 @@ game.bamboo.Controller = game.Class.extend({
     createNode: function(className, properties, editorNodeProperties) {
         properties.name = this.editor.getUniqueName(properties.name);
 
-        game.bamboo.nodes[className].prototype.ready = function() {};
-        var node = new game.bamboo.nodes[className](this.editor.scene, properties);
+        game.nodes[className].prototype.ready = function() {};
+        var node = new game.nodes[className](this.editor.scene, properties);
 
-        if (!game.bamboo.nodes[className].editor) {
-            var proto = game.bamboo.nodes[className].prototype;
+        if (!game.nodes[className].editor) {
+            var proto = game.nodes[className].prototype;
             while (true) {
                 if (proto.constructor.editor) break;
                 proto = Object.getPrototypeOf(proto);
                 if (proto === game.Class.prototype) break;
             }
 
-            game.bamboo.nodes[className].editor = proto.constructor.editor;
+            game.nodes[className].editor = proto.constructor.editor;
         }
 
-        var editorNode = new game.bamboo.nodes[className].editor(node, this.editor, editorNodeProperties);
+        var editorNode = new game.nodes[className].editor(node, this.editor, editorNodeProperties);
         editorNode.connectedToLine.visible = this.editor.viewNodes;
         editorNode.parentSelectionRect.visible = this.editor.viewNodes;
         editorNode.nameText.visible = this.editor.viewNodes;
@@ -99,7 +99,7 @@ game.bamboo.Controller = game.Class.extend({
     selectAllNodes: function() {
         for (var i = 0; i < this.editor.nodes.length; i++) {
             var n = this.editor.nodes[i];
-            if (n instanceof game.bamboo.nodes.Layer.editor) continue;
+            if (n instanceof game.nodes.Layer.editor) continue;
             if (n.layer === this.editor.activeLayer) {
                 this.selectNode(n.node);
             }

@@ -9,7 +9,7 @@ game.module(
 
 game.addAsset('../src/bamboo/editor/media/path_follower.png');
 
-game.bamboo.nodes.PathFollower.editor = game.bamboo.Node.editor.extend({
+game.createEditorNode('PathFollower', {
     init: function(node) {
         this._super(node);
 

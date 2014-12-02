@@ -7,7 +7,7 @@ game.module(
 )
 .body(function() {
 
-game.bamboo.nodes.TriggerImage.editor = game.bamboo.Node.editor.extend({
+game.createEditorNode('TriggerImage', {
     propertyChanged: function(key, value, oldValue) {
         if (key === 'image') {
             this.setProperty('size', new game.Point(this.node.displayObject.width, this.node.displayObject.height));

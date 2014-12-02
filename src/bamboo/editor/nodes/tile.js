@@ -7,8 +7,7 @@ game.module(
 )
 .body(function() {
 
-game.bamboo.nodes.Tile.editor = game.bamboo.Node.editor.extend({
-    helpText: 'LEFT prev tile, RIGHT next tile',
+game.createEditorNode('Tile', {
     frames: [],
     currentFrame: 0,
 

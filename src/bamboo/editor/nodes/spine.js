@@ -6,9 +6,8 @@ game.module(
     'bamboo.runtime.nodes.spine'
 )
 .body(function() {
-'use strict';
 
-game.bamboo.nodes.Spine.editor = game.bamboo.Node.editor.extend({
+game.createEditorNode('Spine', {
     setProperty: function(property, value) {
         if (property === 'animation' && this.node.spineObject) {
             if (this.node.spineObject.parent) {

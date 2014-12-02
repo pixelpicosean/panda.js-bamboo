@@ -7,7 +7,7 @@ game.module(
 )
 .body(function() {
 
-game.bamboo.nodes.Tween.editor = game.bamboo.Node.editor.extend({
+game.createEditorNode('Tween', {
     tweenStartData: {},
     tweenData: {},
 

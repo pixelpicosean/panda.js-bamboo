@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 'use strict';
 
-game.bamboo.Node = game.Class.extend({
+game.createClass('Node', {
     children: [],
 
     staticInit: function(scene, propertyData) {
@@ -137,12 +137,12 @@ game.bamboo.Node = game.Class.extend({
     }
 });
 
-game.bamboo.Node.properties = {};
-
-game.addNodeProperty('Node', 'parent', 'node');
-game.addNodeProperty('Node', 'name', 'string');
-game.addNodeProperty('Node', 'position', 'vector');
-game.addNodeProperty('Node', 'size', 'vector');
-game.addNodeProperty('Node', 'anchor', 'vector');
+game.Node.properties = {
+    parent: new game.Property('parent', 'node'),
+    name: new game.Property('name', 'string'),
+    position: new game.Property('position', 'vector'),
+    size: new game.Property('size', 'vector'),
+    anchor: new game.Property('anchor', 'vector')
+};
 
 });

@@ -9,7 +9,7 @@ game.module(
 
 game.addAsset('../src/bamboo/editor/media/rotator.png');
 
-game.bamboo.nodes.Rotator.editor = game.bamboo.Node.editor.extend({
+game.createEditorNode('Rotator', {
     init: function(node) {
         this._super(node);
 

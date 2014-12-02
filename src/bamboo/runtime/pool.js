@@ -5,7 +5,8 @@ game.module(
     'bamboo.runtime.point'
 )
 .body(function() {
-    
+'use strict';
+
 game.bamboo.pool = {
     objects: [],
 

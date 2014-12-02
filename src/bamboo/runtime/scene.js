@@ -16,7 +16,7 @@ game.createClass('BambooScene', {
     time: 0,
 
     init: function(sceneName) {
-        game.merge(this, game.bamboo.getSceneData(sceneName));
+        game.merge(this, game.getSceneData(sceneName));
         
         this.displayObject = new game.Container();
         
@@ -27,8 +27,8 @@ game.createClass('BambooScene', {
 
     initNodes: function() {
         for (var i = 0; i < this.nodes.length; i++) {
-            if (!game.bamboo.nodes[this.nodes[i].class]) throw 'node ' + this.nodes[i].class + ' not found';
-            var node = new game.bamboo.nodes[this.nodes[i].class](this, this.nodes[i].properties);
+            if (!game.nodes[this.nodes[i].class]) throw 'node ' + this.nodes[i].class + ' not found';
+            var node = new game.nodes[this.nodes[i].class](this, this.nodes[i].properties);
             this.nodes[i] = node;
             this.addNode(node);
         }
@@ -64,7 +64,7 @@ game.createClass('BambooScene', {
     addNode: function(node) {
         if (this.nodes.indexOf(node) === -1) this.nodes.push(node);
         if (typeof node.update === 'function') this.activeNodes.push(node);
-        if (node instanceof game.bamboo.nodes.Layer) this.layers.push(node);
+        if (node instanceof game.nodes.Layer) this.layers.push(node);
         this.nodeAdded(node);
     },
 

@@ -7,9 +7,7 @@ game.module(
 )
 .body(function() {
 
-game.bamboo.nodes.Image.editor = game.bamboo.Node.editor.extend({
-    helpText: '(R)eset size',
-
+game.createEditorNode('Image', {
     propertyChanged: function(key, value, oldValue) {
         this._super(key, value, oldValue);
 

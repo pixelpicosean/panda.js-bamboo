@@ -7,8 +7,7 @@ game.module(
 )
 .body(function() {
 
-game.bamboo.nodes.CollisionTile.editor = game.bamboo.Node.editor.extend({
-    helpText: 'LEFT prev tile, RIGHT next tile',
+game.createEditorNode('CollisionTile', {
     frames: [],
     currentFrame: 0,
 

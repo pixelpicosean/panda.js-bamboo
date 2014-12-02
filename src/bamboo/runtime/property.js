@@ -6,8 +6,9 @@ game.module(
     'engine.tween'
 )
 .body(function() {
+'use strict';
 
-game.bamboo.Property = game.Class.extend({
+game.createClass('Property', {
     options: {},
 
     init: function(name, type, defaultValue, hidden, options) {
@@ -36,7 +37,7 @@ game.bamboo.Property = game.Class.extend({
             var a = [];
             if (!node.propertyData[this.name]) return a;
             for (var i = 0; i < node.propertyData[this.name].length; i++) {
-                var value = game.bamboo.Property.parse(scene, node.propertyData[this.name], i, this.options);
+                var value = game.Property.parse(scene, node.propertyData[this.name], i, this.options);
                 a.push(value);
             }
             return a;

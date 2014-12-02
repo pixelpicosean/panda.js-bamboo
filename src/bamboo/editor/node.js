@@ -8,7 +8,7 @@ game.module(
 
 game.addAsset('../src/bamboo/editor/media/anchorbox.png');
 
-game.bamboo.Node.editor = game.Class.extend({
+game.Node.editor = game.Class.extend({
     editMode: false,
     propertyChangeListeners: [],
     properties: {
@@ -67,7 +67,7 @@ game.bamboo.Node.editor = game.Class.extend({
     layerChanged: function() {
         var node = this.node;
         while (node) {
-            if (node instanceof game.bamboo.nodes.Layer) {
+            if (node instanceof game.nodes.Layer) {
                 this.layer = node;
                 break;
             }
@@ -83,7 +83,7 @@ game.bamboo.Node.editor = game.Class.extend({
         this.connectedToLine.clear();
 
         if (this.node.parent) {
-            if (this.node.parent instanceof game.bamboo.nodes.Layer) return;
+            if (this.node.parent instanceof game.nodes.Layer) return;
             if (this.node.parent instanceof game.BambooScene) return;
             this.connectedToLine.lineStyle(1, 0xffffff, 0.5);
             this.connectedToLine.moveTo(0,0);
@@ -144,7 +144,7 @@ game.bamboo.Node.editor = game.Class.extend({
 
             this.displayObject.position.set(this.node.position.x, this.node.position.y);
 
-            if (value instanceof game.bamboo.nodes.Layer) {
+            if (value instanceof game.nodes.Layer) {
                 this.layerChanged();
                 this.editor.controller.setActiveLayer(value);
                 this.editor.controller.setActiveNode(this.node);
@@ -214,9 +214,9 @@ game.bamboo.Node.editor = game.Class.extend({
 
     getClassName: function() {
         var proto;
-        for (var name in game.bamboo.nodes) {
+        for (var name in game.nodes) {
             proto = Object.getPrototypeOf(this.node);
-            if (proto === game.bamboo.nodes[name].prototype) return name;
+            if (proto === game.nodes[name].prototype) return name;
         }
     },
 
