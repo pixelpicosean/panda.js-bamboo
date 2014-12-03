@@ -9,6 +9,11 @@ game.module(
 'use strict';
 
 game.createNode('Layer', {
+    speedFactor: {
+        x: 1,
+        y: 1
+    },
+    
     ready: function() {
         if (this.cacheAsBitmap) {
             var size = game.config.bamboo.maxTextureSize || 2048;
@@ -42,8 +47,8 @@ game.createNode('Layer', {
     }
 });
 
-game.addNodeProperty('Layer', 'speedFactor', 'vector', [1, 1]);
-game.addNodeProperty('Layer', 'cacheAsBitmap', 'boolean');
-game.addNodeProperty('Layer', 'fixed', 'boolean');
+// game.addNodeProperty('Layer', 'speedFactor', 'vector', [1, 1]);
+// game.addNodeProperty('Layer', 'cacheAsBitmap', 'boolean');
+// game.addNodeProperty('Layer', 'fixed', 'boolean');
 
 });

@@ -56,13 +56,13 @@ game.createNode('PathFollower', {
     }
 });
 
-game.addNodeProperty('PathFollower', 'duration', 'number', 2);
-game.addNodeProperty('PathFollower', 'offset', 'number', 0);
-game.addNodeProperty('PathFollower', 'loop', 'boolean');
-game.addNodeProperty('PathFollower', 'yoyo', 'boolean');
-game.addNodeProperty('PathFollower', 'flipOnYoyo', 'boolean');
-game.addNodeProperty('PathFollower', 'triggered', 'boolean');
-game.addNodeProperty('PathFollower', 'reverse', 'boolean');
-game.addNodeProperty('PathFollower', 'easing', 'easing');
+// game.addNodeProperty('PathFollower', 'duration', 'number', 2);
+// game.addNodeProperty('PathFollower', 'offset', 'number', 0);
+// game.addNodeProperty('PathFollower', 'loop', 'boolean');
+// game.addNodeProperty('PathFollower', 'yoyo', 'boolean');
+// game.addNodeProperty('PathFollower', 'flipOnYoyo', 'boolean');
+// game.addNodeProperty('PathFollower', 'triggered', 'boolean');
+// game.addNodeProperty('PathFollower', 'reverse', 'boolean');
+// game.addNodeProperty('PathFollower', 'easing', 'easing');
 
 });

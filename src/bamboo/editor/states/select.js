@@ -17,73 +17,55 @@ game.bamboo.editor.createState('Select', {
     },
 
     mousedown: function(event) {
-        var mousePos = new game.Point(event.global.x, event.global.y);
-
-        if (this.mode.editor.selectedNodes.length > 0) {
-            var node = this.mode.editor.getNodeAt(mousePos, this.mode.editor.activeLayer);
-
-            if (node && this.mode.editor.activeNode === node) {
-                var resizeArea = 10;
-                var pos = node.getGlobalPosition();
-                mousePos = this.mode.editor.toGlobalSpace(mousePos);
-                var bottomRightX = (pos.x - node.anchor.x * node.size.x) + node.size.x - resizeArea;
-                var bottomRightY = (pos.y - node.anchor.y * node.size.y) + node.size.y - resizeArea;
-                if (mousePos.x >= bottomRightX && mousePos.y >= bottomRightY) {
-                    this.mode.editor.changeState('Resize');
-                    return;
-                }
-            }
-
-            if (this.mode.editor.selectedNodes.indexOf(node) !== -1) {
-                this.mode.editor.changeState('Move');
-            }
-        }
-
         this._mousedown = true;
     },
 
+    nodeMouseDown: function(node, event) {
+        if (this.mode.editor.activeNode === node) {
+            var mousePos = new game.Point(event.global.x, event.global.y);
+            var resizeArea = 10;
+            var pos = node.getGlobalPosition();
+            mousePos = this.mode.editor.toGlobalSpace(mousePos);
+            var bottomRightX = (pos.x - node.anchor.x * node.size.x) + node.size.x - resizeArea;
+            var bottomRightY = (pos.y - node.anchor.y * node.size.y) + node.size.y - resizeArea;
+            if (mousePos.x >= bottomRightX && mousePos.y >= bottomRightY) {
+                this.mode.editor.changeState('Resize');
+                return;
+            }
+        }
+
+        if (this.mode.editor.selectedNodes.indexOf(node) !== -1) {
+            this.mode.editor.changeState('Move');
+        }
+    },
+
     mousemove: function(event) {
-        if (this._mousedown) this.mode.editor.changeState('BoxSelect');
+        if (this._mousedown) {
+            this.mode.editor.changeState('BoxSelect');
+        }
     },
 
     mouseup: function(event) {
         this._mousedown = false;
     },
 
+    nodeClick: function(node) {
+        this.mode.editor.controller.setActiveLayer(node.editorNode.layer);
+
+        if (this.mode.shiftDown) {
+            if (this.mode.editor.selectedNodes.indexOf(node) !== -1) this.mode.editor.controller.deselectNode(node);
+            else this.mode.editor.controller.selectNode(node);
+        }
+        else {
+            this.mode.editor.controller.setActiveNode(node);
+        }
+    },
+
     click: function(event) {
-        var button = event.originalEvent.button;
-        var mousePos = new game.Point(event.global.x, event.global.y);
-        var node;
+        if (this.mode.shiftDown) return;
 
-        if (!node) {
-            node = this.mode.editor.getNodeAt(mousePos, this.mode.editor.activeLayer);
-            if (node) {
-                this.mode.editor.controller.setActiveLayer(node.editorNode.layer);
-            }
-        }
-
-        if (!node) {
-            this.mode.editor.controller.deselectAllNodes();
-            this.mode.editor.controller.setActiveNode();
-            this.mode.editor.changeState('Select');
-            return;
-        }
-        
-        if (!this.mode.shiftDown && !this.mode.altDown && button < 2) this.mode.editor.controller.deselectAllNodes();
-        
-        if (this.mode.altDown) {
-            this.mode.editor.controller.deselectNode(node);
-        } else {
-            if (this.mode.shiftDown && this.mode.editor.selectedNodes.indexOf(node) !== -1) {
-                this.mode.editor.controller.deselectNode(node);
-            }
-            else {
-                this.mode.editor.controller.selectNode(node);
-            }
-            if (!this.mode.shiftDown && button < 2) this.mode.editor.controller.setActiveNode(node);
-        }
-
-        this.mode.editor.changeState('Select');
+        this.mode.editor.controller.deselectAllNodes();
+        this.mode.editor.controller.setActiveNode();
     },
 
     keydown: function(key) {

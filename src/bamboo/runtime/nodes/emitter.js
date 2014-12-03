@@ -34,8 +34,8 @@ bamboo.createNode('Emitter', {
     }
 });
 
-bamboo.addNodeProperty('Emitter', 'target', 'node');
-bamboo.addNodeProperty('Emitter', 'interval', 'number', 1);
-bamboo.addNodeProperty('Emitter', 'triggered', 'boolean');
+// bamboo.addNodeProperty('Emitter', 'target', 'node');
+// bamboo.addNodeProperty('Emitter', 'interval', 'number', 1);
+// bamboo.addNodeProperty('Emitter', 'triggered', 'boolean');
 
 });

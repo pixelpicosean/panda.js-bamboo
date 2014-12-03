@@ -305,6 +305,8 @@ game.bamboo.Ui.Window = game.Class.extend({
         if (this.folded) return;
         if (this.height === 'window') this.windowDiv.style.height = window.innerHeight - this.borderSize * 2 + 'px';
         else this.windowDiv.style.height = (this.height - this.borderSize * 2) + 'px';
+
+        this.contentDiv.style.height = (this.height - this.titleHeight - this.borderSize * 4 - 20) + 'px';
     },
 
     resizeDown: function() {

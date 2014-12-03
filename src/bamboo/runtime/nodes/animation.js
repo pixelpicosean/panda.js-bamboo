@@ -38,11 +38,11 @@ game.createNode('Animation', {
     }
 });
 
-game.addNodeProperty('Animation', 'startFrame', 'number', 0);
-game.addNodeProperty('Animation', 'frameCount', 'number', 0);
-game.addNodeProperty('Animation', 'spritesheet', 'json');
-game.addNodeProperty('Animation', 'speed', 'number', 1);
-game.addNodeProperty('Animation', 'loop', 'boolean', true);
-game.addNodeProperty('Animation', 'triggered', 'boolean');
+// game.addNodeProperty('Animation', 'startFrame', 'number', 0);
+// game.addNodeProperty('Animation', 'frameCount', 'number', 0);
+// game.addNodeProperty('Animation', 'spritesheet', 'json');
+// game.addNodeProperty('Animation', 'speed', 'number', 1);
+// game.addNodeProperty('Animation', 'loop', 'boolean', true);
+// game.addNodeProperty('Animation', 'triggered', 'boolean');
 
 });

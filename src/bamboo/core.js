@@ -1,9 +1,7 @@
-'use strict';
-
 pandaConfig.bamboo = pandaConfig.bamboo || {};
 
 game.bamboo = {
-    version: '0.9.0'
+    version: '0.10.0'
 };
 
 game.scenes = {};
@@ -17,11 +15,6 @@ game.createNode = function(name, className, content) {
     var extendClass = className ? game.nodes[className] || className : game.Node;
     game.nodes[name] = extendClass.extend(content);
     game.nodes[name].properties = {};
-};
-
-game.addNodeProperty = function(node, name, type, defaultValue, hidden, options) {
-    node = game.nodes[node] || node;
-    node.properties[name] = new game.Property(name, type, defaultValue, hidden, options);
 };
 
 game.addBambooAssets = function(sceneName) {
@@ -50,12 +43,19 @@ game.module(
 .require(
     'bamboo.runtime.node',
     'bamboo.runtime.point',
-    'bamboo.runtime.pool',
-    'bamboo.runtime.property',
     'bamboo.runtime.scene',
-    'engine.scene'
+    'engine.scene',
+    'engine.tween'
 )
 .body(function() {
+
+    // Init pool
+    game.bambooPool = new game.Pool();
+    game.bambooPool.create('point');
+    var poolSize = game.config.bamboo.poolSize || 10;
+    for (var i = 0; i < poolSize; i++) {
+        game.bambooPool.put('point', new game.Point());
+    }
 
     game.Scene.inject({
         staticInit: function() {
@@ -67,5 +67,30 @@ game.module(
             }
         }
     });
+
+    // Helper functions for easing
+    // game.Tween.Easing.getNamesList = function() {
+    //     var names = [];
+    //     for (var i in game.Tween.Easing) {
+    //         for (var o in game.Tween.Easing[i]) {
+    //             names.push(i + '.' + o);
+    //         }
+    //     }
+    //     return names;
+    // };
+
+    // game.Tween.Easing.getByName = function(name) {
+    //     if (!name) return game.Tween.Easing.Linear.None;
+    //     name = name.split('.');
+    //     return game.Tween.Easing[name[0]][name[1]];
+    // };
+
+    // game.Tween.Easing.getName = function(easing) {
+    //     for (var i in game.Tween.Easing) {
+    //         for (var o in game.Tween.Easing[i]) {
+    //             if (easing === game.Tween.Easing[i][o]) return i + '.' + o;
+    //         }
+    //     }
+    // };
 
 });

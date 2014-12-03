@@ -57,10 +57,10 @@ game.createNode('Button', 'Image', {
     }
 });
 
-game.addNodeProperty('Button', 'downImage', 'image');
-game.addNodeProperty('Button', 'overImage', 'image');
-game.addNodeProperty('Button', 'callback', 'string');
-game.addNodeProperty('Button', 'buttonMode', 'boolean');
-game.addNodeProperty('Button', 'activateFromTrigger', 'boolean');
+// game.addNodeProperty('Button', 'downImage', 'image');
+// game.addNodeProperty('Button', 'overImage', 'image');
+// game.addNodeProperty('Button', 'callback', 'string');
+// game.addNodeProperty('Button', 'buttonMode', 'boolean');
+// game.addNodeProperty('Button', 'activateFromTrigger', 'boolean');
 
 });

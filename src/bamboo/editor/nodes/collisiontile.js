@@ -56,6 +56,6 @@ game.createEditorNode('CollisionTile', {
     }
 });
 
-game.addNodeProperty('CollisionTile', 'tileset', 'json');
+// game.addNodeProperty('CollisionTile', 'tileset', 'json');
 
 });

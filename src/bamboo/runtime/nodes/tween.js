@@ -61,15 +61,15 @@ game.createNode('Tween', {
     }
 });
 
-game.addNodeProperty('Tween', 'tweenData', 'object');
-game.addNodeProperty('Tween', 'duration', 'number', 1000);
-game.addNodeProperty('Tween', 'repeat', 'number', 0);
-game.addNodeProperty('Tween', 'delay', 'number', 0);
-game.addNodeProperty('Tween', 'yoyo', 'boolean');
-game.addNodeProperty('Tween', 'easing', 'easing');
-game.addNodeProperty('Tween', 'triggered', 'boolean');
-game.addNodeProperty('Tween', 'triggerOnStart', 'boolean');
-game.addNodeProperty('Tween', 'triggerOnComplete', 'boolean');
-game.addNodeProperty('Tween', 'startSound', 'audio');
+// game.addNodeProperty('Tween', 'tweenData', 'object');
+// game.addNodeProperty('Tween', 'duration', 'number', 1000);
+// game.addNodeProperty('Tween', 'repeat', 'number', 0);
+// game.addNodeProperty('Tween', 'delay', 'number', 0);
+// game.addNodeProperty('Tween', 'yoyo', 'boolean');
+// game.addNodeProperty('Tween', 'easing', 'easing');
+// game.addNodeProperty('Tween', 'triggered', 'boolean');
+// game.addNodeProperty('Tween', 'triggerOnStart', 'boolean');
+// game.addNodeProperty('Tween', 'triggerOnComplete', 'boolean');
+// game.addNodeProperty('Tween', 'startSound', 'audio');
 
 });

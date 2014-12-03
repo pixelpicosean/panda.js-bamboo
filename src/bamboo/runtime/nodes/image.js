@@ -8,6 +8,10 @@ game.module(
 .body(function() {
 
 game.createNode('Image', {
+    flipX: false,
+    flipY: false,
+    alpha: 1,
+
     init: function() {
         this.displayObject = new game.Sprite(new game.Texture(new game.BaseTexture()));
     },
@@ -29,10 +33,5 @@ game.createNode('Image', {
         else if (name === 'anchor') this.displayObject.anchor.set(value.x, value.y);
     }
 });
-
-game.addNodeProperty('Image', 'image', 'image');
-game.addNodeProperty('Image', 'alpha', 'number', 1);
-game.addNodeProperty('Image', 'flipX', 'boolean');
-game.addNodeProperty('Image', 'flipY', 'boolean');
 
 });

@@ -11,8 +11,8 @@ game.bamboo.MenuBar = game.Class.extend({
 
         this.menuElem = game.bamboo.ui.addMenu(this.height);
         this.menuElem.addMenu('Scene');
-        this.menuElem.addMenuItem('Scene', 'New scene', function() {
-            // game.scene.loadScene();
+        this.menuElem.addMenuItem('Scene', 'New scene...', function() {
+            if (confirm('Are you sure?')) game.scene.loadScene();
         });
         this.menuElem.addMenuItem('Scene', 'Load scene...', this.editor.loadScene.bind(this.editor));
         this.menuElem.addMenuItem('Scene', 'Save module', this.editor.saveAsModule.bind(this.editor));
@@ -57,16 +57,17 @@ game.bamboo.MenuBar = game.Class.extend({
             game.bamboo.ui.resetWorkspace();
         });
         this.menuElem.addMenuItem('Workspace', 'Save workspace', this.saveWorkspace.bind(this));
-        this.menuElem.addMenu('Help');
-        this.menuElem.addMenuItem('Help', 'Documentation', function() {
-            window.open('http://www.pandajs.net/bamboo/docs');
-        });
-        this.menuElem.addMenuItem('Help', 'View homepage', function() {
-            window.open('http://www.pandajs.net/bamboo');
-        });
-        this.menuElem.addMenuItem('Help', 'View on GitHub', function() {
-            window.open('http://github.com/ekelokorpi/panda.js-bamboo');
-        });
+
+        // this.menuElem.addMenu('Help');
+        // this.menuElem.addMenuItem('Help', 'Documentation', function() {
+        //     window.open('http://www.pandajs.net/bamboo/docs');
+        // });
+        // this.menuElem.addMenuItem('Help', 'View homepage', function() {
+        //     window.open('http://www.pandajs.net/bamboo');
+        // });
+        // this.menuElem.addMenuItem('Help', 'View on GitHub', function() {
+        //     window.open('http://github.com/ekelokorpi/panda.js-bamboo');
+        // });
 
         var version = document.createElement('div');
         version.innerHTML = game.bamboo.version;

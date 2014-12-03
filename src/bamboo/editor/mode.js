@@ -20,6 +20,14 @@ game.bamboo.editor.Mode = game.Class.extend({
         this.state.click(event);
     },
 
+    nodeClick: function(node, event) {
+        this.state.nodeClick(node, event);
+    },
+
+    nodeMouseDown: function(node, event) {
+        this.state.nodeMouseDown(node, event);
+    },
+
     mousedown: function(event) {
         this.state.mousedown(event);
     },

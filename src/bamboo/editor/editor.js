@@ -9,7 +9,6 @@ game.bamboo.Editor = game.Class.extend({
     selectedNodes: [],
     images: [],
     windowsHidden: false,
-    viewNodes: true,
     camera: {},
 
     init: function(data) {
@@ -17,11 +16,16 @@ game.bamboo.Editor = game.Class.extend({
             data = game.BambooScene.defaultJSON;
             data.width = bambooConfig.width || data.width;
             data.height = bambooConfig.height || data.height;
+            game.storage.remove('lastScene');
+        }
+        else {
+            game.storage.set('lastScene', data.name);
         }
 
         this.scene = new game.BambooScene(data);
 
         this.gridSize = game.storage.get('gridSize', 16);
+        this.viewNodes = game.storage.get('viewNodes', true);
 
         this.camera.position = new game.Point();
         this.displayObject = new game.Container();
@@ -145,6 +149,7 @@ game.bamboo.Editor = game.Class.extend({
             id: 'scenes',
             closeable: true,
             visible: true,
+            fixed: true,
             height: 195,
             minY: this.menuBar.height
         });
@@ -162,7 +167,7 @@ game.bamboo.Editor = game.Class.extend({
         this.scenesWindow.contentDiv.appendChild(scenesList);
 
         this.scenesWindow.addButton('Load', function() {
-            game.scene.loadScene(scenesList.value);
+            if (scenesList.value) game.scene.loadScene(scenesList.value);
         });
     },
 
@@ -196,15 +201,11 @@ game.bamboo.Editor = game.Class.extend({
         }
         game.storage.set('gridSize', this.gridSize);
 
-        if (this.gridSize > 0) console.log('Grid ' + this.gridSize + ' x ' + this.gridSize);
-        else console.log('Grid disabled');
-
         this.boundaryLayer.resetGraphics();
     },
 
     toggleBoundaries: function() {
         this.boundaryLayer.boundaries.visible = !this.boundaryLayer.boundaries.visible;
-        console.log('Boundaries ' + (this.boundaryLayer.boundaries.visible ? 'on' : 'off'));
     },
 
     initShadow: function() {
@@ -323,7 +324,7 @@ game.bamboo.Editor = game.Class.extend({
 
     toggleViewNodes: function() {
         this.viewNodes = !this.viewNodes;
-        console.log('Nodes ' + (this.viewNodes ? 'visible' : 'hidden'));
+        game.storage.set('viewNodes', this.viewNodes);
         for (var i = 0; i < this.nodes.length; i++) {
             this.nodes[i].parentSelectionRect.visible = this.viewNodes;
             this.nodes[i].connectedToLine.visible = this.viewNodes;
@@ -602,6 +603,14 @@ game.bamboo.Editor = game.Class.extend({
         this.mode.click(event);
     },
 
+    nodeClick: function(node, event) {
+        this.mode.nodeClick(node, event);
+    },
+
+    nodeMouseDown: function(node, event) {
+        this.mode.nodeMouseDown(node, event);
+    },
+
     mousedown: function(event) {
         this.prevMousePos.x = event.global.x;
         this.prevMousePos.y = event.global.y;
@@ -750,7 +759,8 @@ game.bamboo.Editor = game.Class.extend({
         if (!name) return this.showError('Scene must have name');
         var content = this.buildModuleFromJSON(json);
 
-        this.saveToFile(bambooConfig.moduleSaveDir, name + '.js', content);
+        var dir = '../../game/' + bambooConfig.moduleFolder + '/';
+        this.saveToFile(dir, name + '.js', content);
     },
 
     buildModuleFromJSON: function(json) {
@@ -765,7 +775,7 @@ game.bamboo.Editor = game.Class.extend({
             }
         }
 
-        var content = 'game.module(\n    \'game.scenes.' + name + '\'\n)\n';
+        var content = 'game.module(\n    \'game.' + bambooConfig.moduleFolder + '.' + name + '\'\n)\n';
         content += '.require(\n';
         content += '    \'bamboo.core\',\n';
         for (var i = 0; i < nodeClasses.length; i++) {
@@ -799,7 +809,7 @@ game.bamboo.Editor = game.Class.extend({
             if (request.responseText === 'success') {
                 console.log('Scene saved');
             }
-            else this.showError('Failed to write file ' + filename);
+            else console.log('Error saving scene');
         }
     },
 

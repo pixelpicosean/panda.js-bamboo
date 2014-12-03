@@ -1,19 +1,35 @@
 game.module(
     'bamboo.runtime.node'
 )
-.require(
-    'bamboo.runtime.property'
-)
 .body(function() {
 'use strict';
 
+game.Property = {
+    node: Number.MIN_VALUE * 1
+};
+
 game.createClass('Node', {
-    children: [],
+    rotation: 0,
+    anchor: {
+        x: 0,
+        y: 0
+    },
+    size: {
+        x: 0,
+        y: 0
+    },
+    position: {
+        x: 0,
+        y: 0
+    },
+    name: '',
+    parent: game.Property.node,
 
     staticInit: function(scene, propertyData) {
         this.scene = scene;
         this.propertyData = propertyData;
         this.name = propertyData.name;
+        this.children = [];
     },
 
     init: function() {
@@ -21,23 +37,15 @@ game.createClass('Node', {
     },
 
     initProperties: function() {
-        var propClasses = this.getPropertyClasses();
+        var props = this.getProperties();
 
-        for (var name in propClasses) {
-            this.setProperty(name, propClasses[name].parse(this));
+        for (var i = props.length - 1; i >= 0; i--) {
+            var name = props[i];
+            var value = this.propertyData[name] || this[name];
+            this.setProperty(name, this.parseProperty(name, value));
         }
 
         delete this.propertyData;
-    },
-
-    ready: function() {
-    },
-
-    onRemove: function() {
-    },
-
-    remove: function() {
-        return this.scene.removeNode(this);
     },
 
     setProperty: function(name, value) {
@@ -49,6 +57,50 @@ game.createClass('Node', {
             if (this.displayObject.anchor) this.displayObject.anchor.set(value.x, value.y);
         }
         else if (name === 'parent') this.parent.addChild(this);
+        else if (name === 'rotation') this.displayObject.rotation = value * (Math.PI / 180);
+    },
+
+    parseProperty: function(name, value) {
+        var type = this.getPropertyType(name);
+
+        if (type === 'vector') return new game.Point(value.x, value.y);
+        if (type === 'node') return this.scene.findNode(value);
+        return value;
+    },
+
+    getProperties: function() {
+        var proto = this.constructor.prototype;
+        var props = [];
+        for (var name in proto) {
+            if (typeof proto[name] !== 'function') props.push(name);
+        }
+        return props;
+    },
+
+    getPropertyType: function(name) {
+        var proto = this.constructor.prototype;
+        for (var prop in game.Property) {
+            if (proto[name] === game.Property[prop]) return prop;
+        }
+
+        var type = typeof proto[name];
+
+        if (type === 'object') {
+            if (typeof proto[name].length === 'number') return 'array';
+            if (typeof proto[name].x === 'number' && typeof proto[name].y === 'number') return 'vector';
+        }
+
+        return type;
+    },
+
+    ready: function() {
+    },
+
+    onRemove: function() {
+    },
+
+    remove: function() {
+        return this.scene.removeNode(this);
     },
 
     addChild: function(node) {
@@ -66,27 +118,6 @@ game.createClass('Node', {
         return false;
     },
 
-    getPropertyClasses: function() {
-        var properties = [];
-        var proto = Object.getPrototypeOf(this);
-        while (true) {
-            var p = {};
-            properties.splice(0, 0, p);
-            for (var key in proto.constructor.properties) {
-                p[key] = proto.constructor.properties[key];
-            }
-            proto = Object.getPrototypeOf(proto);
-            if (proto === game.Class.prototype) break;
-        }
-        var props = {};
-        for (var i = 0; i < properties.length; i++) {
-            for (var k in properties[i]) {
-                props[k] = properties[i][k];
-            }
-        }
-        return props;
-    },
-
     toLocalSpace: function(point, output) {
         var pos = this.getGlobalPosition();
 
@@ -94,7 +125,7 @@ game.createClass('Node', {
         var y = point.y - pos.y;
         
         if (output) {
-            game.bamboo.pool.put(pos);
+            game.bambooPool.put('point', pos);
             return output.set(x, y);
         }
 
@@ -109,7 +140,7 @@ game.createClass('Node', {
         var y = point.y + pos.y;
 
         if (output) {
-            game.bamboo.pool.put(pos);
+            game.bambooPool.put('point', pos);
             return output.set(x, y);
         }
 
@@ -131,18 +162,10 @@ game.createClass('Node', {
 
         if (output) return output.set(x, y);
 
-        var point = game.bamboo.pool.get();
+        var point = game.bambooPool.get('point');
         point.set(x, y);
         return point;
     }
 });
-
-game.Node.properties = {
-    parent: new game.Property('parent', 'node'),
-    name: new game.Property('name', 'string'),
-    position: new game.Property('position', 'vector'),
-    size: new game.Property('size', 'vector'),
-    anchor: new game.Property('anchor', 'vector')
-};
 
 });

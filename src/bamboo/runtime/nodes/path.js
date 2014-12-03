@@ -257,10 +257,10 @@ game.createNode('Path', {
     }
 });
 
-game.addNodeProperty('Path', 'loop', 'boolean');
-game.addNodeProperty('Path', 'spline', 'boolean');
+// game.addNodeProperty('Path', 'loop', 'boolean');
+// game.addNodeProperty('Path', 'spline', 'boolean');
 
 // TODO fix this
-game.nodes.Path.properties.points = new game.Property('', '', 'array', [], new game.Property('', 'vector'));
+// game.nodes.Path.properties.points = new game.Property('', '', 'array', [], new game.Property('', 'vector'));
 
 });

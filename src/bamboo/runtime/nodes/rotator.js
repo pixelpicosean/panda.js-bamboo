@@ -44,12 +44,12 @@ game.createNode('Rotator', {
     }
 });
 
-game.addNodeProperty('Rotator', 'rotation', 'number', 0);
-game.addNodeProperty('Rotator', 'duration', 'number', 3);
-game.addNodeProperty('Rotator', 'degrees', 'number', 360);
-game.addNodeProperty('Rotator', 'easing', 'easing');
-game.addNodeProperty('Rotator', 'loop', 'boolean');
-game.addNodeProperty('Rotator', 'yoyo', 'boolean');
-game.addNodeProperty('Rotator', 'triggered', 'boolean');
+// game.addNodeProperty('Rotator', 'rotation', 'number', 0);
+// game.addNodeProperty('Rotator', 'duration', 'number', 3);
+// game.addNodeProperty('Rotator', 'degrees', 'number', 360);
+// game.addNodeProperty('Rotator', 'easing', 'easing');
+// game.addNodeProperty('Rotator', 'loop', 'boolean');
+// game.addNodeProperty('Rotator', 'yoyo', 'boolean');
+// game.addNodeProperty('Rotator', 'triggered', 'boolean');
 
 });

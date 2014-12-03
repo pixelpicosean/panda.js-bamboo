@@ -65,8 +65,8 @@ game.bamboo.editor.createState('BoxSelect', {
                 this.mode.editor.controller.setActiveNode(node);
             }
             else {
-                this.mode.editor.controller.deselectAllNodes();
-                this.mode.editor.controller.setActiveNode();
+                // this.mode.editor.controller.deselectAllNodes();
+                // this.mode.editor.controller.setActiveNode();
             }
         }
 

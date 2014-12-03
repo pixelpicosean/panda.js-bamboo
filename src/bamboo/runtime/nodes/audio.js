@@ -21,8 +21,8 @@ game.createNode('Audio', {
     }
 });
 
-game.addNodeProperty('Audio', 'audio', 'audio');
-game.addNodeProperty('Audio', 'loop', 'boolean');
-game.addNodeProperty('Audio', 'oneAtTime', 'boolean');
+// game.addNodeProperty('Audio', 'audio', 'audio');
+// game.addNodeProperty('Audio', 'loop', 'boolean');
+// game.addNodeProperty('Audio', 'oneAtTime', 'boolean');
 
 });

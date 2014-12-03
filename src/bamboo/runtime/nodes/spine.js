@@ -29,11 +29,11 @@ game.createNode('Spine', {
     }
 });
 
-game.addNodeProperty('Spine', 'spineData', 'json');
-game.addNodeProperty('Spine', 'spritesheet', 'json');
-game.addNodeProperty('Spine', 'animation', 'string');
-game.addNodeProperty('Spine', 'speed', 'number', 1);
-game.addNodeProperty('Spine', 'loop', 'boolean', true);
-game.addNodeProperty('Spine', 'triggered', 'boolean');
+// game.addNodeProperty('Spine', 'spineData', 'json');
+// game.addNodeProperty('Spine', 'spritesheet', 'json');
+// game.addNodeProperty('Spine', 'animation', 'string');
+// game.addNodeProperty('Spine', 'speed', 'number', 1);
+// game.addNodeProperty('Spine', 'loop', 'boolean', true);
+// game.addNodeProperty('Spine', 'triggered', 'boolean');
 
 });

@@ -24,7 +24,6 @@ game.module(
     'bamboo.editor.modes.edit',
     'bamboo.editor.modes.main',
     'bamboo.editor.states.boxselect',
-    'bamboo.editor.states.add',
     'bamboo.editor.states.move',
     'bamboo.editor.states.resize',
     'bamboo.editor.states.select',
@@ -47,6 +46,10 @@ game.module(
 )
 .body(function() {
 
+game.bambooPool.get = function() {
+    return new game.Point();
+};
+
 game.addAsset('../src/bamboo/editor/media/hourglass.png');
 
 game.createScene('BambooEditor', {
@@ -63,6 +66,12 @@ game.createScene('BambooEditor', {
         canvas.ondragleave = this.dragleave.bind(this);
         canvas.ondrop = this.filedrop.bind(this);
 
+        if (!game.bamboo.editor.currentScene && bambooConfig.loadLastScene) {
+            var lastScene = game.storage.get('lastScene');
+            if (lastScene) game.bamboo.editor.currentScene = lastScene;
+            bambooConfig.loadLastScene = false;
+        }
+
         var data = game.bamboo.editor.currentScene ? game.getSceneData(game.bamboo.editor.currentScene) : null;
         this.editor = new game.bamboo.Editor(data);
         this.stage.addChild(this.editor.displayObject);
@@ -71,7 +80,9 @@ game.createScene('BambooEditor', {
 
     loadScene: function(name) {
         if (game.bamboo.editor.currentScene) game.removeBambooAssets(game.bamboo.editor.currentScene);
-        game.addBambooAssets(name);
+        
+        if (name) game.addBambooAssets(name);
+
         game.bamboo.editor.currentScene = name;
 
         game.bamboo.ui.removeAll();
@@ -82,6 +93,14 @@ game.createScene('BambooEditor', {
 
     click: function(event) {
         if (this.editor) this.editor.click(event);
+    },
+
+    nodeClick: function(node, event) {
+        if (this.editor) this.editor.nodeClick(node, event);
+    },
+
+    nodeMouseDown: function(node, event) {
+        if (this.editor) this.editor.nodeMouseDown(node, event);
     },
 
     mousedown: function(event) {
@@ -151,7 +170,8 @@ game.start = function() {
     game.System.startScene = 'BambooEditor';
 
     // Default config
-    bambooConfig.moduleSaveDir = bambooConfig.moduleSaveDir || '../../game/scenes/';
+    // bambooConfig.moduleFolder = bambooConfig.moduleFolder ? '../../game/' + bambooConfig.moduleFolder + '/' : '../../game/scenes/';
+    bambooConfig.moduleFolder = bambooConfig.moduleFolder || 'scenes';
     bambooConfig.JSONSaveDir = bambooConfig.JSONSaveDir || '../../../media/';
 
     var style = document.createElement('link');
@@ -163,7 +183,6 @@ game.start = function() {
     game.scenes = game.ksort(game.scenes);
 
     style.onload = function() {
-        console.log('Bamboo ' + game.bamboo.version);
         game._start(null, window.innerWidth, window.innerHeight);
         game.bamboo.ui = new game.bamboo.Ui();
     };

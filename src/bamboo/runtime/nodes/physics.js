@@ -21,6 +21,6 @@ game.createNode('Physics', {
     }
 });
 
-game.addNodeProperty('Physics', 'gravity', 'vector', [0, 980]);
+// game.addNodeProperty('Physics', 'gravity', 'vector', [0, 980]);
 
 });

@@ -33,7 +33,7 @@ game.createNode('CollisionTile', {
     }
 });
 
-game.addNodeProperty('CollisionTile', 'frame', 'string', '', true);
-game.addNodeProperty('CollisionTile', 'collisionGroup', 'number', 0);
+// game.addNodeProperty('CollisionTile', 'frame', 'string', '', true);
+// game.addNodeProperty('CollisionTile', 'collisionGroup', 'number', 0);
 
 });

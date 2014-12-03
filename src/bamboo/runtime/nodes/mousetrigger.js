@@ -28,8 +28,8 @@ game.createNode('MouseTrigger', {
     }
 });
 
-game.addNodeProperty('MouseTrigger', 'onetime', 'boolean');
-game.addNodeProperty('MouseTrigger', 'buttonMode', 'boolean');
-game.addNodeProperty('MouseTrigger', 'useMouseDown', 'boolean');
+// game.addNodeProperty('MouseTrigger', 'onetime', 'boolean');
+// game.addNodeProperty('MouseTrigger', 'buttonMode', 'boolean');
+// game.addNodeProperty('MouseTrigger', 'useMouseDown', 'boolean');
 
 });

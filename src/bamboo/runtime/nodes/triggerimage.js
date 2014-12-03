@@ -21,6 +21,6 @@ game.createNode('TriggerImage', 'Trigger', {
     }
 });
 
-game.addNodeProperty('TriggerImage', 'image', 'image');
+// game.addNodeProperty('TriggerImage', 'image', 'image');
 
 });

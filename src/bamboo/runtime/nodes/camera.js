@@ -35,8 +35,8 @@ bamboo.createNode('Camera', {
     }
 });
 
-bamboo.addNodeProperty('Camera', 'target', 'node');
-bamboo.addNodeProperty('Camera', 'offset', 'vector');
-bamboo.addNodeProperty('Camera', 'startFromTarget', 'boolean');
+// bamboo.addNodeProperty('Camera', 'target', 'node');
+// bamboo.addNodeProperty('Camera', 'offset', 'vector');
+// bamboo.addNodeProperty('Camera', 'startFromTarget', 'boolean');
 
 });

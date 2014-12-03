@@ -13,6 +13,8 @@ game.bamboo.editor.State = game.Class.extend({
     cancel: function() {},
 
     click: function() {},
+    nodeClick: function() {},
+    nodeMouseDown: function() {},
     mousedown: function() {},
     mousemove: function() {},
     mouseup: function() {},

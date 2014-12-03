@@ -18,6 +18,6 @@ game.createNode('Tile', {
     }
 });
 
-game.addNodeProperty('Tile', 'frame', 'string', '', true);
+// game.addNodeProperty('Tile', 'frame', 'string', '', true);
 
 });

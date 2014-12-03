@@ -56,6 +56,6 @@ game.createEditorNode('Tile', {
     }
 });
 
-game.addNodeProperty('Tile', 'tileset', 'json');
+// game.addNodeProperty('Tile', 'tileset', 'json');
 
 });

@@ -50,8 +50,8 @@ game.createNode('Trigger', {
     }
 });
 
-game.addNodeProperty('Trigger', 'activator', 'node');
-game.addNodeProperty('Trigger', 'target', 'node');
-game.addNodeProperty('Trigger', 'onetime', 'boolean');
+// game.addNodeProperty('Trigger', 'activator', 'node');
+// game.addNodeProperty('Trigger', 'target', 'node');
+// game.addNodeProperty('Trigger', 'onetime', 'boolean');
 
 });

@@ -34,6 +34,12 @@ game.Node.editor = game.Class.extend({
         this.activeRect.visible = false;
         this.displayObject.addChild(this.activeRect);
 
+        this.touchRect = new game.Container();
+        this.touchRect.interactive = true;
+        this.touchRect.click = game.scene.nodeClick.bind(game.scene, this.node);
+        this.touchRect.mousedown = game.scene.nodeMouseDown.bind(game.scene, this.node);
+        this.displayObject.addChild(this.touchRect);
+
         this.connectedToLine = new game.Graphics();
         this.connectedToLine.visible = false;
         this.displayObject.addChild(this.connectedToLine);
@@ -105,20 +111,26 @@ game.Node.editor = game.Class.extend({
         this.parentSelectionRect.clear();
         this.parentSelectionRect.lineStyle(1, 0xffffff, 0.5);
         this.parentSelectionRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
+        this.parentSelectionRect.rotation = this.node.rotation * (Math.PI / 180);
 
         this.activeRect.clear();
         this.activeRect.beginFill(0xffaa00, 0.3);
-        this.activeRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
+        this.activeRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);        
         this.activeRect.endFill();
+        this.activeRect.rotation = this.node.rotation * (Math.PI / 180);
 
         this.selectionRect.clear();
         this.selectionRect.beginFill(0x00ff66, 0.2);
         this.selectionRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
         this.selectionRect.endFill();
+        this.selectionRect.rotation = this.node.rotation * (Math.PI / 180);
 
         this.editableRect.clear();
         this.editableRect.lineStyle(1, 0x0066ff);
         this.editableRect.drawRect(-this.node.size.x * this.node.anchor.x - 6, -this.node.size.y * this.node.anchor.y - 6, size.x + 12, size.y + 12);
+
+        this.touchRect.hitArea = new game.HitRectangle(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
+        this.touchRect.rotation = this.node.rotation * (Math.PI / 180);
     },
 
     enableEditMode: function(enabled) {
@@ -155,7 +167,7 @@ game.Node.editor = game.Class.extend({
             this.redrawConnectedToLine();
         }
         else if (property === 'rotation') {
-            if (this.node.displayObject) this.node.displayObject.updateTransform();
+            this.updateRect();
             this.redrawConnectedToLine();
         }
 
@@ -236,14 +248,34 @@ game.Node.editor = game.Class.extend({
     },
 
     toJSON: function() {
-        var propClasses = this.node.getPropertyClasses();
-        var jsonProperties = {};
-        for (var name in propClasses) {
-            jsonProperties[name] = propClasses[name].toJSON(this.node);
+        var props = this.node.getProperties();
+        
+        var json = {};
+        for (var i = props.length - 1; i >= 0; i--) {
+            var name = props[i];
+            var type = this.node.getPropertyType(name);
+
+            var value = this.node[name];
+
+            if (type === 'vector') value = { x: value.x, y: value.y };
+            else if (type === 'node') value = value.name;
+
+            // Skip if default value
+            var defaultValue = this.node.constructor.prototype[name];
+            if (value === defaultValue) continue;
+            else if (type === 'vector') {
+                if (value.x === defaultValue.x && value.y === defaultValue.y) continue;
+            }
+            else if (type === 'array') {
+                // TODO
+            }
+
+            json[name] = value;
         }
+
         return {
             class: this.getClassName(),
-            properties: jsonProperties
+            properties: json
         };
     }
 });
