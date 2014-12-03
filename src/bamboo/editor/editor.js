@@ -13,9 +13,12 @@ game.bamboo.Editor = game.Class.extend({
     camera: {},
 
     init: function(data) {
-        if (!data) data = game.BambooScene.defaultJSON;
+        if (!data) {
+            data = game.BambooScene.defaultJSON;
+            data.width = bambooConfig.width || data.width;
+            data.height = bambooConfig.height || data.height;
+        }
 
-        this.config = game.bamboo.editor.config;
         this.scene = new game.BambooScene(data);
 
         this.gridSize = game.storage.get('gridSize', 16);
@@ -725,7 +728,7 @@ game.bamboo.Editor = game.Class.extend({
         var filename = json.name.toLowerCase() + '.json';
         var content = JSON.stringify(json, null, '    ');
 
-        this.saveToFile(this.config.JSONSaveDir, filename, content);
+        this.saveToFile(bambooConfig.JSONSaveDir, filename, content);
     },
 
     downloadAsModule: function() {
@@ -747,7 +750,7 @@ game.bamboo.Editor = game.Class.extend({
         if (!name) return this.showError('Scene must have name');
         var content = this.buildModuleFromJSON(json);
 
-        this.saveToFile(this.config.moduleSaveDir, name + '.js', content);
+        this.saveToFile(bambooConfig.moduleSaveDir, name + '.js', content);
     },
 
     buildModuleFromJSON: function(json) {

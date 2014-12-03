@@ -1,9 +1,6 @@
-game.bamboo.editor = {
-    config: {
-        moduleSaveDir: '../../game/scenes/',
-        JSONSaveDir: '../../../media/'
-    }
-};
+bambooConfig = bambooConfig || {};
+
+game.bamboo.editor = {};
 
 game.createEditorNode = function(node, content) {
     game.nodes[node].editor = game.Node.editor.extend(content);
@@ -152,6 +149,10 @@ game.start = function() {
     game.System.top = 0;
     game.Storage.id = 'net.pandajs.bamboo';
     game.System.startScene = 'BambooEditor';
+
+    // Default config
+    bambooConfig.moduleSaveDir = bambooConfig.moduleSaveDir || '../../game/scenes/';
+    bambooConfig.JSONSaveDir = bambooConfig.JSONSaveDir || '../../../media/';
 
     var style = document.createElement('link');
     style.rel = 'stylesheet';
