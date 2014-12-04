@@ -122,6 +122,9 @@ game.bamboo.Controller = game.Class.extend({
         this.editor.selectedNodes.push(node);
         node.editorNode.selectionRect.visible = true;
         node.editorNode.anchorBox.visible = true;
+        node.editorNode.nameText.style.fill = node.editorNode.selectionColor.replace('0x', '#');
+        node.editorNode.nameText.dirty = true;
+
         this.editor.nodeSelected(node);
 
         var markChildren = function(c) {
@@ -142,6 +145,8 @@ game.bamboo.Controller = game.Class.extend({
         this.editor.selectedNodes.splice(idx, 1);
         node.editorNode.selectionRect.visible = false;
         node.editorNode.anchorBox.visible = false;
+        node.editorNode.nameText.style.fill = node.editorNode.textColor;
+        node.editorNode.nameText.dirty = true;
         this.editor.nodeDeselected(node);
 
         var unmarkChildren = function(c, selectedNodes) {
@@ -202,6 +207,9 @@ game.bamboo.Controller = game.Class.extend({
         if (this.editor.activeNode) {
             this.editor.activeNode.editorNode.activeRect.visible = false;
             this.editor.activeNode.editorNode.anchorBox.visible = false;
+
+            this.editor.activeNode.editorNode.nameText.style.fill = this.editor.activeNode.editorNode.textColor;
+            this.editor.activeNode.editorNode.nameText.dirty = true;
         }
 
         this.editor.activeNode = node;
@@ -212,6 +220,9 @@ game.bamboo.Controller = game.Class.extend({
             this.editor.activeNode.editorNode.selectionRect.visible = false;
             this.editor.activeNode.editorNode.anchorBox.visible = true;
             this.editor.activeNode.editorNode.activeRect.visible = true;
+
+            this.editor.activeNode.editorNode.nameText.style.fill = this.editor.activeNode.editorNode.activeColor.replace('0x', '#');
+            this.editor.activeNode.editorNode.nameText.dirty = true;
         }
         
         this.editor.activeNodeChanged(node);

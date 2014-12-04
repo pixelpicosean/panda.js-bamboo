@@ -20,12 +20,16 @@ game.bamboo.editor.createState('Move', {
         this.offset = this.mode.editor.prevMousePos.clone();
         this.offset.x += this.mode.editor.camera.position.x;
         this.offset.y += this.mode.editor.camera.position.y;
+        this.offset.x /= this.mode.editor.zoom;
+        this.offset.y /= this.mode.editor.zoom;
 
         document.body.style.cursor = 'move';
+        document.body.style.pointerEvents = 'none';
     },
 
     exit: function() {
         document.body.style.cursor = 'default';
+        document.body.style.pointerEvents = 'auto';
     },
 
     cancel: function() {
@@ -55,7 +59,7 @@ game.bamboo.editor.createState('Move', {
     },
 
     mousemove: function(event) {
-        this.update(event.global.x, event.global.y);
+        this.update(event.global.x / this.mode.editor.zoom, event.global.y / this.mode.editor.zoom);
     },
 
     update: function(x, y) {

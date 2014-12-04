@@ -10,6 +10,7 @@ game.bamboo.Editor = game.Class.extend({
     images: [],
     windowsHidden: false,
     camera: {},
+    zoom: 1,
 
     init: function(data) {
         if (!data) {
@@ -29,6 +30,11 @@ game.bamboo.Editor = game.Class.extend({
 
         this.camera.position = new game.Point();
         this.displayObject = new game.Container();
+        this.displayObject.pivot.x = game.system.width / 2;
+        this.displayObject.pivot.y = game.system.height / 2;
+        this.displayObject.position.x = game.system.width / 2;
+        this.displayObject.position.y = game.system.height / 2;
+        
         this.controller = new game.bamboo.Controller(this);
         this.prevMousePos = new game.Point(game.system.width / 2, game.system.height / 2);
         
@@ -75,7 +81,8 @@ game.bamboo.Editor = game.Class.extend({
             snappable: true,
             closeable: true,
             visible: true,
-            minY: this.menuBar.height
+            minY: this.menuBar.height,
+            minHeight: 200
         });
         assetsWindow.setTitle('Assets');
 
@@ -85,7 +92,7 @@ game.bamboo.Editor = game.Class.extend({
             assetsList.style.height = (assetsWindow.height - 100) + 'px';
         };
         assetsWindow.onResize();
-        this.assetsList.className = 'assetsList';
+        this.assetsList.className = 'list';
         this.assetsList.style.overflow = 'auto';
         assetsWindow.contentDiv.appendChild(this.assetsList);
 
@@ -97,7 +104,7 @@ game.bamboo.Editor = game.Class.extend({
         this.nodesWindow = game.bamboo.ui.addWindow({
             id: 'nodes',
             closeable: true,
-            resizable: true,
+            resizable: false,
             snappable: true,
             minY: this.menuBar.height,
             title: 'Nodes'
@@ -136,7 +143,6 @@ game.bamboo.Editor = game.Class.extend({
         }
 
         this.updateLayers();
-        this.showSettings();
         this.initShadow();
 
         console.log('Scene ' + this.scene.name + ' loaded');
@@ -150,13 +156,14 @@ game.bamboo.Editor = game.Class.extend({
             closeable: true,
             visible: true,
             fixed: true,
-            height: 195,
-            minY: this.menuBar.height
+            height: 200,
+            centered: true
         });
 
         var scenesList = document.createElement('select');
         scenesList.style.height = '100px';
         scenesList.size = 2;
+        scenesList.className = 'list';
         for (var name in game.scenes) {
             var opt = document.createElement('option');
             opt.value = name;
@@ -367,21 +374,12 @@ game.bamboo.Editor = game.Class.extend({
         if (this.mode) this.mode.exit();
         if (this.mode && this.mode.state) this.mode.state.exit();
         this.mode = new game.bamboo.editor['Mode' + mode.ucfirst()](this, param);
-        this.updateStatus();
     },
 
     changeState: function(state, param) {
         if (this.mode.state) this.mode.state.exit();
         this.mode.state = new game.bamboo.editor['State' + state.ucfirst()](this.mode, param);
         this.mode.state.enter();
-        this.updateStatus();
-    },
-
-    updateStatus: function() {
-        return;
-        var status = this.mode.helpText;
-        if (this.mode.state) status += '<br>' + this.mode.state.helpText;
-        this.statusBar.setStatus(status);
     },
 
     exit: function() {
@@ -620,12 +618,12 @@ game.bamboo.Editor = game.Class.extend({
     mousemove: function(event) {
         if (this.menuBar.menuElem.active) this.menuBar.menuElem.activate();
 
-        this.prevMousePos.x = event.global.x;
-        this.prevMousePos.y = event.global.y;
+        this.prevMousePos.x = (event.global.x / this.zoom);
+        this.prevMousePos.y = (event.global.y / this.zoom);
 
         if (this.cameraOffset) {
-            this.targetCameraWorldPosition.x = event.global.x - this.cameraOffset.x;
-            this.targetCameraWorldPosition.y = event.global.y - this.cameraOffset.y;
+            this.targetCameraWorldPosition.x = (event.global.x / this.zoom) - this.cameraOffset.x;
+            this.targetCameraWorldPosition.y = (event.global.y / this.zoom) - this.cameraOffset.y;
             this.cameraWorldPosition = this.targetCameraWorldPosition.clone();
         }
 
@@ -640,6 +638,24 @@ game.bamboo.Editor = game.Class.extend({
     },
 
     keydown: function(key) {
+        if (key === 'PLUS' || key === 'H') {
+            // Zoom in
+            this.zoom = this.zoom * 1.2;
+            this.displayObject.scale.set(this.zoom, this.zoom);
+            return;
+        }
+        if (key === 'MINUS' || key === 'G') {
+            // Zoom out
+            this.zoom = this.zoom / 1.2;
+            this.displayObject.scale.set(this.zoom, this.zoom);
+            return;
+        }
+        if (key === '0') {
+            // Reset zoom
+            this.zoom = 1;
+            this.displayObject.scale.set(this.zoom, this.zoom);
+            return;
+        }
         this.mode.keydown(key);
     },
 
@@ -814,6 +830,10 @@ game.bamboo.Editor = game.Class.extend({
     },
 
     onResize: function() {
+        this.displayObject.pivot.x = game.system.width / 2;
+        this.displayObject.pivot.y = game.system.height / 2;
+        this.displayObject.position.x = game.system.width / 2;
+        this.displayObject.position.y = game.system.height / 2;
         this.boundaryLayer.resetGraphics();
         this.worldTargetPos.set(game.system.width / 2 - game.System.width / 2, game.system.height / 2 - game.System.height / 2);
         this.scene.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);

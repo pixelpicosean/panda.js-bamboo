@@ -176,8 +176,8 @@ game.bamboo.Ui = game.Class.extend({
 });
 
 game.bamboo.Ui.Window = game.Class.extend({
-    x: 'center',
-    y: 'center',
+    x: 0,
+    y: 0,
     width: 400,
     height: 100,
     borderSize: 1,
@@ -197,13 +197,11 @@ game.bamboo.Ui.Window = game.Class.extend({
     parent: null,
     children: null,
     saved: true,
+    centered: false,
 
     init: function(parent, settings) {
         this.ui = parent;
         game.merge(this, settings);
-
-        if (this.x === 'center') this.x = window.innerWidth / 2 - this.width / 2;
-        if (this.y === 'center') this.y = window.innerHeight / 2 - this.height / 2;
 
         this.windowDiv = document.createElement('div');
         this.windowDiv.className = 'window';
@@ -306,7 +304,7 @@ game.bamboo.Ui.Window = game.Class.extend({
         if (this.height === 'window') this.windowDiv.style.height = window.innerHeight - this.borderSize * 2 + 'px';
         else this.windowDiv.style.height = (this.height - this.borderSize * 2) + 'px';
 
-        this.contentDiv.style.height = (this.height - this.titleHeight - this.borderSize * 4 - 20) + 'px';
+        this.contentDiv.style.height = (this.height - this.titleHeight - this.borderSize * 4 - 20 - 6) + 'px';
     },
 
     resizeDown: function() {
@@ -340,7 +338,6 @@ game.bamboo.Ui.Window = game.Class.extend({
         this.folded = !this.folded;
         if (this.folded) {
             this.windowDiv.style.height = this.titleHeight + 'px';
-            // this.windowDiv.style.overflow = 'hidden';
             this.origHeight = this.height;
             this.height = this.titleHeight;
             if (this.children) {
@@ -350,7 +347,6 @@ game.bamboo.Ui.Window = game.Class.extend({
         }
         else {
             this.height = this.origHeight;
-            // this.windowDiv.style.overflow = 'auto';
             this.updateSize();
         }
     },
@@ -365,6 +361,7 @@ game.bamboo.Ui.Window = game.Class.extend({
             if (typeof this.onResize === 'function') this.onResize();
         }
         else {
+            this.snappedToEdge = null;
             this.x = this.origPosition.x + event.clientX - this.mouseStartPos.x;
             this.y = this.origPosition.y + event.clientY - this.mouseStartPos.y;
 
@@ -386,10 +383,21 @@ game.bamboo.Ui.Window = game.Class.extend({
     },
 
     updatePosition: function() {
+        if (this.centered) {
+            this.x = game.system.width / 2 - this.width / 2;
+            this.y = game.system.height / 2 - this.height / 2;
+        }
+        if (this.x + this.width > window.innerWidth) {
+            this.x = window.innerWidth - this.width;
+            if (this.snapToEdge) this.snappedToEdge = 'right';
+        }
+        if (this.y + this.height > window.innerHeight) this.y = window.innerHeight - this.height;
         if (this.x < this.minX) this.x = this.minX;
         if (this.y < this.minY) this.y = this.minY;
-        if (this.x + this.width > window.innerWidth) this.x = window.innerWidth - this.width;
-        if (this.y + this.height > window.innerHeight) this.y = window.innerHeight - this.height;
+
+        if (this.snappedToEdge === 'right') {
+            this.x = window.innerWidth - this.width;
+        }
         
         if (this.children) {
             this.children.x = this.x;
@@ -706,26 +714,31 @@ game.bamboo.Ui.Menu = game.Class.extend({
     }
 });
 
+game.bamboo.Ui.Menu.height = 25;
+
 game.bamboo.Ui.defaultWorkspace = {
     windows: {
         properties: {
-            x: window.innerWidth - 210,
-            y: 36,
+            x: window.innerWidth - 200,
+            y: 0,
             width: 200,
-            height: 500
+            height: 500,
+            snapToEdge: true,
+            snappedToEdge: 'right',
+            minY: 26
         },
         assets: {
-            x: 10,
-            y: 36,
+            x: 0,
+            y: 0,
             width: 200,
-            height: 230
+            height: 330
         },
         layers: {
-            height: 180,
+            height: 200,
             snappedTo: 'properties'
         },
         nodes: {
-            height: 180,
+            height: 183,
             snappedTo: 'assets'
         },
         camera: {
@@ -735,12 +748,6 @@ game.bamboo.Ui.defaultWorkspace = {
         layerSettings: {
             width: 200,
             height: 243
-        },
-        console: {
-            x: 10,
-            y: window.innerHeight - 210,
-            width: window.innerWidth - 20,
-            height: 200
         }
     }
 };

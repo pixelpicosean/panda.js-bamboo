@@ -162,35 +162,46 @@ game.createScene('BambooEditor', {
 
 game._start = game.start;
 game.start = function() {
+    // Panda config
     game.System.scale = false;
     game.System.center = false;
     game.System.left = 0;
     game.System.top = 0;
     game.Storage.id = 'net.pandajs.bamboo';
     game.System.startScene = 'BambooEditor';
+    // game.System.scaleMode = 'nearest';
 
-    // Default config
-    // bambooConfig.moduleFolder = bambooConfig.moduleFolder ? '../../game/' + bambooConfig.moduleFolder + '/' : '../../game/scenes/';
+    // Bamboo config
     bambooConfig.moduleFolder = bambooConfig.moduleFolder || 'scenes';
     bambooConfig.JSONSaveDir = bambooConfig.JSONSaveDir || '../../../media/';
+
+    game.nodes = game.ksort(game.nodes);
+    game.scenes = game.ksort(game.scenes);
 
     var style = document.createElement('link');
     style.rel = 'stylesheet';
     style.type = 'text/css';
     style.href = 'src/bamboo/editor/style.css';
-
-    game.nodes = game.ksort(game.nodes);
-    game.scenes = game.ksort(game.scenes);
-
     style.onload = function() {
-        game._start(null, window.innerWidth, window.innerHeight);
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+        // Force dimension to odd
+        if (width % 2 === 0) width++;
+        if (height % 2 === 0) height++;
+        game._start(null, width, height);
         game.bamboo.ui = new game.bamboo.Ui();
     };
     document.getElementsByTagName('head')[0].appendChild(style);
 };
 
 window.addEventListener('resize', function() {
-    if (game.system) game.system.resize(window.innerWidth, window.innerHeight);
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    // Force dimension to odd
+    if (width % 2 === 0) width++;
+    if (height % 2 === 0) height++;
+    
+    if (game.system) game.system.resize(width, height);
     if (game.scene && game.scene.editor) game.scene.editor.onResize();
     if (game.bamboo.ui) game.bamboo.ui.onResize();
 });

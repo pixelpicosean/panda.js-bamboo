@@ -24,14 +24,15 @@ game.bamboo.PropertyPanel = game.Class.extend({
             minY: this.editor.menuBar.height,
             resizable: true,
             snappable: true,
-            closeable: true
+            closeable: true,
+            minHeight: 150
         });
         this.layerWindow.setTitle('Layers');
         this.layerWindow.show();
 
         // Create layer list
         this.layerList = document.createElement('select');
-        this.layerList.className = 'layerList';
+        this.layerList.className = 'list';
         this.layerList.size = 6;
         this.layerList.addEventListener('click', this.layerSelectionChanged.bind(this), false);
 
@@ -90,7 +91,7 @@ game.bamboo.PropertyPanel = game.Class.extend({
     },
 
     layerWindowResize: function() {
-        this.layerList.style.height = (this.layerWindow.height - 100) + 'px';
+        this.layerList.style.height = (this.layerWindow.height - 101) + 'px';
     },
 
     updateLayerList: function() {
@@ -107,12 +108,15 @@ game.bamboo.PropertyPanel = game.Class.extend({
 
     showSettings: function() {
         this.propertyWindow.clear();
-
         this.propertyWindow.setTitle('Properties');
 
         this.propertyWindow.addInputText('name', this.editor.scene.name, 'Name', '', this.settingsChanged.bind(this, 'name'));
         this.propertyWindow.addInputText('width', this.editor.scene.width, 'Width', '', this.settingsChanged.bind(this, 'width'));
         this.propertyWindow.addInputText('height', this.editor.scene.height, 'Height', '', this.settingsChanged.bind(this, 'height'));
+
+        for (var name in this.editor.scene.properties) {
+            this.propertyWindow.addInputText(name, this.editor.scene.properties[name], name, '', this.settingsChanged.bind(this, name));
+        }
         
         this.updateLayerList();
     },
@@ -123,20 +127,20 @@ game.bamboo.PropertyPanel = game.Class.extend({
         if (key === 'name') {
             this.editor.scene.name = value;
         }
-        if (key === 'width') {
+        else if (key === 'width') {
             this.editor.scene.width = parseInt(value) || this.editor.scene.width;
             this.propertyWindow.inputs[key].value = this.editor.scene.width;
             this.editor.boundaryLayer.resetGraphics();
         }
-        if (key === 'height') {
+        else if (key === 'height') {
             this.editor.scene.height = parseInt(value) || this.editor.scene.height;
             this.propertyWindow.inputs[key].value = this.editor.scene.height;
             this.editor.boundaryLayer.resetGraphics();
         }
-        if (key === 'bgcolor') {
-            var color = parseInt('0x' + value.slice(1));
-            game.system.stage.setBackgroundColor(color);
-            this.editor.scene.bgcolor = value.replace('#', '0x');
+        else {
+            if (typeof this.editor.scene.properties[key] !== 'undefined') {
+                this.editor.scene.properties[key] = parseFloat(value) || value;
+            }
         }
         this.focusOnCanvas();
     },
@@ -225,7 +229,9 @@ game.bamboo.PropertyPanel = game.Class.extend({
     },
 
     activeNodeChanged: function(node) {
-        if (!node) return this.showSettings();
+        if (!node) {
+            return this.showSettings();
+        }
 
         this.activeElement = null;
         if (this.node) {

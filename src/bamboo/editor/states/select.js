@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 
 game.bamboo.editor.createState('Select', {
-    enter: function() {        
+    enter: function() {
         if (!this.mode.editor.activeNode) this.mode.editor.showSettings();
     },
 
@@ -29,8 +29,7 @@ game.bamboo.editor.createState('Select', {
             var bottomRightX = (pos.x - node.anchor.x * node.size.x) + node.size.x - resizeArea;
             var bottomRightY = (pos.y - node.anchor.y * node.size.y) + node.size.y - resizeArea;
             if (mousePos.x >= bottomRightX && mousePos.y >= bottomRightY) {
-                this.mode.editor.changeState('Resize');
-                return;
+                // return this.mode.editor.changeState('Resize');
             }
         }
 
@@ -50,6 +49,8 @@ game.bamboo.editor.createState('Select', {
     },
 
     nodeClick: function(node) {
+        if (this.mode.editor.selectedNodes.indexOf(node) !== -1) return;
+        
         this.mode.editor.controller.setActiveLayer(node.editorNode.layer);
 
         if (this.mode.shiftDown) {

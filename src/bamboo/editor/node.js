@@ -15,6 +15,9 @@ game.Node.editor = game.Class.extend({
         selectable: true,
         linkable: false
     },
+    textColor: 'white',
+    activeColor: '0xffaa00',
+    selectionColor: '0x00ff66',
 
     init: function(node, editor) {
         this.editor = editor;
@@ -44,7 +47,7 @@ game.Node.editor = game.Class.extend({
         this.connectedToLine.visible = false;
         this.displayObject.addChild(this.connectedToLine);
 
-        this.nameText = new game.Text(this.node.name, { font: '12px Arial', fill: 'white' });
+        this.nameText = new game.Text(this.node.name, { font: '12px Arial', fill: this.textColor });
         this.nameText.alpha = 0.7;
         this.nameText.visible = false;
         this.displayObject.addChild(this.nameText);
@@ -114,13 +117,13 @@ game.Node.editor = game.Class.extend({
         this.parentSelectionRect.rotation = this.node.rotation * (Math.PI / 180);
 
         this.activeRect.clear();
-        this.activeRect.beginFill(0xffaa00, 0.3);
+        this.activeRect.beginFill(parseInt(this.activeColor), 0.3);
         this.activeRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);        
         this.activeRect.endFill();
         this.activeRect.rotation = this.node.rotation * (Math.PI / 180);
 
         this.selectionRect.clear();
-        this.selectionRect.beginFill(0x00ff66, 0.2);
+        this.selectionRect.beginFill(parseInt(this.selectionColor), 0.2);
         this.selectionRect.drawRect(-this.node.size.x * this.node.anchor.x, -this.node.size.y * this.node.anchor.y, size.x, size.y);
         this.selectionRect.endFill();
         this.selectionRect.rotation = this.node.rotation * (Math.PI / 180);

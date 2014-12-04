@@ -16,26 +16,24 @@ game.bamboo.BoundaryLayer = game.Class.extend({
     toggleScreenDim: function() {
         this.dimAmount += 0.25;
         if (this.dimAmount > 1) this.dimAmount = 0;
-
-        this.editor.setTempMessage('Dim ' + (this.dimAmount * 100) + '%');
         this.updateBoundary();
     },
 
     updateBoundary: function() {
-        var left = Math.round(game.system.width / 2 - game.System.width / 2);
-        var top = Math.round(game.system.height / 2 - game.System.height / 2);
+        var left = (game.system.width / 2 - game.System.width / 2);
+        var top = (game.system.height / 2 - game.System.height / 2);
 
-        this.leftLine.position.x = left + this.editor.displayObject.scale.x * (0 - this.editor.camera.position.x) - 1;
-        this.topLine.position.y = top + this.editor.displayObject.scale.y * (0 - this.editor.camera.position.y) - 1;
-        this.rightLine.position.x = left + this.editor.displayObject.scale.x * (this.editor.scene.width - this.editor.camera.position.x) + 1;
-        this.bottomLine.position.y = top + this.editor.displayObject.scale.y * (this.editor.scene.height - this.editor.camera.position.y) + 1;
+        this.leftLine.position.x = left + (0 - this.editor.camera.position.x) - 1;
+        this.topLine.position.y = top + (0 - this.editor.camera.position.y) - 1;
+        this.rightLine.position.x = left + (this.editor.scene.width - this.editor.camera.position.x) + 1;
+        this.bottomLine.position.y = top + (this.editor.scene.height - this.editor.camera.position.y) + 1;
 
         this.grid.position.x = this.leftLine.position.x + 1;
         this.grid.position.y = this.topLine.position.y + 1;
 
         this.screenRect.clear();
         this.screenRect.lineStyle(1, 0xffffff);
-        this.screenRect.drawRect(-1, -1, 2 + this.editor.displayObject.scale.x * game.System.width, 2 + this.editor.displayObject.scale.y * game.System.height);
+        this.screenRect.drawRect(-1, -1, 2 + game.System.width, 2 + game.System.height);
         this.screenRect.position.x = left;
         this.screenRect.position.y = top;
         
@@ -50,13 +48,13 @@ game.bamboo.BoundaryLayer = game.Class.extend({
             this.screenDim.drawRect(0, 0, game.system.width, miny);
         }
 
-        if (top + this.editor.displayObject.scale.y * game.System.height < game.system.height) {
-            maxy = top + this.editor.displayObject.scale.y * game.System.height;
+        if (top + game.System.height < game.system.height) {
+            maxy = Math.round(top + game.System.height);
             this.screenDim.drawRect(0, maxy, game.system.width, game.system.height - maxy);
         }
 
-        if(left > 0) this.screenDim.drawRect(0, miny, left, maxy - miny);
-        if(left + this.editor.displayObject.scale.x * game.System.width < game.system.width) this.screenDim.drawRect(left + this.editor.displayObject.scale.x * game.System.width, miny, game.system.width - (left + this.editor.displayObject.scale.x * game.System.width), maxy - miny);
+        if (left > 0) this.screenDim.drawRect(0, miny, left, (maxy - miny));
+        if (left + game.System.width < game.system.width) this.screenDim.drawRect(left + game.System.width, miny, game.system.width - (left + game.System.width), maxy - miny);
     },
 
     resetGraphics: function() {

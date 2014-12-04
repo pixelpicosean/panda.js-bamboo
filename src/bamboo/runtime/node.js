@@ -53,11 +53,9 @@ game.createClass('Node', {
         
         if (name === 'position') this.displayObject.position.set(value.x, value.y);
         else if (name === 'scale') this.displayObject.scale.set(value.x, value.y);
-        else if (name === 'anchor') {
-            if (this.displayObject.anchor) this.displayObject.anchor.set(value.x, value.y);
-        }
-        else if (name === 'parent') this.parent.addChild(this);
+        else if (name === 'anchor' && this.displayObject.anchor) this.displayObject.anchor.set(value.x, value.y);
         else if (name === 'rotation') this.displayObject.rotation = value * (Math.PI / 180);
+        else if (name === 'parent') this.parent.addChild(this);
     },
 
     parseProperty: function(name, value) {
@@ -72,7 +70,9 @@ game.createClass('Node', {
         var proto = this.constructor.prototype;
         var props = [];
         for (var name in proto) {
-            if (typeof proto[name] !== 'function') props.push(name);
+            if (name.indexOf('_') === 0) continue;
+            if (typeof proto[name] === 'function') continue;
+            props.push(name);
         }
         return props;
     },
@@ -120,7 +120,6 @@ game.createClass('Node', {
 
     toLocalSpace: function(point, output) {
         var pos = this.getGlobalPosition();
-
         var x = point.x - pos.x;
         var y = point.y - pos.y;
         
@@ -129,13 +128,11 @@ game.createClass('Node', {
             return output.set(x, y);
         }
 
-        pos.set(x, y);
-        return pos;
+        return pos.set(x, y);
     },
 
     toGlobalSpace: function(point, output) {
         var pos = this.getGlobalPosition();
-
         var x = point.x + pos.x;
         var y = point.y + pos.y;
 
@@ -144,15 +141,14 @@ game.createClass('Node', {
             return output.set(x, y);
         }
 
-        pos.set(x, y);
-        return pos;
+        return pos.set(x, y);
     },
 
     getGlobalPosition: function(output) {
         var x = this.position.x;
         var y = this.position.y;
-
         var parent = this.parent;
+
         while (parent) {
             if (!parent.position) break;
             x += parent.position.x;
@@ -163,8 +159,7 @@ game.createClass('Node', {
         if (output) return output.set(x, y);
 
         var point = game.bambooPool.get('point');
-        point.set(x, y);
-        return point;
+        return point.set(x, y);
     }
 });
 
