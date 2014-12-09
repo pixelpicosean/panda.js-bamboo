@@ -74,23 +74,33 @@ game.bamboo.editor.createState('Select', {
             var node;
             for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
                 node = this.mode.editor.selectedNodes[i];
-                var newPos = this.mode.shiftDown ? node.size.x : this.mode.editor.gridSize || 1;
-                node.editorNode.setProperty('position', new game.Point(node.position.x + newPos, node.position.y));
+                if (this.mode.altDown) {
+                    node.editorNode.setProperty('rotation', node.rotation += 5);
+                }
+                else {
+                    var newPos = this.mode.shiftDown ? 10 : 1;
+                    node.editorNode.setProperty('position', new game.Point(node.position.x + newPos, node.position.y));
+                }
             }
         }
         if (key === 'LEFT') {
             var node;
             for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
                 node = this.mode.editor.selectedNodes[i];
-                var newPos = this.mode.shiftDown ? node.size.x : this.mode.editor.gridSize || 1;
-                node.editorNode.setProperty('position', new game.Point(node.position.x - newPos, node.position.y));
+                if (this.mode.altDown) {
+                    node.editorNode.setProperty('rotation', node.rotation -= 5);
+                }
+                else {
+                    var newPos = this.mode.shiftDown ? 10 : 1;
+                    node.editorNode.setProperty('position', new game.Point(node.position.x - newPos, node.position.y));    
+                }
             }
         }
         if (key === 'UP') {
             var node;
             for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
                 node = this.mode.editor.selectedNodes[i];
-                var newPos = this.mode.shiftDown ? node.size.y : this.mode.editor.gridSize || 1;
+                var newPos = this.mode.shiftDown ? 10 : 1;
                 node.editorNode.setProperty('position', new game.Point(node.position.x, node.position.y - newPos));
             }
         }
@@ -98,7 +108,7 @@ game.bamboo.editor.createState('Select', {
             var node;
             for (var i = 0; i < this.mode.editor.selectedNodes.length; i++) {
                 node = this.mode.editor.selectedNodes[i];
-                var newPos = this.mode.shiftDown ? node.size.y : this.mode.editor.gridSize || 1;
+                var newPos = this.mode.shiftDown ? 10 : 1;
                 node.editorNode.setProperty('position', new game.Point(node.position.x, node.position.y + newPos));
             }
         }

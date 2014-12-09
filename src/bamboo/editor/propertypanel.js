@@ -64,11 +64,11 @@ game.bamboo.PropertyPanel = game.Class.extend({
         layerButton.addEventListener('click', this.deleteLayerClicked.bind(this), false);
         buttonsDiv.appendChild(layerButton);
 
-        layerButton = document.createElement('div');
-        layerButton.className = 'button image last';
-        layerButton.innerHTML = '<img src="src/bamboo/editor/media/gear.png">';
-        layerButton.addEventListener('click', this.showLayerSettings.bind(this), false);
-        buttonsDiv.appendChild(layerButton);
+        // layerButton = document.createElement('div');
+        // layerButton.className = 'button image last';
+        // layerButton.innerHTML = '<img src="src/bamboo/editor/media/gear.png">';
+        // layerButton.addEventListener('click', this.showLayerSettings.bind(this), false);
+        // buttonsDiv.appendChild(layerButton);
 
         this.layerWindow.onResize = this.layerWindowResize.bind(this);
         this.layerWindowResize();

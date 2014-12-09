@@ -192,7 +192,7 @@ game.bamboo.Ui.Window = game.Class.extend({
     minX: 0,
     closeable: false,
     resizable: false,
-    minWidth: 200,
+    minWidth: 150,
     minHeight: 100,
     parent: null,
     children: null,
@@ -721,7 +721,7 @@ game.bamboo.Ui.defaultWorkspace = {
         properties: {
             x: window.innerWidth - 200,
             y: 0,
-            width: 200,
+            width: 180,
             height: 500,
             snapToEdge: true,
             snappedToEdge: 'right',
@@ -730,7 +730,7 @@ game.bamboo.Ui.defaultWorkspace = {
         assets: {
             x: 0,
             y: 0,
-            width: 200,
+            width: 180,
             height: 330
         },
         layers: {

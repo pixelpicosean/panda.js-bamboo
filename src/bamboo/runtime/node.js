@@ -5,7 +5,7 @@ game.module(
 'use strict';
 
 game.Property = {
-    node: Number.MIN_VALUE * 1
+    node: -999999999 * 1
 };
 
 game.createClass('Node', {

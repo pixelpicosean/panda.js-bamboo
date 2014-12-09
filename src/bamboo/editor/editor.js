@@ -638,13 +638,13 @@ game.bamboo.Editor = game.Class.extend({
     },
 
     keydown: function(key) {
-        if (key === 'PLUS' || key === 'H') {
+        if (key === 'PLUS') {
             // Zoom in
             this.zoom = this.zoom * 1.2;
             this.displayObject.scale.set(this.zoom, this.zoom);
             return;
         }
-        if (key === 'MINUS' || key === 'G') {
+        if (key === 'MINUS') {
             // Zoom out
             this.zoom = this.zoom / 1.2;
             this.displayObject.scale.set(this.zoom, this.zoom);
@@ -771,12 +771,38 @@ game.bamboo.Editor = game.Class.extend({
     saveAsModule: function() {
         if (this.mode.animationRunning) this.mode.stopAnimation();
         var json = this.scene.toJSON();
+
+        if (!game.scenes[json.name]) {
+            game.scenes[json.name] = json;
+        }
+
         var name = json.name.toLowerCase();
-        if (!name) return this.showError('Scene must have name');
+
         var content = this.buildModuleFromJSON(json);
 
         var dir = '../../game/' + bambooConfig.moduleFolder + '/';
         this.saveToFile(dir, name + '.js', content);
+
+        // Save main module
+        var content = this.buildMainModule();
+        var dir = '../../game/';
+        this.saveToFile(dir, bambooConfig.mainModule + '.js', content);
+    },
+
+    buildMainModule: function() {
+        var content = 'game.module(\n    \'game.' + bambooConfig.mainModule + '\'\n)\n';
+        content += '.require(\n';
+        content += '    \'bamboo.core\'';
+        for (var name in game.scenes) {
+            name = name.toLowerCase();
+            content += ',\n';
+            content += '    \'game.' + bambooConfig.moduleFolder + '.' + name + '\'';
+        }
+        content += '\n)\n';
+        content += '.body(function() {\n';
+        content += '\n});\n';
+
+        return content;
     },
 
     buildModuleFromJSON: function(json) {
@@ -825,7 +851,9 @@ game.bamboo.Editor = game.Class.extend({
             if (request.responseText === 'success') {
                 console.log('Scene saved');
             }
-            else console.log('Error saving scene');
+            else {
+                console.log('Error saving scene');
+            }
         }
     },
 

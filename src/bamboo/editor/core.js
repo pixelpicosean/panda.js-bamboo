@@ -169,14 +169,15 @@ game.start = function() {
     game.System.top = 0;
     game.Storage.id = 'net.pandajs.bamboo';
     game.System.startScene = 'BambooEditor';
-    // game.System.scaleMode = 'nearest';
 
-    // Bamboo config
+    // Default config
     bambooConfig.moduleFolder = bambooConfig.moduleFolder || 'scenes';
     bambooConfig.JSONSaveDir = bambooConfig.JSONSaveDir || '../../../media/';
+    bambooConfig.mainModule = bambooConfig.mainModule || 'scenes';
+    bambooConfig.customSort = typeof bambooConfig.customSort === 'boolean' ? bambooConfig.customSort : false;
 
     game.nodes = game.ksort(game.nodes);
-    game.scenes = game.ksort(game.scenes);
+    if (!bambooConfig.customSort) game.scenes = game.ksort(game.scenes);
 
     var style = document.createElement('link');
     style.rel = 'stylesheet';
