@@ -3,74 +3,14 @@ game.module(
 )
 .body(function() {
 
-game.bamboo.Ui = game.Class.extend({
+game.createClass('BambooUi', {
     activeWindow: null,
     windows: [],
     menu: null,
-    workspace: null,
 
     init: function() {
         window.addEventListener('mousemove', this.mousemove.bind(this), false);
         window.addEventListener('mouseup', this.mouseup.bind(this), false);
-        this.loadWorkspace();
-    },
-
-    loadWorkspace: function() {
-        var data = game.storage.get('workspace', game.copy(game.bamboo.Ui.defaultWorkspace));
-        this.workspace = data;
-    },
-
-    getWorkspace: function() {
-        var workspace = {
-            windows: {}
-        };
-
-        for (var i = 0; i < this.windows.length; i++) {
-            if (!this.windows[i].saved) continue;
-            var data = this.windows[i];
-            workspace.windows[data.id] = {
-                x: data.x,
-                y: data.y,
-                width: data.width,
-                height: data.height
-            };
-            if (data.parent) workspace.windows[data.id].snappedTo = data.parent.id;
-        }
-
-        return workspace;
-    },
-
-    resetWorkspace: function() {
-        game.storage.remove('workspace');
-        var data = game.copy(game.bamboo.Ui.defaultWorkspace);
-
-        for (var i = 0; i < this.windows.length; i++) {
-            if (data.windows[this.windows[i].id]) {
-                var winData = data.windows[this.windows[i].id];
-
-                if (!winData.snappedTo) {
-                    for (var key in winData) {
-                        this.windows[i][key] = winData[key];
-                    }
-                    this.windows[i].children = null;
-                    this.windows[i].updatePosition();
-                    this.windows[i].updateSize();
-                }
-            }
-        }
-
-        for (var i = 0; i < this.windows.length; i++) {
-            if (data.windows[this.windows[i].id]) {
-                var winData = data.windows[this.windows[i].id];
-
-                if (winData.snappedTo) {
-                    var parent = this.findWindow(winData.snappedTo);
-                    if (parent) {
-                        parent.snap(this.windows[i]);
-                    }
-                }
-            }
-        }
     },
 
     showWindow: function(id) {
@@ -92,22 +32,13 @@ game.bamboo.Ui = game.Class.extend({
     },
 
     addWindow: function(settings) {
-        if (this.workspace && settings.id) {
-            if (this.workspace.windows[settings.id]) {
-                var data = this.workspace.windows[settings.id];
-                for (var key in data) {
-                    settings[key] = data[key];
-                }
-            }
-        }
-
-        var winElem = new game.bamboo.Ui.Window(this, settings);
+        var winElem = new game.BambooUiWindow(this, settings);
         this.windows.push(winElem);
         return winElem;
     },
 
     addMenu: function(height) {
-        this.menu = new game.bamboo.Ui.Menu(height);
+        this.menu = new game.BambooUiMenu(height);
         return this.menu;
     },
 
@@ -175,7 +106,7 @@ game.bamboo.Ui = game.Class.extend({
     }
 });
 
-game.bamboo.Ui.Window = game.Class.extend({
+game.createClass('BambooUiWindow', {
     x: 0,
     y: 0,
     width: 400,
@@ -601,7 +532,7 @@ game.bamboo.Ui.Window = game.Class.extend({
     }
 });
 
-game.bamboo.Ui.Menu = game.Class.extend({
+game.createClass('BambooUiMenu', {
     menus: {},
     activeMenu: null,
     height: 25,
@@ -713,43 +644,5 @@ game.bamboo.Ui.Menu = game.Class.extend({
         this.menus[name].style.display = 'none';
     }
 });
-
-game.bamboo.Ui.Menu.height = 25;
-
-game.bamboo.Ui.defaultWorkspace = {
-    windows: {
-        properties: {
-            x: window.innerWidth - 200,
-            y: 0,
-            width: 180,
-            height: 500,
-            snapToEdge: true,
-            snappedToEdge: 'right',
-            minY: 26
-        },
-        assets: {
-            x: 0,
-            y: 0,
-            width: 180,
-            height: 330
-        },
-        layers: {
-            height: 200,
-            snappedTo: 'properties'
-        },
-        nodes: {
-            height: 183,
-            snappedTo: 'assets'
-        },
-        camera: {
-            width: 200,
-            height: 100
-        },
-        layerSettings: {
-            width: 200,
-            height: 243
-        }
-    }
-};
 
 });

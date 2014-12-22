@@ -8,6 +8,9 @@ game.module(
 
 game.addAsset('../src/bamboo/editor/media/anchorbox.png');
 
+// TODO
+game.Property.spriteSheet = -999999999 * 2;
+
 game.Node.editor = game.Class.extend({
     editMode: false,
     propertyChangeListeners: [],
@@ -65,12 +68,59 @@ game.Node.editor = game.Class.extend({
         this.anchorBox.alpha = 0.5;
         this.anchorBox.visible = false;
         this.displayObject.addChild(this.anchorBox);
+
+        this.connectedToLine.visible = this.editor.config.viewNodes;
+        this.parentSelectionRect.visible = this.editor.config.viewNodes;
+        this.nameText.visible = this.editor.config.viewNodes;
+        this.debugDisplayObject.visible = this.editor.config.viewNodes;
+
+        if (typeof this.update === 'function') this.editor.scene.activeNodes.push(this);
+
+        this.initDisplayObject();
+    },
+
+    initDisplayObject: function() {
+        this.node.initDisplayObject();
     },
 
     ready: function() {
         this.node.parent.editorNode.displayObject.addChild(this.displayObject);
         this.displayObject.position.set(this.node.position.x, this.node.position.y);
         this.redrawConnectedToLine();
+    },
+
+    getProperties: function() {
+        var props = this.node.getProperties();
+        for (var name in this.customProperties) {
+            props.unshift(name);
+        }
+        return props;
+    },
+
+    getPropertyType: function(name) {
+        if (typeof this.customProperties[name] !== 'undefined') {
+            
+            for (var prop in game.Property) {
+                if (this.customProperties[name] === game.Property[prop]) return prop;
+            }
+
+            var type = typeof this.customProperties[name];
+
+            if (type === 'object') {
+                if (typeof this.customProperties[name].length === 'number') return 'array';
+                if (typeof this.customProperties[name].x === 'number' && typeof this.customProperties[name].y === 'number') return 'vector';
+            }
+
+            return type;
+        }
+        else return this.node.getPropertyType(name);
+    },
+
+    getPropertyValue: function(name) {
+        if (typeof this.customProperties[name] !== 'undefined') {
+            return this.customProperties[name];
+        }
+        return this.node[name];
     },
 
     layerChanged: function() {
@@ -142,7 +192,7 @@ game.Node.editor = game.Class.extend({
 
     setProperty: function(property, value) {
         var oldValue = this.node[property];
-        this.node.setProperty(property, value);
+        this.node._setProperty(property, value);
         this.propertyChanged(property, value, oldValue);
     },
 

@@ -9,11 +9,13 @@ game.Property = {
 };
 
 game.createClass('Node', {
-    rotation: 0,
+    _children: [],
+    parent: game.Property.node,
     anchor: {
         x: 0,
         y: 0
     },
+    rotation: 0,
     size: {
         x: 0,
         y: 0
@@ -23,32 +25,25 @@ game.createClass('Node', {
         y: 0
     },
     name: '',
-    parent: game.Property.node,
 
-    staticInit: function(scene, propertyData) {
-        this.scene = scene;
-        this.propertyData = propertyData;
-        this.name = propertyData.name;
-        this.children = [];
-    },
-
-    init: function() {
+    initDisplayObject: function() {
         this.displayObject = new game.Container();
     },
 
-    initProperties: function() {
+    ready: function() {
+    },
+
+    initProperties: function(data) {
         var props = this.getProperties();
 
         for (var i = props.length - 1; i >= 0; i--) {
             var name = props[i];
-            var value = this.propertyData[name] || this[name];
-            this.setProperty(name, this.parseProperty(name, value));
+            var value = typeof data[name] !== 'undefined' ? data[name] : this[name];
+            this._setProperty(name, this.parseProperty(name, value));
         }
-
-        delete this.propertyData;
     },
 
-    setProperty: function(name, value) {
+    _setProperty: function(name, value) {
         this[name] = value;
         
         if (name === 'position') this.displayObject.position.set(value.x, value.y);
@@ -56,11 +51,15 @@ game.createClass('Node', {
         else if (name === 'anchor' && this.displayObject.anchor) this.displayObject.anchor.set(value.x, value.y);
         else if (name === 'rotation') this.displayObject.rotation = value * (Math.PI / 180);
         else if (name === 'parent') this.parent.addChild(this);
+        else this.setProperty(name, value);
+    },
+
+    setProperty: function(name, value) {
+
     },
 
     parseProperty: function(name, value) {
         var type = this.getPropertyType(name);
-
         if (type === 'vector') return new game.Point(value.x, value.y);
         if (type === 'node') return this.scene.findNode(value);
         return value;
@@ -79,6 +78,7 @@ game.createClass('Node', {
 
     getPropertyType: function(name) {
         var proto = this.constructor.prototype;
+
         for (var prop in game.Property) {
             if (proto[name] === game.Property[prop]) return prop;
         }
@@ -93,25 +93,22 @@ game.createClass('Node', {
         return type;
     },
 
-    ready: function() {
-    },
-
     onRemove: function() {
     },
 
     remove: function() {
-        return this.scene.removeNode(this);
+        if (this.scene) return this.scene.removeNode(this);
     },
 
     addChild: function(node) {
-        this.children.push(node);
+        this._children.push(node);
         this.displayObject.addChild(node.displayObject);
     },
 
     removeChild: function(node) {
-        var index = this.children.indexOf(node);
+        var index = this._children.indexOf(node);
         if (index !== -1) {
-            this.children.splice(index, 1);
+            this._children.splice(index, 1);
             this.displayObject.removeChild(node.displayObject);
             return true;
         }

@@ -3,20 +3,81 @@ game.module(
 )
 .body(function() {
 
-game.bamboo.Editor = game.Class.extend({
+game.createScene('BambooEditor', {
     nodes: [],
     layers: [],
     selectedNodes: [],
     images: [],
-    windowsHidden: false,
-    camera: {},
-    zoom: 1,
 
-    init: function(data) {
+    init: function() {
+        game.editor = this;
+
+        this.initConfig();
+        this.initDragDrop();
+        this.initLastScene();
+        this.initScene();
+        this.initObjects();
+        this.initLayers();
+        this.initCamera();
+        this.initNodes();
+        this.initNodeProperties();
+        // this.initOverlay();
+        this.initWindows();
+
+        this.controller.setActiveLayer(this.layers[0]);
+        this.changeMode('Main');
+
+        this.prevMousePos = new game.Point(game.system.width / 2, game.system.height / 2);
+
+        console.log('Scene ' + this.scene.name + ' loaded');
+        this.updateDocumentTitle();
+    },
+
+    updateDocumentTitle: function() {
+        document.title = 'Bamboo (' + this.scene.name + ')';
+    },
+
+    initConfig: function() {
+        this.config = game.bamboo.config;
+
+        if (!this.config.saveSettings) return;
+
+        // Read local storage
+        this.config.gridSize = game.storage.get('gridSize', this.config.gridSize);
+        this.config.viewNodes = game.storage.get('viewNodes', this.config.viewNodes);
+    },
+
+    initDragDrop: function() {
+        var canvas = game.system.canvas;
+        canvas.ondragover = this.dragover.bind(this);
+        canvas.ondragleave = this.dragleave.bind(this);
+        canvas.ondrop = this.filedrop.bind(this);
+    },
+
+    initLastScene: function() {
+        if (!this.config.loadLastScene) return;
+
+        if (!game.bamboo.currentScene) {
+            game.bamboo.currentScene = game.storage.get('lastScene');
+            this.config.loadLastScene = false;
+        }
+    },
+
+    initCamera: function() {
+        this.camera = new game.BambooCamera(this);
+        this.scene.displayObject.position.set(this.camera.center.x, this.camera.center.y);
+        this.editorContainer.position.set(this.camera.center.x, this.camera.center.y);
+        this.boundary.update();
+    },
+
+    initScene: function() {
+        var data = game.getSceneData(game.bamboo.currentScene);
+
         if (!data) {
+            // Load default scene
             data = game.BambooScene.defaultJSON;
-            data.width = bambooConfig.width || data.width;
-            data.height = bambooConfig.height || data.height;
+            data.width = this.config.width || this.config.systemWidth;
+            data.height = this.config.height || this.config.systemHeight;
             game.storage.remove('lastScene');
         }
         else {
@@ -24,47 +85,42 @@ game.bamboo.Editor = game.Class.extend({
         }
 
         this.scene = new game.BambooScene(data);
+    },
 
-        this.gridSize = game.storage.get('gridSize', 16);
-        this.viewNodes = game.storage.get('viewNodes', true);
+    initObjects: function() {
+        this.controller = new game.BambooController(this);
+        this.boundary = new game.BambooBoundary(this);
+        this.menuBar = new game.BambooMenuBar(this);
+        this.sideBar = new game.BambooSideBar(this);
+    },
 
-        this.camera.position = new game.Point();
-        this.displayObject = new game.Container();
-        this.displayObject.pivot.x = game.system.width / 2;
-        this.displayObject.pivot.y = game.system.height / 2;
-        this.displayObject.position.x = game.system.width / 2;
-        this.displayObject.position.y = game.system.height / 2;
+    initLayers: function() {
+        this.mainContainer = new game.Container().addTo(this.stage);
+        this.mainContainer.pivot.x = this.config.systemWidth / 2;
+        this.mainContainer.pivot.y = this.config.systemHeight / 2;
+        this.mainContainer.position.x = this.config.systemWidth / 2;
+        this.mainContainer.position.y = this.config.systemHeight / 2;
+
+        this.sceneContainer = this.scene.displayObject;
+        this.sceneContainer.addTo(this.mainContainer);
         
-        this.controller = new game.bamboo.Controller(this);
-        this.prevMousePos = new game.Point(game.system.width / 2, game.system.height / 2);
+        this.editorContainer = new game.Container().addTo(this.mainContainer);
         
-        this.worldTargetPos = new game.Point(game.system.width / 2 - game.System.width / 2, game.system.height / 2 - game.System.height / 2);
-        this.scene.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);
-        this.displayObject.addChild(this.scene.displayObject);
-        
-        this.overlay = new game.Container();
-        this.displayObject.addChild(this.overlay);
+        this.overlayContainer = this.boundary.container;
+        this.overlayContainer.addTo(this.mainContainer);
+    },
 
-        this.nodeLayer = new game.Container();
-        this.displayObject.addChild(this.nodeLayer);
+    loadScene: function(name) {
+        if (game.bamboo.currentScene) game.removeBambooAssets(game.bamboo.currentScene);
+        if (name) game.addBambooAssets(name);
 
-        this.targetCameraWorldPosition = this.worldTargetPos.clone();
-        
-        this.boundaryLayer = new game.bamboo.BoundaryLayer(this);
-        this.overlay.addChild(this.boundaryLayer.displayObject);
+        game.bamboo.currentScene = name;
+        game.bamboo.ui.removeAll();
 
-        this.menuBar = new game.bamboo.MenuBar(this);
-        this.propertyPanel = new game.bamboo.PropertyPanel(this);
+        var loader = new game.Loader('BambooEditor').start();
+    },
 
-        this.changeMode('Main');
-        this.cameraWorldPosition = new game.Point(
-            this.worldTargetPos.x - this.camera.position.x,
-            this.worldTargetPos.y - this.camera.position.y
-        );
-
-        this.initNodes();
-        this.initNodeProperties();
-
+    initWindows: function() {
         // Error window
         this.errorWindow = game.bamboo.ui.addWindow({
             width: 400,
@@ -80,7 +136,6 @@ game.bamboo.Editor = game.Class.extend({
             resizable: true,
             snappable: true,
             closeable: true,
-            visible: true,
             minY: this.menuBar.height,
             minHeight: 200
         });
@@ -99,56 +154,9 @@ game.bamboo.Editor = game.Class.extend({
         assetsWindow.addButton('Add', this.addAsset.bind(this, this.assetsList));
         assetsWindow.addButton('Remove', this.removeAsset.bind(this, this.assetsList));
         this.updateAssetsList();
-
-        // Nodes window
-        this.nodesWindow = game.bamboo.ui.addWindow({
-            id: 'nodes',
-            closeable: true,
-            resizable: false,
-            snappable: true,
-            minY: this.menuBar.height,
-            title: 'Nodes'
-        });
-        this.nodesWindow.addInputSelect('type', 'Type');
-
-        for (var name in game.nodes) {
-            this.nodesWindow.addInputSelectOption('type', name, name);
-        }
-
-        this.nodesWindow.setInputSelectValue('type', 'Image');
-
-        this.nodesWindow.addInputSelect('parent', 'Parent', 'Node that this node will follow');
-        this.buildNodeDropdown(this.nodesWindow, 'parent', this.scene);
-
-        this.nodesWindow.addButton('Add', this.addNode.bind(this));
-        this.nodesWindow.show();
-
-        // Camera window
-        this.cameraWindow = game.bamboo.ui.addWindow({
-            id: 'camera',
-            resizable: true,
-            closeable: true,
-            snappable: true
-        });
-        this.cameraWindow.setTitle('Camera');
-        this.cameraWindow.addMultiInput('position', [this.camera.position.x, this.camera.position.y], 2, 'Position', '', this.updateCameraPosition.bind(this));
-
-        // Set default active layer
-        for (var i = 0; i < this.layers.length; i++) {
-            if (this.layers[i].name === 'main') {
-                this.activeLayer = null;
-                this.controller.setActiveLayer(this.layers[i]);
-                break;
-            }
-        }
-
-        this.updateLayers();
-        this.initShadow();
-
-        console.log('Scene ' + this.scene.name + ' loaded');
     },
 
-    loadScene: function() {
+    showScenesWindow: function() {
         if (this.scenesWindow) this.scenesWindow.hide();
         this.scenesWindow = game.bamboo.ui.addWindow({
             title: 'Load scene',
@@ -189,72 +197,54 @@ game.bamboo.Editor = game.Class.extend({
         this.loadFiles(input.files);
     },
 
-    updateCameraPosition: function() {
-        this.camera.position.x = this.cameraWindow.inputs['position.0'].value;
-        this.camera.position.y = this.cameraWindow.inputs['position.1'].value;
-        this.cameraWorldPosition = this.cameraWorldPosition;
-    },
-
     changeGrid: function() {
         if (this.mode.shiftDown) {
-            this.gridSize /= 2;
-            if (this.gridSize === 0) this.gridSize = 128;
-            if (this.gridSize === 4) this.gridSize = 0;
+            this.config.gridSize /= 2;
+            if (this.config.gridSize === 0) this.config.gridSize = 128;
+            if (this.config.gridSize === 4) this.config.gridSize = 0;
         }
         else {
-            this.gridSize *= 2;
-            if (this.gridSize === 0) this.gridSize = 8;
-            if (this.gridSize > 128) this.gridSize = 0;
+            this.config.gridSize *= 2;
+            if (this.config.gridSize === 0) this.config.gridSize = 8;
+            if (this.config.gridSize > 128) this.config.gridSize = 0;
         }
-        game.storage.set('gridSize', this.gridSize);
+        game.storage.set('gridSize', this.config.gridSize);
 
-        this.boundaryLayer.resetGraphics();
+        this.boundary.updateGrid();
     },
 
     toggleBoundaries: function() {
-        this.boundaryLayer.boundaries.visible = !this.boundaryLayer.boundaries.visible;
+        this.boundary.boundaries.visible = !this.boundary.boundaries.visible;
     },
 
-    initShadow: function() {
-        this.shadow = document.createElement('div');
-        this.shadow.style.position = 'absolute';
-        this.shadow.style.left = '0px';
-        this.shadow.style.top = '0px';
-        this.shadow.style.width = '100%';
-        this.shadow.style.height = '100%';
-        this.shadow.style.backgroundColor = 'rgba(0,0,0,0.5)';
-        this.shadow.style.zIndex = 10;
-        this.shadow.style.textAlign = 'center';
-        this.shadow.style.lineHeight = window.innerHeight + 'px';
-        this.shadow.style.display = 'none';
-        this.shadow.style.pointerEvents = 'none';
-        document.body.appendChild(this.shadow);
-    },
+    // initOverlay: function() {
+    //     this.overlay = document.createElement('div');
+    //     this.overlay.style.position = 'absolute';
+    //     this.overlay.style.left = '0px';
+    //     this.overlay.style.top = '0px';
+    //     this.overlay.style.width = '100%';
+    //     this.overlay.style.height = '100%';
+    //     this.overlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
+    //     this.overlay.style.zIndex = 10;
+    //     this.overlay.style.textAlign = 'center';
+    //     this.overlay.style.lineHeight = window.innerHeight + 'px';
+    //     this.overlay.style.display = 'none';
+    //     this.overlay.style.pointerEvents = 'none';
+    //     document.body.appendChild(this.overlay);
+    // },
 
-    updateCameraWindow: function() {
-        var x = this.camera.position.x;
-        var y = this.camera.position.y;
-        this.cameraWindow.inputs['position.0'].value = x;
-        this.cameraWindow.inputs['position.1'].value = y;
-    },
+    // showOverlay: function() {
+    //     this.overlay.style.display = 'block';
+    // },
 
-    resetCamera: function() {
-        this.cameraWorldPosition = new game.Point(this.worldTargetPos.x, this.worldTargetPos.y);
-        this.updateCameraWindow();
-    },
+    // hideOverlay: function() {
+    //     this.overlay.style.display = 'none';
+    // },
 
-    showShadow: function() {
-        this.shadow.style.display = 'block';
-    },
-
-    hideShadow: function() {
-        this.shadow.style.display = 'none';
-    },
-
-    setShadowText: function(text) {
-        this.shadow.innerHTML = text;
-        return this;
-    },
+    // setOverlayText: function(text) {
+    //     this.overlay.innerHTML = text;
+    //     return this;
+    // },
 
     removeAsset: function(assetsList) {
         if (assetsList.value && confirm('Remove ' + assetsList.value + '?')) {
@@ -289,7 +279,8 @@ game.bamboo.Editor = game.Class.extend({
 
     initNodeProperties: function() {
         for (var i = 0; i < this.scene.nodes.length; i++) {
-            this.scene.nodes[i].initProperties();
+            this.scene.nodes[i].initProperties(this.scene.nodes[i]._properties);
+            delete this.scene.nodes[i]._properties;
             this.nodeAdded(this.scene.nodes[i]);
         }
     },
@@ -297,14 +288,14 @@ game.bamboo.Editor = game.Class.extend({
     addNode: function() {
         this.controller.deselectAllNodes();
 
-        var name = this.getUniqueName(this.nodesWindow.inputs['type'].value);
+        var nodeType = this.sideBar.nodesWindow.inputs['type'].value;
 
-        var node = this.controller.createNode(this.nodesWindow.inputs['type'].value, {
-            name: name,
-            parent: this.nodesWindow.inputs['parent'].value
+        var node = this.controller.createNode(nodeType, {
+            name: this.getUniqueName(nodeType),
+            parent: this.activeLayer.name
         });
 
-        node.initProperties();
+        node.initProperties(node._properties);
         node.editorNode.layerChanged();
         node.editorNode.ready();
 
@@ -314,9 +305,10 @@ game.bamboo.Editor = game.Class.extend({
         if (node.size.x === 0 && node.size.y === 0) {
             node.editorNode.setProperty('size', new game.Point(32, 32));
         }
+        node.editorNode.updateRect();
 
         this.controller.setActiveNode(node);
-        this.propertyPanel.updateLayerList();
+        this.sideBar.updateLayerList();
         this.changeState('Move');
 
         var parentPos = node.parent.getGlobalPosition();
@@ -324,19 +316,16 @@ game.bamboo.Editor = game.Class.extend({
         this.mode.state.offset.x -= pos.x - parentPos.x;
         this.mode.state.offset.y -= pos.y - parentPos.y;
         this.mode.state.update(this.prevMousePos.x, this.prevMousePos.y);
-
-        this.nodesWindow.inputs['parent'].innerHTML = '';
-        this.buildNodeDropdown(this.nodesWindow, 'parent', this.scene);
     },
 
     toggleViewNodes: function() {
-        this.viewNodes = !this.viewNodes;
-        game.storage.set('viewNodes', this.viewNodes);
+        this.config.viewNodes = !this.config.viewNodes;
+        game.storage.set('viewNodes', this.config.viewNodes);
         for (var i = 0; i < this.nodes.length; i++) {
-            this.nodes[i].parentSelectionRect.visible = this.viewNodes;
-            this.nodes[i].connectedToLine.visible = this.viewNodes;
-            this.nodes[i].nameText.visible = this.viewNodes;
-            this.nodes[i].debugDisplayObject.visible = this.viewNodes;
+            this.nodes[i].parentSelectionRect.visible = this.config.viewNodes;
+            this.nodes[i].connectedToLine.visible = this.config.viewNodes;
+            this.nodes[i].nameText.visible = this.config.viewNodes;
+            this.nodes[i].debugDisplayObject.visible = this.config.viewNodes;
         }
     },
 
@@ -364,8 +353,8 @@ game.bamboo.Editor = game.Class.extend({
                 Math.round(layer.position.y + this.camera.position.y * -layer.speedFactor.y)
             );
             layer.editorNode.displayObject.position.set(
-                layer.position.x + this.camera.position.x * -layer.speedFactor.x,
-                layer.position.y + this.camera.position.y * -layer.speedFactor.y
+                Math.round(layer.position.x + this.camera.position.x * -layer.speedFactor.x),
+                Math.round(layer.position.y + this.camera.position.y * -layer.speedFactor.y)
             );
         }
     },
@@ -380,10 +369,6 @@ game.bamboo.Editor = game.Class.extend({
         if (this.mode.state) this.mode.state.exit();
         this.mode.state = new game.bamboo.editor['State' + state.ucfirst()](this.mode, param);
         this.mode.state.enter();
-    },
-
-    exit: function() {
-        game.bamboo.ui.removeAll();
     },
 
     getUniqueName: function(name) {
@@ -433,10 +418,19 @@ game.bamboo.Editor = game.Class.extend({
         if (node instanceof game.nodes.Layer) {
             this.layers.push(node);
             this.layerAdded(node);
+
+            if (this.layers.length === 1) {
+                if (this.config.background) {
+                    var bg = new game.Sprite(this.config.background);
+                    var bgScale = this.config.backgroundScale || 1;
+                    bg.scale.set(bgScale, bgScale);
+                    bg.addTo(this.layers[0].displayObject);
+                }
+            }
         }
         else {
             // force update for node-list
-            if (this.activeLayer) this.propertyPanel.activeLayerChanged(this.activeLayer);
+            if (this.activeLayer) this.sideBar.activeLayerChanged(this.activeLayer);
         }
     },
 
@@ -448,7 +442,7 @@ game.bamboo.Editor = game.Class.extend({
         }
         else {
             // force update for node-list
-            this.propertyPanel.activeLayerChanged(this.activeLayer);
+            this.sideBar.activeLayerChanged(this.activeLayer);
         }
         this.nodesWindow.inputs['parent'].innerHTML = '';
         this.buildNodeDropdown(this.nodesWindow, 'parent', this.scene);
@@ -462,33 +456,26 @@ game.bamboo.Editor = game.Class.extend({
 
     layerAdded: function(layer) {
         this.controller.setActiveLayer(layer);
-        this.propertyPanel.updateLayerList();
+        this.sideBar.updateLayerList();
     },
 
     layerRemoved: function(layer) {
-        this.propertyPanel.updateLayerList();
+        this.sideBar.updateLayerList();
     },
 
     addImage: function(name) {
         if (this.images.indexOf(name) !== -1) return;
         this.images.push(name);
         this.images.sort();
-        if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
+        if (this.activeNode) this.activeNodeChanged(this.activeNode);
     },
 
     activeNodeChanged: function(node) {
-        this.propertyPanel.activeNodeChanged(node);
-
-        if (node) {
-            this.nodesWindow.setInputSelectValue('parent', node.name);
-        }
-        else {
-            this.nodesWindow.setInputSelectValue('parent', this.activeLayer.name);
-        }
+        this.sideBar.activeNodeChanged(node);
     },
 
-    showSettings: function() {
-        this.propertyPanel.showSettings();
+    showSceneSettings: function() {
+        this.sideBar.showSceneSettings();
     },
 
     getNodesInLayer: function(layer) {
@@ -531,34 +518,6 @@ game.bamboo.Editor = game.Class.extend({
         }
     },
 
-    getNextNodeAt: function(p, layer, node) {
-        // far enough flags z-order, so when finding next node, we first
-        // loop until we find the 'starting' node, and start searching from that
-        // TODO: we could probably use indexOf to find the starting index instead of looping
-        var farEnough = false;
-        for (var i=this.nodes.length-1; i>=0; i--) {
-            if (!farEnough) {
-                if (this.nodes[i] === node)
-                    farEnough = true;
-                continue;
-            }
-
-            var n = this.nodes[i];
-            if (layer && n.layer !== layer)
-                continue;
-
-            var l = n.node.toLocalSpace(p);
-            var r = n._cachedRect;
-            var sx = 6/n.node.scale.x;
-            var sy = 6/n.node.scale.y;
-            if (l.x >= r.x-sx && l.x <= r.x+r.width+sx &&
-               l.y >= r.y-sy && l.y <= r.y+r.height+sy) {
-                return n.node;
-            }
-        }
-        return null;
-    },
-
     findNode: function(name) {
         for (var i = 0; i < this.scene.nodes.length; i++) {
             if (this.scene.nodes[i].name === name) return this.scene.nodes[i];
@@ -592,8 +551,8 @@ game.bamboo.Editor = game.Class.extend({
     },
 
     toGlobalSpace: function(point) {
-        var x = point.x - this.scene.position.x + this.camera.position.x - this.worldTargetPos.x;
-        var y = point.y - this.scene.position.y + this.camera.position.y - this.worldTargetPos.y;
+        var x = point.x - this.scene.position.x + this.camera.position.x - this.camera.center.x;
+        var y = point.y - this.scene.position.y + this.camera.position.y - this.camera.center.y;
         return new game.Point(x, y);
     },
 
@@ -610,6 +569,8 @@ game.bamboo.Editor = game.Class.extend({
     },
 
     mousedown: function(event) {
+        this.focus();
+        
         this.prevMousePos.x = event.global.x;
         this.prevMousePos.y = event.global.y;
         this.mode.mousedown(event);
@@ -618,13 +579,11 @@ game.bamboo.Editor = game.Class.extend({
     mousemove: function(event) {
         if (this.menuBar.menuElem.active) this.menuBar.menuElem.activate();
 
-        this.prevMousePos.x = (event.global.x / this.zoom);
-        this.prevMousePos.y = (event.global.y / this.zoom);
+        this.prevMousePos.x = (event.global.x / this.camera.zoom);
+        this.prevMousePos.y = (event.global.y / this.camera.zoom);
 
-        if (this.cameraOffset) {
-            this.targetCameraWorldPosition.x = (event.global.x / this.zoom) - this.cameraOffset.x;
-            this.targetCameraWorldPosition.y = (event.global.y / this.zoom) - this.cameraOffset.y;
-            this.cameraWorldPosition = this.targetCameraWorldPosition.clone();
+        if (this.spaceDown) {
+            this.camera.set(this.prevMousePos.x, this.prevMousePos.y);
         }
 
         this.mode.mousemove(event);
@@ -638,28 +597,25 @@ game.bamboo.Editor = game.Class.extend({
     },
 
     keydown: function(key) {
-        if (key === 'PLUS') {
-            // Zoom in
-            this.zoom = this.zoom * 1.2;
-            this.displayObject.scale.set(this.zoom, this.zoom);
-            return;
+        if (key === 'ESC' && document.activeElement !== document.body) {
+            document.activeElement.blur();
         }
-        if (key === 'MINUS') {
-            // Zoom out
-            this.zoom = this.zoom / 1.2;
-            this.displayObject.scale.set(this.zoom, this.zoom);
-            return;
+        if (key === 'ENTER' && document.activeElement !== document.body) {
+            document.activeElement.blur();
         }
-        if (key === '0') {
-            // Reset zoom
-            this.zoom = 1;
-            this.displayObject.scale.set(this.zoom, this.zoom);
-            return;
-        }
+        if (document.activeElement !== document.body) return;
+
+        if (key === '1') return this.menuBar.toggleVisibility();
+        if (key === '2') return this.sideBar.toggleVisibility();
+        if (key === 'PLUS') return this.camera.zoomIn();
+        if (key === 'MINUS') return this.camera.zoomOut();
+        if (key === '0') return this.camera.zoomReset();
         this.mode.keydown(key);
     },
 
     keyup: function(key) {
+        if (document.activeElement !== document.body) return;
+
         this.mode.keyup(key);
     },
 
@@ -705,7 +661,7 @@ game.bamboo.Editor = game.Class.extend({
             loader.load();
         }
         else {
-            if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
+            if (this.activeNode) this.activeNodeChanged(this.activeNode);
         }
 
         return false;
@@ -728,7 +684,7 @@ game.bamboo.Editor = game.Class.extend({
         this.scene.assets.sort();
         var word = count === 1 ? 'asset' : 'assets';
         console.log(count + ' ' + word + ' added');
-        if (this.activeNode) this.propertyPanel.activeNodeChanged(this.activeNode);
+        if (this.activeNode) this.activeNodeChanged(this.activeNode);
 
         this.updateAssetsList();
     },
@@ -753,7 +709,7 @@ game.bamboo.Editor = game.Class.extend({
         var filename = json.name.toLowerCase() + '.json';
         var content = JSON.stringify(json, null, '    ');
 
-        this.saveToFile(bambooConfig.JSONSaveDir, filename, content);
+        this.saveToFile(this.config.JSONSaveDir, filename, content);
     },
 
     downloadAsModule: function() {
@@ -780,23 +736,25 @@ game.bamboo.Editor = game.Class.extend({
 
         var content = this.buildModuleFromJSON(json);
 
-        var dir = '../../game/' + bambooConfig.moduleFolder + '/';
+        var dir = '../../game/' + this.config.moduleFolder + '/';
         this.saveToFile(dir, name + '.js', content);
 
         // Save main module
         var content = this.buildMainModule();
         var dir = '../../game/';
-        this.saveToFile(dir, bambooConfig.mainModule + '.js', content);
+        this.saveToFile(dir, this.config.mainModule + '.js', content);
+
+        console.log('Scene saved');
     },
 
     buildMainModule: function() {
-        var content = 'game.module(\n    \'game.' + bambooConfig.mainModule + '\'\n)\n';
+        var content = 'game.module(\n    \'game.' + this.config.mainModule + '\'\n)\n';
         content += '.require(\n';
         content += '    \'bamboo.core\'';
         for (var name in game.scenes) {
             name = name.toLowerCase();
             content += ',\n';
-            content += '    \'game.' + bambooConfig.moduleFolder + '.' + name + '\'';
+            content += '    \'game.' + this.config.moduleFolder + '.' + name + '\'';
         }
         content += '\n)\n';
         content += '.body(function() {\n';
@@ -817,7 +775,7 @@ game.bamboo.Editor = game.Class.extend({
             }
         }
 
-        var content = 'game.module(\n    \'game.' + bambooConfig.moduleFolder + '.' + name + '\'\n)\n';
+        var content = 'game.module(\n    \'game.' + this.config.moduleFolder + '.' + name + '\'\n)\n';
         content += '.require(\n';
         content += '    \'bamboo.core\',\n';
         for (var i = 0; i < nodeClasses.length; i++) {
@@ -848,49 +806,45 @@ game.bamboo.Editor = game.Class.extend({
 
     saveToFileComplete: function(request, filename) {
         if (request.readyState === 4) {
-            if (request.responseText === 'success') {
-                console.log('Scene saved');
-            }
-            else {
-                console.log('Error saving scene');
-            }
+            if (request.responseText !== 'success') console.log('Error saving file: ' + filename);
         }
     },
 
     onResize: function() {
-        this.displayObject.pivot.x = game.system.width / 2;
-        this.displayObject.pivot.y = game.system.height / 2;
-        this.displayObject.position.x = game.system.width / 2;
-        this.displayObject.position.y = game.system.height / 2;
-        this.boundaryLayer.resetGraphics();
-        this.worldTargetPos.set(game.system.width / 2 - game.System.width / 2, game.system.height / 2 - game.System.height / 2);
-        this.scene.displayObject.position.set(~~this.worldTargetPos.x, ~~this.worldTargetPos.y);
-        this.nodeLayer.position.x = game.system.width / 2 - game.System.width / 2;
-        this.nodeLayer.position.y = game.system.height / 2 - game.System.height / 2;
-        this.shadow.style.lineHeight = window.innerHeight + 'px';
-    }
-});
+        this.mainContainer.pivot.x = game.system.width / 2;
+        this.mainContainer.pivot.y = game.system.height / 2;
+        this.mainContainer.position.x = game.system.width / 2;
+        this.mainContainer.position.y = game.system.height / 2;
 
-Object.defineProperty(game.bamboo.Editor.prototype, 'cameraWorldPosition', {
-    get: function() {
-        var point = new game.Point(
-            this.camera.position.x * -1 + this.worldTargetPos.x,
-            this.camera.position.y * -1 + this.worldTargetPos.y
-        );
-        return point;
+        this.camera.center.set(game.system.width / 2 - this.config.systemWidth / 2, game.system.height / 2 - this.config.systemHeight / 2);
+
+        this.scene.displayObject.position.set(this.camera.center.x, this.camera.center.y);
+        this.editorContainer.position.set(this.camera.center.x, this.camera.center.y);
+        this.boundary.updateLines();
+        this.boundary.update();
+
+        // this.overlay.style.lineHeight = window.innerHeight + 'px';
     },
-    set: function(value) {
-        var tgtCamPos = value.subtract(this.worldTargetPos);
 
-        tgtCamPos.multiply(-1);
-        this.camera.position.x = tgtCamPos.x;
-        this.camera.position.y = tgtCamPos.y;
-        this.boundaryLayer.updateBoundary();
+    filedrop: function(event) {
+        event.preventDefault();
+        this.hideOverlay();
+        this.filedrop(event);
+    },
 
-        this.nodeLayer.position.x = game.system.width / 2 - game.System.width / 2;
-        this.nodeLayer.position.y = game.system.height / 2 - game.System.height / 2;
-        this.updateLayers();
-        if (this.cameraWindow) this.updateCameraWindow();
+    dragover: function() {
+        this.setOverlayText('Drop here to add asset');
+        this.showOverlay();
+        return false;
+    },
+
+    dragleave: function() {
+        this.hideOverlay();
+        return false;
+    },
+
+    focus: function() {
+        if (document.activeElement !== document.body) document.activeElement.blur();
     }
 });
 

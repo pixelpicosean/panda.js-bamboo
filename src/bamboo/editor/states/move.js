@@ -20,8 +20,8 @@ game.bamboo.editor.createState('Move', {
         this.offset = this.mode.editor.prevMousePos.clone();
         this.offset.x += this.mode.editor.camera.position.x;
         this.offset.y += this.mode.editor.camera.position.y;
-        this.offset.x /= this.mode.editor.zoom;
-        this.offset.y /= this.mode.editor.zoom;
+        this.offset.x /= this.mode.editor.camera.zoom;
+        this.offset.y /= this.mode.editor.camera.zoom;
 
         document.body.style.cursor = 'move';
         document.body.style.pointerEvents = 'none';
@@ -59,7 +59,7 @@ game.bamboo.editor.createState('Move', {
     },
 
     mousemove: function(event) {
-        this.update(event.global.x / this.mode.editor.zoom, event.global.y / this.mode.editor.zoom);
+        this.update(event.global.x / this.mode.editor.camera.zoom, event.global.y / this.mode.editor.camera.zoom);
     },
 
     update: function(x, y) {
@@ -75,9 +75,9 @@ game.bamboo.editor.createState('Move', {
             if (this.lockToAxis === 'X') newPos.y = this.startValues[i].y;
             else if (this.lockToAxis === 'Y') newPos.x = this.startValues[i].x;
 
-            if (this.mode.editor.gridSize > 0) {
-                newPos.x = Math.round(newPos.x / this.mode.editor.gridSize) * this.mode.editor.gridSize;
-                newPos.y = Math.round(newPos.y / this.mode.editor.gridSize) * this.mode.editor.gridSize;
+            if (this.mode.editor.config.gridSize > 0) {
+                newPos.x = Math.round(newPos.x / this.mode.editor.config.gridSize) * this.mode.editor.config.gridSize;
+                newPos.y = Math.round(newPos.y / this.mode.editor.config.gridSize) * this.mode.editor.config.gridSize;
             }
 
             node.editorNode.setProperty('position', newPos);

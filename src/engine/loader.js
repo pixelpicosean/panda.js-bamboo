@@ -15,7 +15,7 @@ game.module(
     @constructor
     @param {Function|String} callback
 **/
-game.Loader = game.Class.extend({
+game.createClass('Loader', {
     /**
         Number of files loaded.
         @property {Number} loaded
@@ -102,13 +102,13 @@ game.Loader = game.Class.extend({
         this.barBg = new game.Graphics();
         this.barBg.beginFill(game.Loader.barBgColor);
         this.barBg.drawRect(0, 0, barWidth, barHeight);
-        this.barBg.position.set(game.system.width / 2 - (barWidth / 2), game.system.height / 2 - (barHeight / 2));
+        this.barBg.position.set(Math.round(game.renderer.width / 2 - (barWidth / 2)), Math.round(game.renderer.height / 2 - (barHeight / 2)));
         this.stage.addChild(this.barBg);
 
         this.barFg = new game.Graphics();
         this.barFg.beginFill(game.Loader.barColor);
-        this.barFg.drawRect(0, 0, barWidth + 2, barHeight + 2);
-        this.barFg.position.set(game.system.width / 2 - (barWidth / 2) - 1, game.system.height / 2 - (barHeight / 2) - 1);
+        this.barFg.drawRect(0, 0, barWidth, barHeight);
+        this.barFg.position.set(Math.round(game.renderer.width / 2 - (barWidth / 2)), Math.round(game.renderer.height / 2 - (barHeight / 2)));
         this.barFg.scale.x = this.percent / 100;
         this.stage.addChild(this.barFg);
     },
@@ -184,7 +184,7 @@ game.Loader = game.Class.extend({
     **/
     loadAudio: function() {
         for (var i = this.audioQueue.length - 1; i >= 0; i--) {
-            game.audio.load(this.audioQueue[i], this.progress.bind(this), this.error.bind(this, this.audioQueue[i]));
+            game.audio._load(this.audioQueue[i], this.progress.bind(this), this.error.bind(this, this.audioQueue[i]));
         }
     },
 
@@ -257,59 +257,61 @@ game.Loader = game.Class.extend({
     }
 });
 
-/**
-    Loader background color.
-    @attribute {Number} bgColor
-    @default 0x000000
-**/
-game.Loader.bgColor = 0x000000;
-/**
-    Minimum time to show loader, in milliseconds.
-    @attribute {Number} time
-    @default 200
-**/
-game.Loader.time = 200;
-/**
-    Loading bar background color.
-    @attribute {Number} barBg
-    @default 0x231f20
-**/
-game.Loader.barBgColor = 0x515e73;
-/**
-    Loading bar color.
-    @attribute {Number} barColor
-    @default 0xe6e7e8
-**/
-game.Loader.barColor = 0xb9bec7;
-/**
-    Width of the loading bar.
-    @attribute {Number} barWidth
-    @default 200
-**/
-game.Loader.barWidth = 200;
-/**
-    Height of the loading bar.
-    @attribute {Number} barHeight
-    @default 20
-**/
-game.Loader.barHeight = 20;
-/**
-    Loading bar margin from logo.
-    @attribute {Number} barMargin
-    @default 10
-**/
-game.Loader.barMargin = 10;
-/**
-    Loader logo url.
-    @attribute {String} logo
-    @default null
-**/
-game.Loader.logo = null;
-/**
-    Threat requests as crossorigin.
-    @attribute {Boolean} crossorigin
-    @default true
-**/
-game.Loader.crossorigin = true;
+game.addAttributes('Loader', {
+    /**
+        Loader background color.
+        @attribute {Number} bgColor
+        @default 0x000000
+    **/
+    bgColor: 0x000000,
+    /**
+        Minimum time to show loader, in milliseconds.
+        @attribute {Number} time
+        @default 200
+    **/
+    time: 200,
+    /**
+        Loading bar background color.
+        @attribute {Number} barBg
+        @default 0x231f20
+    **/
+    barBgColor: 0x515e73,
+    /**
+        Loading bar color.
+        @attribute {Number} barColor
+        @default 0xe6e7e8
+    **/
+    barColor: 0xb9bec7,
+    /**
+        Width of the loading bar.
+        @attribute {Number} barWidth
+        @default 200
+    **/
+    barWidth: 200,
+    /**
+        Height of the loading bar.
+        @attribute {Number} barHeight
+        @default 20
+    **/
+    barHeight: 20,
+    /**
+        Loading bar margin from logo.
+        @attribute {Number} barMargin
+        @default 10
+    **/
+    barMargin: 10,
+    /**
+        Loader logo url.
+        @attribute {String} logo
+        @default null
+    **/
+    logo: null,
+    /**
+        Threat requests as crossorigin.
+        @attribute {Boolean} crossorigin
+        @default true
+    **/
+    crossorigin: true
+});
 
 });

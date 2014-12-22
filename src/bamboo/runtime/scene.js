@@ -28,7 +28,8 @@ game.createClass('BambooScene', {
     initNodes: function() {
         for (var i = 0; i < this.nodes.length; i++) {
             if (!game.nodes[this.nodes[i].class]) throw 'node ' + this.nodes[i].class + ' not found';
-            var node = new game.nodes[this.nodes[i].class](this, this.nodes[i].properties);
+            var node = new game.nodes[this.nodes[i].class]();
+            node._properties = this.nodes[i].properties;
             this.nodes[i] = node;
             this.addNode(node);
         }
@@ -36,7 +37,8 @@ game.createClass('BambooScene', {
 
     initNodeProperties: function() {
         for (var i = 0; i < this.nodes.length; i++) {
-            this.nodes[i].initProperties();
+            this.nodes[i].initProperties(this.nodes[i]._properties);
+            delete this.nodes[i]._properties;
         }
     },
 
@@ -44,14 +46,6 @@ game.createClass('BambooScene', {
         for (var i = 0; i < this.nodes.length; i++) {
             this.nodes[i].ready();
         }
-    },
-
-    addChild: function(node) {
-        this.displayObject.addChild(node.displayObject);
-    },
-
-    removeChild: function(node) {
-        this.displayObject.removeChild(node.displayObject);
     },
 
     findNode: function(name) {
@@ -62,10 +56,10 @@ game.createClass('BambooScene', {
     },
 
     addNode: function(node) {
+        node.scene = this;
         if (this.nodes.indexOf(node) === -1) this.nodes.push(node);
         if (typeof node.update === 'function') this.activeNodes.push(node);
         if (node instanceof game.nodes.Layer) this.layers.push(node);
-        this.nodeAdded(node);
     },
 
     removeNode: function(node) {
@@ -79,14 +73,15 @@ game.createClass('BambooScene', {
         node.parent.removeChild(node);
         node.onRemove();
 
-        this.nodeRemoved(node);
         return true;
     },
 
-    nodeAdded: function(node) {
+    addChild: function(node) {
+        this.displayObject.addChild(node.displayObject);
     },
 
-    nodeRemoved: function(node) {
+    removeChild: function(node) {
+        this.displayObject.removeChild(node.displayObject);
     },
 
     update: function() {

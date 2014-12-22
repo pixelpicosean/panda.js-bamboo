@@ -1,43 +1,49 @@
-bambooConfig = bambooConfig || {};
-
 game.bamboo.editor = {};
 
 game.createEditorNode = function(node, content) {
     game.nodes[node].editor = game.Node.editor.extend(content);
 };
 
+game.bamboo.setConfig = function(name, defaultValue) {
+    if (typeof game.bamboo.config[name] === 'undefined') game.bamboo.config[name] = defaultValue;
+};
+
 game.module(
     'bamboo.editor.core'
 )
 .require(
-    'bamboo.editor.boundarylayer',
+    'bamboo.editor.boundary',
     'bamboo.editor.editor',
+    'bamboo.editor.camera',
     'bamboo.editor.controller',
     'bamboo.editor.filesaver',
+    'bamboo.editor.menubar',
     'bamboo.editor.mode',
     'bamboo.editor.node',
-    'bamboo.editor.propertypanel',
-    'bamboo.editor.state',
-    'bamboo.editor.menubar',
-    'bamboo.editor.ui',
     'bamboo.editor.scene',
+    'bamboo.editor.sidebar',
+    'bamboo.editor.state',
+    'bamboo.editor.ui',
+
     'bamboo.editor.modes.edit',
     'bamboo.editor.modes.main',
+
     'bamboo.editor.states.boxselect',
     'bamboo.editor.states.move',
     'bamboo.editor.states.resize',
     'bamboo.editor.states.select',
+
     'bamboo.editor.nodes.animation',
     'bamboo.editor.nodes.image',
     'bamboo.editor.nodes.layer',
     'bamboo.editor.nodes.path',
     'bamboo.editor.nodes.pathfollower',
     'bamboo.editor.nodes.rotator',
-    'bamboo.editor.nodes.tile',
     'bamboo.editor.nodes.spine',
-    'bamboo.editor.nodes.collisiontile',
     'bamboo.editor.nodes.triggerimage',
     'bamboo.editor.nodes.tween',
+    'bamboo.editor.nodes.spritesheet',
+
     'bamboo.runtime.nodes.trigger',
     'bamboo.runtime.nodes.audio',
     'bamboo.runtime.nodes.physics',
@@ -46,165 +52,93 @@ game.module(
 )
 .body(function() {
 
-game.bambooPool.get = function() {
-    return new game.Point();
-};
+// Unlimited pool
+game.bambooPool.get = function() { return new game.Point(); };
 
-game.addAsset('../src/bamboo/editor/media/hourglass.png');
+game.config.autoStart = false;
+game.ready = function() {
+    console.log('Bamboo ' + game.bamboo.version);
 
-game.createScene('BambooEditor', {
-    init: function() {
-        // Disable right click
-        document.oncontextmenu = document.body.oncontextmenu = function() {
-            return false;
-        };
-        window.ondrop = window.ondragleave = window.ondragover = function(event) {
-            event.preventDefault();
-        };
-        var canvas = game.system.canvas;
-        canvas.ondragover = this.dragover.bind(this);
-        canvas.ondragleave = this.dragleave.bind(this);
-        canvas.ondrop = this.filedrop.bind(this);
+    // Bamboo config
+    game.bamboo.setConfig('moduleFolder', 'scenes');
+    game.bamboo.setConfig('mainModule', 'scenes');
+    game.bamboo.setConfig('JSONSaveDir', '../../../media/');
+    game.bamboo.setConfig('customSort', false);
+    game.bamboo.setConfig('systemWidth', game.System.width);
+    game.bamboo.setConfig('systemHeight', game.System.height);
+    game.bamboo.setConfig('gridSize', 32);
+    game.bamboo.setConfig('viewNodes', true);
+    game.bamboo.setConfig('saveSettings', true);
+    game.bamboo.setConfig('sideBarWidth', 220);
+    game.bamboo.setConfig('sideBarVisible', true);
+    game.bamboo.setConfig('menuBarHeight', 26);
 
-        if (!game.bamboo.editor.currentScene && bambooConfig.loadLastScene) {
-            var lastScene = game.storage.get('lastScene');
-            if (lastScene) game.bamboo.editor.currentScene = lastScene;
-            bambooConfig.loadLastScene = false;
-        }
-
-        var data = game.bamboo.editor.currentScene ? game.getSceneData(game.bamboo.editor.currentScene) : null;
-        this.editor = new game.bamboo.Editor(data);
-        this.stage.addChild(this.editor.displayObject);
-        this.addObject(this.editor);
-    },
-
-    loadScene: function(name) {
-        if (game.bamboo.editor.currentScene) game.removeBambooAssets(game.bamboo.editor.currentScene);
-        
-        if (name) game.addBambooAssets(name);
-
-        game.bamboo.editor.currentScene = name;
-
-        game.bamboo.ui.removeAll();
-
-        var loader = new game.Loader('BambooEditor');
-        loader.start();
-    },
-
-    click: function(event) {
-        if (this.editor) this.editor.click(event);
-    },
-
-    nodeClick: function(node, event) {
-        if (this.editor) this.editor.nodeClick(node, event);
-    },
-
-    nodeMouseDown: function(node, event) {
-        if (this.editor) this.editor.nodeMouseDown(node, event);
-    },
-
-    mousedown: function(event) {
-        if (event.originalEvent.button === 2) return;
-        if (document.activeElement !== document.body) document.activeElement.blur();
-        if (this.editor) this.editor.mousedown(event);
-    },
-
-    mousemove: function(event) {
-        if (this.editor) this.editor.mousemove(event);
-    },
-
-    mouseup: function(event) {
-        if (this.editor) this.editor.mouseup(event);
-    },
-
-    mouseout: function(event) {
-        if (this.editor) this.editor.mouseout(event);
-    },
-
-    keydown: function(key) {
-        if (key === 'ESC' && document.activeElement !== document.body) {
-            document.activeElement.blur();
-        }
-        if (key === 'ENTER' && document.activeElement !== document.body) {
-            document.activeElement.blur();
-        }
-        if (document.activeElement !== document.body) return;
-        if (this.editor) this.editor.keydown(key);
-        if (key === 'BACKSPACE') return true;
-    },
-
-    keyup: function(key) {
-        if (document.activeElement !== document.body) return;
-        if (this.editor) this.editor.keyup(key);
-    },
-
-    filedrop: function(event) {
-        event.preventDefault();
-        if (this.editor) {
-            this.editor.hideShadow();
-            this.editor.filedrop(event);
-        }
-    },
-
-    dragover: function() {
-        if (this.editor) {
-            this.editor.setShadowText('Drop here to add asset');
-            this.editor.showShadow();
-        }
-        return false;
-    },
-
-    dragleave: function() {
-        if (this.editor) this.editor.hideShadow();
-        return false;
-    }
-});
-
-game._start = game.start;
-game.start = function() {
     // Panda config
     game.System.scale = false;
     game.System.center = false;
     game.System.left = 0;
-    game.System.top = 0;
-    game.Storage.id = 'net.pandajs.bamboo';
+    game.System.top = game.bamboo.config.menuBarHeight;
     game.System.startScene = 'BambooEditor';
+    game.System.width = window.innerWidth;
+    if (game.bamboo.config.sideBarVisible) game.System.width -= game.bamboo.config.sideBarWidth;
+    game.System.height = window.innerHeight - game.bamboo.config.menuBarHeight;
+    game.Storage.id = 'net.pandajs.bamboo';
+    game.Loader.barBgColor = 0x393939;
+    game.Loader.barColor = 0x6b6b6b;
+    game.Loader.time = 0;
 
-    // Default config
-    bambooConfig.moduleFolder = bambooConfig.moduleFolder || 'scenes';
-    bambooConfig.JSONSaveDir = bambooConfig.JSONSaveDir || '../../../media/';
-    bambooConfig.mainModule = bambooConfig.mainModule || 'scenes';
-    bambooConfig.customSort = typeof bambooConfig.customSort === 'boolean' ? bambooConfig.customSort : false;
+    // Force dimensions to odd ???
+    // if (game.System.width % 2 === 0) game.System.width++;
+    // if (game.System.height % 2 === 0) game.System.height++;
 
+    // Init nodes
     game.nodes = game.ksort(game.nodes);
-    if (!bambooConfig.customSort) game.scenes = game.ksort(game.scenes);
+    for (var name in game.nodes) {
+        if (!game.nodes[name].editor) {
+            // Get editor node
+            var proto = game.nodes[name].prototype;
+            while (true) {
+                if (proto.constructor.editor) break;
+                proto = Object.getPrototypeOf(proto);
+                if (proto === game.Class.prototype) break;
+            }
+            game.nodes[name].editor = proto.constructor.editor;
+        }
+    }
 
-    var style = document.createElement('link');
-    style.rel = 'stylesheet';
-    style.type = 'text/css';
-    style.href = 'src/bamboo/editor/style.css';
-    style.onload = function() {
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-        // Force dimension to odd
-        if (width % 2 === 0) width++;
-        if (height % 2 === 0) height++;
-        game._start(null, width, height);
-        game.bamboo.ui = new game.bamboo.Ui();
-    };
-    document.getElementsByTagName('head')[0].appendChild(style);
+    // Sort scenes
+    if (!game.bamboo.config.customSort) game.scenes = game.ksort(game.scenes);
+
+    game.start();
+    game.bamboo.ui = new game.BambooUi();
+};
+
+game.bamboo.resize = function() {
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    if (game.scene.sideBar.visible) width -= game.bamboo.config.sideBarWidth;
+    if (game.scene.menuBar.visible) {
+        height -= game.bamboo.config.menuBarHeight;
+        game.system.canvas.style.top = game.bamboo.config.menuBarHeight + 'px';
+    }
+    else {
+        game.system.canvas.style.top = '0px';
+    }
+
+    // Force dimensions to odd ???
+    // if (width % 2 === 0) width++;
+    // if (height % 2 === 0) height++;
+    
+    game.system.resize(width, height);
+    game.scene.onResize();
+    game.bamboo.ui.onResize();
 };
 
 window.addEventListener('resize', function() {
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-    // Force dimension to odd
-    if (width % 2 === 0) width++;
-    if (height % 2 === 0) height++;
-    
-    if (game.system) game.system.resize(width, height);
-    if (game.scene && game.scene.editor) game.scene.editor.onResize();
-    if (game.bamboo.ui) game.bamboo.ui.onResize();
+    if (!game.system) return;
+
+    game.bamboo.resize();
 });
 
 window.addEventListener('keydown', function(event) {
@@ -213,5 +147,15 @@ window.addEventListener('keydown', function(event) {
         event.preventDefault();
     }
 });
+
+window.ondrop = window.ondragleave = window.ondragover = function(event) {
+    // Disable default drag n drop
+    event.preventDefault();
+};
+
+document.oncontextmenu = document.body.oncontextmenu = function() {
+    // Disable right click
+    return false;
+};
 
 });

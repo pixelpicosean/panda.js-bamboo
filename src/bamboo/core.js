@@ -1,7 +1,6 @@
-pandaConfig.bamboo = pandaConfig.bamboo || {};
-
 game.bamboo = {
-    version: '0.11.0'
+    version: '0.13.0',
+    config: typeof bambooConfig !== 'undefined' ? bambooConfig : {}
 };
 
 game.scenes = {};
@@ -14,7 +13,6 @@ game.createNode = function(name, className, content) {
     }
     var extendClass = className ? game.nodes[className] || className : game.Node;
     game.nodes[name] = extendClass.extend(content);
-    game.nodes[name].properties = {};
 };
 
 game.addBambooAssets = function(sceneName) {
@@ -32,9 +30,7 @@ game.removeBambooAssets = function(sceneName) {
 };
 
 game.getSceneData = function(sceneName) {
-    var sceneData = game.scenes[sceneName];
-    if (!sceneData) throw 'scene ' + sceneName + ' not found';
-    return sceneData;
+    return game.scenes[sceneName];
 };
 
 game.module(
@@ -44,15 +40,14 @@ game.module(
     'bamboo.runtime.node',
     'bamboo.runtime.point',
     'bamboo.runtime.scene',
-    'engine.scene',
-    'engine.tween'
+    'engine.scene'
 )
 .body(function() {
 
     // Init pool
     game.bambooPool = new game.Pool();
     game.bambooPool.create('point');
-    var poolSize = game.config.bamboo.poolSize || 10;
+    var poolSize = game.bamboo.config.poolSize || 10;
     for (var i = 0; i < poolSize; i++) {
         game.bambooPool.put('point', new game.Point());
     }
@@ -67,30 +62,5 @@ game.module(
             }
         }
     });
-
-    // Helper functions for easing
-    // game.Tween.Easing.getNamesList = function() {
-    //     var names = [];
-    //     for (var i in game.Tween.Easing) {
-    //         for (var o in game.Tween.Easing[i]) {
-    //             names.push(i + '.' + o);
-    //         }
-    //     }
-    //     return names;
-    // };
-
-    // game.Tween.Easing.getByName = function(name) {
-    //     if (!name) return game.Tween.Easing.Linear.None;
-    //     name = name.split('.');
-    //     return game.Tween.Easing[name[0]][name[1]];
-    // };
-
-    // game.Tween.Easing.getName = function(easing) {
-    //     for (var i in game.Tween.Easing) {
-    //         for (var o in game.Tween.Easing[i]) {
-    //             if (easing === game.Tween.Easing[i][o]) return i + '.' + o;
-    //         }
-    //     }
-    // };
 
 });

@@ -53,7 +53,7 @@ game.bamboo.editor.ModeMain = game.bamboo.editor.Mode.extend({
             return;
         }
         if (key === 'R') {
-            this.editor.resetCamera();
+            this.editor.camera.reset();
             return;
         }
         if (key === 'S') {
@@ -61,11 +61,13 @@ game.bamboo.editor.ModeMain = game.bamboo.editor.Mode.extend({
             return;
         }
         if (key === 'SPACE') {
-            this.editor.cameraOffset = this.editor.prevMousePos.subtractc(this.editor.cameraWorldPosition);
+            this.editor.spaceDown = true;
+            this.editor.camera.offset.x = this.editor.prevMousePos.x - (this.editor.camera.center.x - this.editor.camera.position.x);
+            this.editor.camera.offset.y = this.editor.prevMousePos.y - (this.editor.camera.center.y - this.editor.camera.position.y);
             return;
         }
         if (key === 'L') {
-            this.editor.boundaryLayer.toggleScreenDim();
+            this.editor.boundary.toggleScreenDim();
             return;
         }
         if (key === 'B') {
@@ -92,9 +94,9 @@ game.bamboo.editor.ModeMain = game.bamboo.editor.Mode.extend({
         if (key === 'CTRL') this.ctrlDown = false;
         
         if (key === 'SPACE') {
-            this.editor.cameraOffset = null;
-            game.storage.set('lastCameraPosX', this.editor.cameraWorldPosition.x);
-            game.storage.set('lastCameraPosY', this.editor.cameraWorldPosition.y);
+            this.editor.spaceDown = false;
+            // game.storage.set('lastCameraPosX', this.editor.cameraWorldPosition.x);
+            // game.storage.set('lastCameraPosY', this.editor.cameraWorldPosition.y);
             return;
         }
     },

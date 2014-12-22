@@ -13,7 +13,7 @@ game.createEditorNode('Layer', {
     ready: function() {
         this.displayObject.removeChild(this.nameText);
         this.displayObject.removeChild(this.parentSelectionRect);
-        this.editor.nodeLayer.addChild(this.displayObject);
+        this.editor.editorContainer.addChild(this.displayObject);
     },
 
     setVisibility: function(value) {

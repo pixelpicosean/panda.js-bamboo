@@ -3,18 +3,19 @@ game.module(
 )
 .body(function() {
     
-game.bamboo.MenuBar = game.Class.extend({
-    height: 26,
+game.createClass('BambooMenuBar', {
+    visible: true,
 
     init: function(editor) {
         this.editor = editor;
+        this.height = this.editor.config.menuBarHeight;
 
         this.menuElem = game.bamboo.ui.addMenu(this.height);
         this.menuElem.addMenu('Scene');
         this.menuElem.addMenuItem('Scene', 'New scene...', function() {
             if (confirm('Are you sure?')) game.scene.loadScene();
         });
-        this.menuElem.addMenuItem('Scene', 'Load scene...', this.editor.loadScene.bind(this.editor));
+        this.menuElem.addMenuItem('Scene', 'Load scene...', this.editor.showScenesWindow.bind(this.editor));
         this.menuElem.addMenuItem('Scene', 'Save module', this.editor.saveAsModule.bind(this.editor));
         this.menuElem.addMenuItem('Scene', 'Save JSON', this.editor.saveAsJSON.bind(this.editor));
         this.menuElem.addMenuItem('Scene', 'Download module', this.editor.downloadAsModule.bind(this.editor));
@@ -30,9 +31,6 @@ game.bamboo.MenuBar = game.Class.extend({
         this.menuElem.addMenu('Window');
         this.menuElem.addMenuItem('Window', 'Assets', function() {
             game.bamboo.ui.toggleWindow('assets');
-        });
-        this.menuElem.addMenuItem('Window', 'Camera', function() {
-            game.bamboo.ui.toggleWindow('camera');
         });
         this.menuElem.addMenuItem('Window', 'Layers', function() {
             game.bamboo.ui.toggleWindow('layers');
@@ -51,12 +49,7 @@ game.bamboo.MenuBar = game.Class.extend({
         this.menuElem.addMenuItem('Workspace', 'Grid', this.editor.changeGrid.bind(this.editor));
         this.menuElem.addMenuItem('Workspace', 'Boundaries', this.editor.toggleBoundaries.bind(this.editor));
         this.menuElem.addMenuItem('Workspace', 'Nodes', this.editor.toggleViewNodes.bind(this.editor));
-        this.menuElem.addMenuItem('Workspace', 'Lights', this.editor.boundaryLayer.toggleScreenDim.bind(this.editor.boundaryLayer));
-        this.menuElem.addMenuItemSpacer('Workspace');
-        this.menuElem.addMenuItem('Workspace', 'Reset workspace', function() {
-            game.bamboo.ui.resetWorkspace();
-        });
-        this.menuElem.addMenuItem('Workspace', 'Save workspace', this.saveWorkspace.bind(this));
+        this.menuElem.addMenuItem('Workspace', 'Lights', this.editor.boundary.toggleScreenDim.bind(this.editor.boundary));
 
         // this.menuElem.addMenu('Help');
         // this.menuElem.addMenuItem('Help', 'Documentation', function() {
@@ -75,6 +68,14 @@ game.bamboo.MenuBar = game.Class.extend({
         version.style.right = '10px';
         version.style.top = '5px';
         this.menuElem.windowDiv.appendChild(version);
+    },
+
+    toggleVisibility: function() {
+        this.visible = !this.visible;
+        if (this.visible) this.menuElem.show();
+        else this.menuElem.hide();
+
+        game.bamboo.resize();
     },
 
     saveWorkspace: function() {

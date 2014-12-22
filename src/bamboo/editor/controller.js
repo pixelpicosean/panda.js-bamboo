@@ -3,50 +3,20 @@ game.module(
 )
 .body(function() {
 
-game.bamboo.Controller = game.Class.extend({
+game.createClass('BambooController', {
     init: function(editor) {
         this.editor = editor;
     },
 
-    createNode: function(className, properties, editorNodeProperties) {
-        properties.name = this.editor.getUniqueName(properties.name);
-
-        game.nodes[className].prototype.ready = function() {};
-        var node = new game.nodes[className](this.editor.scene, properties);
-
-        if (!game.nodes[className].editor) {
-            var proto = game.nodes[className].prototype;
-            while (true) {
-                if (proto.constructor.editor) break;
-                proto = Object.getPrototypeOf(proto);
-                if (proto === game.Class.prototype) break;
-            }
-
-            game.nodes[className].editor = proto.constructor.editor;
-        }
-
-        var editorNode = new game.nodes[className].editor(node, this.editor, editorNodeProperties);
-        editorNode.connectedToLine.visible = this.editor.viewNodes;
-        editorNode.parentSelectionRect.visible = this.editor.viewNodes;
-        editorNode.nameText.visible = this.editor.viewNodes;
-        editorNode.debugDisplayObject.visible = this.editor.viewNodes;
-
-        if (typeof editorNode.update === 'function') this.editor.scene.activeNodes.push(editorNode);
+    createNode: function(className, properties) {
+        // Create node
+        var node = new game.nodes[className]();
+        node.scene = this.editor.scene;
+        node._properties = properties;
         
-        switch (this.editor.editorNodeVisibility) {
-            case 0:
-                editorNode.debugDisplayObject.visible = false;
-                break;
-            case 1:
-                editorNode.debugDisplayObject.visible = true;
-                editorNode.debugDisplayObject.alpha = 0.25;
-                break;
-            case 2:
-                editorNode.debugDisplayObject.visible = true;
-                editorNode.debugDisplayObject.alpha = 1.0;
-                break;
-        }
-        
+        // Create editor node
+        var editorNode = new game.nodes[className].editor(node, this.editor);
+                
         this.editor.scene.nodes.push(node);
         this.editor.nodes.push(editorNode);
         return node;
@@ -111,7 +81,7 @@ game.bamboo.Controller = game.Class.extend({
             if (layer && this.editor.selectedNodes[i].editorNode.layer !== layer) continue;
             this.deselectNode(this.editor.selectedNodes[i]);
         }
-        this.editor.changeState('Select');
+        // this.editor.changeState('Select');
     },
 
     selectNode: function(node) {
@@ -231,7 +201,7 @@ game.bamboo.Controller = game.Class.extend({
     setActiveLayer: function(layer) {
         if (this.editor.activeLayer === layer) return;
         this.editor.activeLayer = layer;
-        this.editor.propertyPanel.activeLayerChanged(layer);
+        this.editor.sideBar.activeLayerChanged(layer);
 
         for (var i = 0; i < this.editor.nodes.length; i++) {
             if (this.editor.nodes[i].layer === layer) {
@@ -278,7 +248,7 @@ game.bamboo.Controller = game.Class.extend({
         node.parent.displayObject.children[prevIndex] = node.displayObject;
         node.parent.displayObject.children[thisIndex] = prevNode.displayObject;
 
-        this.editor.propertyPanel.activeLayerChanged(node.editorNode.layer);
+        this.editor.sideBar.activeLayerChanged(node.editorNode.layer);
     },
 
     moveNodeUp: function(node) {
@@ -313,7 +283,7 @@ game.bamboo.Controller = game.Class.extend({
         node.parent.displayObject.children[nextIndex] = node.displayObject;
         node.parent.displayObject.children[thisIndex] = nextNode.displayObject;
 
-        this.editor.propertyPanel.activeLayerChanged(node.editorNode.layer);
+        this.editor.sideBar.activeLayerChanged(node.editorNode.layer);
     },
 
     moveNodeTop: function(node) {
@@ -334,7 +304,7 @@ game.bamboo.Controller = game.Class.extend({
         node.parent.displayObject.removeChild(node.displayObject);
         node.parent.displayObject.addChild(node.displayObject);
 
-        this.editor.propertyPanel.activeLayerChanged(node.editorNode.layer);
+        this.editor.sideBar.activeLayerChanged(node.editorNode.layer);
 
         game.bamboo.console.log('Moved node to top');
     },
@@ -357,7 +327,7 @@ game.bamboo.Controller = game.Class.extend({
         node.parent.displayObject.removeChild(node.displayObject);
         node.parent.displayObject.addChildAt(node.displayObject, 0);
 
-        this.editor.propertyPanel.activeLayerChanged(node.editorNode.layer);
+        this.editor.sideBar.activeLayerChanged(node.editorNode.layer);
 
         game.bamboo.console.log('Moved node to bottom');
     },
@@ -385,7 +355,7 @@ game.bamboo.Controller = game.Class.extend({
         idx = this.editor.layers.indexOf(layer);
         this.editor.layers.splice(idx, 1);
         this.editor.layers.splice(idx - 1, 0, layer);
-        this.editor.propertyPanel.updateLayerList();
+        this.editor.sideBar.updateLayerList();
     },
     
     moveLayerDown: function(layer) {
@@ -411,7 +381,7 @@ game.bamboo.Controller = game.Class.extend({
         idx = this.editor.layers.indexOf(layer);
         this.editor.layers.splice(idx, 1);
         this.editor.layers.splice(idx + 1, 0, layer);
-        this.editor.propertyPanel.updateLayerList();
+        this.editor.sideBar.updateLayerList();
     },
 
     enableEditMode: function(node, enabled) {

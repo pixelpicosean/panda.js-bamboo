@@ -6,6 +6,7 @@ game.module(
 game.bamboo.editor.State = game.Class.extend({    
     init: function(mode) {
         this.mode = mode;
+        this.editor = mode.editor;
     },
 
     enter: function() {},

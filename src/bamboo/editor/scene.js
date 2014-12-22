@@ -60,8 +60,6 @@ game.BambooScene.inject({
 
 game.BambooScene.defaultJSON = {
     name: 'Untitled',
-    width: 1024,
-    height: 768,
     nodes: [
         {
             class: 'Layer',

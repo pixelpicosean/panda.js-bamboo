@@ -47,8 +47,4 @@ game.createNode('Layer', {
     }
 });
 
-// game.addNodeProperty('Layer', 'speedFactor', 'vector', [1, 1]);
-// game.addNodeProperty('Layer', 'cacheAsBitmap', 'boolean');
-// game.addNodeProperty('Layer', 'fixed', 'boolean');
-
 });
