@@ -1,76 +1,76 @@
 ## Layout
 
-+-----------------------------------------------+
-|                   MENUBAR                     |
-+---+-----------------------------------+-------+
-|   |                                   |       |
-|   |                                   |       |
-| T |                                   |   S   |
-| O |                                   |   I   |
-| O |                                   |   D   |
-| L |             EDITOR                |   E   |
-| B |                                   |   B   |
-| A |                                   |   A   |
-| R |                                   |   R   |
-|   |                                   |       |
-|   |                                   |       |
-+---+-----------------------------------+-------+
+    +-----------------------------------------------+
+    |                   MENUBAR                     |
+    +---+-----------------------------------+-------+
+    |   |                                   |       |
+    |   |                                   |       |
+    | T |                                   |   S   |
+    | O |                                   |   I   |
+    | O |                                   |   D   |
+    | L |             EDITOR                |   E   |
+    | B |                                   |   B   |
+    | A |                                   |   A   |
+    | R |                                   |   R   |
+    |   |                                   |       |
+    |   |                                   |       |
+    +---+-----------------------------------+-------+
 
 ## Hierarchy
 
-ui
-|
-canvas
-|
-stage
-|
-+---mainContainer
+    ui
     |
-    +---overlayContainer
-    |   |
-    |   +---screenRect
-    |   |
-    |   +---screenDim
-    |   |
-    |   +---boundaries
-    |       |
-    |       +---grid
-    |       |
-    |       +---bottomLine
-    |       |
-    |       +---rightLine
-    |       |
-    |       +---topLine
-    |       |
-    |       +---leftLine
+    canvas
     |
-    +---editorContainer
-    |   |
-    |   +---layer.editorNode.displayObject
-    |           |
-    |           +---node.editorNode.displayObject
-    |               |
-    |               +---anchorBox
-    |               |
-    |               +---parentSelectionRect
-    |               |
-    |               +---editableRect
-    |               |
-    |               +---nameText
-    |               |
-    |               +---connectedToLine
-    |               |
-    |               +---touchRect
-    |               |
-    |               +---activeRect
-    |               |
-    |               +---selectionRect
-    |               |
-    |               +---debugDisplayObject
+    stage
     |
-    +---sceneContainer
+    +---mainContainer
         |
-        +---layer.displayObject
+        +---overlayContainer
+        |   |
+        |   +---screenRect
+        |   |
+        |   +---screenDim
+        |   |
+        |   +---boundaries
+        |       |
+        |       +---grid
+        |       |
+        |       +---bottomLine
+        |       |
+        |       +---rightLine
+        |       |
+        |       +---topLine
+        |       |
+        |       +---leftLine
+        |
+        +---editorContainer
+        |   |
+        |   +---layer.editorNode.displayObject
+        |           |
+        |           +---node.editorNode.displayObject
+        |               |
+        |               +---anchorBox
+        |               |
+        |               +---parentSelectionRect
+        |               |
+        |               +---editableRect
+        |               |
+        |               +---nameText
+        |               |
+        |               +---connectedToLine
+        |               |
+        |               +---touchRect
+        |               |
+        |               +---activeRect
+        |               |
+        |               +---selectionRect
+        |               |
+        |               +---debugDisplayObject
+        |
+        +---sceneContainer
             |
-            +---node.displayObject
+            +---layer.displayObject
+                |
+                +---node.displayObject
 
