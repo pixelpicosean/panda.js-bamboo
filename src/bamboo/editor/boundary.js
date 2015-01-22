@@ -5,11 +5,11 @@ game.module(
 
 game.createClass('BambooBoundary', {
     dimAlpha: 0.5,
-    dimColor: 0x282828,
+    dimColor: 0x000000,
     lineColor: 0x77ff55,
     gridAlpha: 0.3,
-    gridColor: 0xffffff,
-    screenRectColor: 0xffffff,
+    gridColor: 0xeeeeee,
+    screenRectColor: 0x474747,
 
     init: function(editor) {
         this.editor = editor;
@@ -45,7 +45,7 @@ game.createClass('BambooBoundary', {
         
         this.bottomLine.lineStyle(1, this.lineColor);
         this.bottomLine.moveTo(0, 0);
-        this.bottomLine.lineTo(game.system.width, 1);
+        this.bottomLine.lineTo(game.system.width, 0);
     },
 
     updateGrid: function() {

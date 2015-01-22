@@ -3,26 +3,16 @@ game.module(
 )
 .body(function() {
 
-game.createClass('BambooUi', {
-    activeWindow: null,
+game.bamboo.ui = {
     windows: [],
     menu: null,
 
-    init: function() {
-        window.addEventListener('mousemove', this.mousemove.bind(this), false);
-        window.addEventListener('mouseup', this.mouseup.bind(this), false);
-    },
-
-    showWindow: function(id) {
-        var win = this.findWindow(id);
-        if (win) return win.show();
-        return false;
-    },
-
-    toggleWindow: function(id) {
-        var win = this.findWindow(id);
-        if (win) return win.toggleVisibility();
-        return false;
+    removeAll: function() {
+        this.menu.remove();
+        for (var i = 0; i < this.windows.length; i++) {
+            this.windows[i].remove();
+        }
+        this.windows.length = 0;
     },
 
     findWindow: function(id) {
@@ -31,147 +21,42 @@ game.createClass('BambooUi', {
         }
     },
 
-    addWindow: function(settings) {
-        var winElem = new game.BambooUiWindow(this, settings);
-        this.windows.push(winElem);
-        return winElem;
-    },
-
-    addMenu: function(height) {
-        this.menu = new game.BambooUiMenu(height);
-        return this.menu;
-    },
-
     onResize: function() {
+        this.menu.update();
         for (var i = 0; i < this.windows.length; i++) {
             if (typeof this.windows[i].onResize === 'function') {
                 this.windows[i].onResize();
             }
-            this.windows[i].updatePosition();
-            this.windows[i].updateSize();
-        }
-        if (this.menu) this.menu.updateSize();
-    },
-
-    setActiveWindow: function(winElem) {
-        this.activeWindow = winElem;
-        if (this.activeWindow.resizing) document.body.style.cursor = 'nwse-resize';
-        else document.body.style.cursor = 'move';
-    },
-
-    mousemove: function(event) {
-        if (this.activeWindow) this.activeWindow.mousemove(event);
-    },
-
-    mouseup: function() {
-        if (this.activeWindow) {
-            document.body.style.cursor = 'default';
-            this.activeWindow = null;
-        }
-    },
-
-    removeWindow: function(winElem) {
-        for (var i = this.windows.length - 1; i >= 0; i--) {
-            if (this.windows[i] === winElem) {
-                winElem.hide();
-                this.windows.splice(i, 1);
-                return true;
-            }
-        }
-        return false;
-    },
-
-    removeAll: function() {
-        this.hideAll();
-        this.windows.length = 0;
-        this.menu.remove();
-    },
-
-    hideAll: function() {
-        for (var i = 0; i < this.windows.length; i++) {
-            this.windows[i].hide();
-        }
-    },
-
-    showAll: function() {
-        for (var i = 0; i < this.windows.length; i++) {
-            this.windows[i].show();
-        }
-    },
-
-    update: function() {
-        for (var i = 0; i < this.windows.length; i++) {
             this.windows[i].update();
         }
-    }
-});
+    },
+};
 
-game.createClass('BambooUiWindow', {
+game.createClass('BambooWindow', {
     x: 0,
     y: 0,
     width: 400,
-    height: 100,
-    borderSize: 1,
     inputs: {},
     visible: false,
     align: 'left',
-    folded: false,
-    titleHeight: 29,
-    titlePadding: 8,
+    folded: true,
+    titleHeight: 30,
+    titlePadding: 10,
     fixed: false,
-    minY: 0,
-    minX: 0,
-    closeable: false,
-    resizable: false,
-    minWidth: 150,
-    minHeight: 100,
     parent: null,
     children: null,
-    saved: true,
-    centered: false,
-
-    init: function(parent, settings) {
-        this.ui = parent;
+    
+    init: function(settings) {
+        game.bamboo.ui.windows.push(this);
         game.merge(this, settings);
 
         this.windowDiv = document.createElement('div');
         this.windowDiv.className = 'window';
+        if (settings.className) this.windowDiv.className += ' ' + settings.className;
 
         this.titleDiv = document.createElement('div');
-        if (!this.fixed) this.titleDiv.addEventListener('mousedown', this.mousedown.bind(this), false);
+        this.titleDiv.addEventListener('mousedown', this.mousedown.bind(this), false);
         this.titleDiv.className = 'title';
-        this.titleDiv.style.padding = this.titlePadding + 'px';
-        this.titleDiv.style.height = (this.titleHeight - this.titlePadding * 2) + 'px';
-
-        if (this.title) this.setTitle(this.title);
-        
-        if (this.closeable) {
-            var closeButton = document.createElement('div');
-            closeButton.className = 'close';
-            // closeButton.src = 'src/bamboo/editor/media/close.png';
-            closeButton.style.position = 'absolute';
-            closeButton.style.right = '0px';
-            closeButton.style.top = '0px';
-            closeButton.style.width = '29px';
-            closeButton.style.height = '29px';
-            closeButton.style.backgroundImage = 'url(src/bamboo/editor/media/close.png)';
-            closeButton.addEventListener('click', this.close.bind(this));
-            this.windowDiv.appendChild(closeButton);
-        }
-
-        if (this.resizable) {
-            var resizeImg = document.createElement('img');
-            resizeImg.src = 'src/bamboo/editor/media/resize.png';
-            resizeImg.style.position = 'absolute';
-            resizeImg.style.right = '0px';
-            resizeImg.style.bottom = '0px';
-            resizeImg.addEventListener('mousedown', this.resizeDown.bind(this));
-            this.windowDiv.appendChild(resizeImg);
-            this.origSize = new game.Point();
-        }
-
-        this.mouseStartPos = new game.Point();
-        this.origPosition = new game.Point();
 
         this.contentDiv = document.createElement('div');
         this.contentDiv.className = 'content';
@@ -179,28 +64,25 @@ game.createClass('BambooUiWindow', {
         this.windowDiv.appendChild(this.titleDiv);
         this.windowDiv.appendChild(this.contentDiv);
 
-        window.addEventListener('resize', this.update.bind(this), false);
-
         this.updateSize();
         this.updatePosition();
 
-        if (this.visible) document.body.appendChild(this.windowDiv);
+        if (this.title) this.setTitle(this.title);
+        document.body.appendChild(this.windowDiv);
+
         if (this.folded) {
             this.folded = false;
             this.toggleFold();
         }
         if (this.snappedTo) {
-            var parent = this.ui.findWindow(this.snappedTo);
-            if (parent) {
-                parent.snap(this); 
-            }
+            var parent = game.bamboo.ui.findWindow(this.snappedTo);
+            if (parent) parent.snap(this); 
         }
     },
 
     snap: function(target) {
         this.children = target;
         target.parent = this;
-
         target.x = this.x;
         target.y = this.y + this.height;
         target.width = this.width;
@@ -216,33 +98,21 @@ game.createClass('BambooUiWindow', {
     },
 
     updateSize: function() {
-        if (this.resizable && !this.folded) {
-            if (this.width < this.minWidth) this.width = this.minWidth;
-            if (this.height < this.minHeight) this.height = this.minHeight;
-        }
+        this.windowDiv.style.width = this.width + 'px';
 
+        if (this.folded) return;
+
+        this.windowDiv.style.height = this.height + 'px';
+        this.contentDiv.style.height = (this.height - this.titleHeight - 20) + 'px';
+
+        this.updateHeight();
+        
         if (this.children) {
             this.children.width = this.width;
             this.children.y = this.y + this.height;
             this.children.updatePosition();
             this.children.updateSize();
         }
-
-        if (this.width === 'window') this.windowDiv.style.width = window.innerWidth - this.borderSize * 2 + 'px';
-        else this.windowDiv.style.width = (this.width - this.borderSize * 2) + 'px';
-
-        if (this.folded) return;
-        if (this.height === 'window') this.windowDiv.style.height = window.innerHeight - this.borderSize * 2 + 'px';
-        else this.windowDiv.style.height = (this.height - this.borderSize * 2) + 'px';
-
-        this.contentDiv.style.height = (this.height - this.titleHeight - this.borderSize * 4 - 20 - 6) + 'px';
-    },
-
-    resizeDown: function() {
-        this.resizing = true;
-        this.ui.setActiveWindow(this);
-        this.mouseStartPos.set(event.clientX, event.clientY);
-        this.origSize.set(this.width, this.height);
     },
 
     bringFront: function() {
@@ -253,33 +123,29 @@ game.createClass('BambooUiWindow', {
 
     mousedown: function(event) {
         this.resizing = false;
-        if (event.button === 2) {
-            // Right mouse button
-            this.toggleFold();
-            return;
-        }
-        if (!this.ui) return;
-        this.bringFront();
-        this.ui.setActiveWindow(this);
-        this.mouseStartPos.set(event.clientX, event.clientY);
-        this.origPosition.set(this.x, this.y);
+        this.toggleFold();
     },
 
     toggleFold: function() {
         this.folded = !this.folded;
+        
         if (this.folded) {
             this.windowDiv.style.height = this.titleHeight + 'px';
-            this.origHeight = this.height;
-            this.height = this.titleHeight;
+            this.updateHeight();
             if (this.children) {
                 this.children.y = this.y + this.height;
                 this.children.updatePosition();
             }
         }
         else {
-            this.height = this.origHeight;
+            this.windowDiv.style.height = 'auto';
+            this.updateHeight();
             this.updateSize();
         }
+    },
+
+    updateHeight: function() {
+        this.height = this.windowDiv.clientHeight + 2;
     },
 
     mousemove: function(event) {
@@ -329,6 +195,8 @@ game.createClass('BambooUiWindow', {
         if (this.snappedToEdge === 'right') {
             this.x = window.innerWidth - this.width;
         }
+
+        this.updateHeight();
         
         if (this.children) {
             this.children.x = this.x;
@@ -532,44 +400,61 @@ game.createClass('BambooUiWindow', {
     }
 });
 
-game.createClass('BambooUiMenu', {
+game.createClass('BambooMenu', {
+    height: 30,
+    visible: true,
     menus: {},
-    activeMenu: null,
-    height: 25,
+    menuButtons: {},
 
-    init: function(height) {
-        this.height = height || this.height;
-        this.height -= 2;
+    init: function(editor) {
+        this.editor = editor;
+        game.bamboo.ui.menu = this;
+        
         this.windowDiv = document.createElement('div');
-        this.windowDiv.className = 'window';
+        this.windowDiv.className = 'window menu';
+        this.windowDiv.style.lineHeight = this.height + 'px';
         this.windowDiv.style.height = this.height + 'px';
         this.windowDiv.style.left = '0px';
         this.windowDiv.style.top = '0px';
         this.windowDiv.style.overflow = 'visible';
         this.windowDiv.style.zIndex = 999999;
-        this.updateSize();
 
         this.contentDiv = document.createElement('div');
-
         this.windowDiv.appendChild(this.contentDiv);
 
         document.body.appendChild(this.windowDiv);
+        this.initMenus();        
+        this.update();
     },
 
-    remove: function() {
-        document.body.removeChild(this.windowDiv);
-    },
+    initMenus: function() {
+        this.addMenu('Scene');
+        this.addMenuItem('Scene', 'New scene...', function() {
+            if (confirm('Are you sure?')) game.scene.loadScene();
+        });
+        this.addMenuItem('Scene', 'Load scene...', this.editor.showScenesWindow.bind(this.editor));
+        this.addMenuItem('Scene', 'Save module', this.editor.saveAsModule.bind(this.editor));
+        this.addMenuItem('Scene', 'Save JSON', this.editor.saveAsJSON.bind(this.editor));
+        this.addMenuItem('Scene', 'Download module', this.editor.downloadAsModule.bind(this.editor));
+        this.addMenuItem('Scene', 'Download JSON', this.editor.downloadAsJSON.bind(this.editor));
 
-    show: function() {
-        this.windowDiv.style.display = 'block';
-    },
+        this.addMenu('Node');
+        this.addMenuItem('Node', 'Delete', this.editor.controller.deleteSelectedNodes.bind(this.editor.controller));
+        this.addMenuItem('Node', 'Duplicate', this.editor.controller.duplicateSelectedNodes.bind(this.editor.controller));
+        this.addMenuItem('Node', 'Parent/unparent', this.editor.controller.setNodeParent.bind(this.editor.controller));
+        this.addMenuItem('Node', 'Move to top', this.editor.controller.moveNodeTop.bind(this.editor.controller));
+        this.addMenuItem('Node', 'Move to bottom', this.editor.controller.moveNodeBottom.bind(this.editor.controller));
 
-    hide: function() {
-        this.windowDiv.style.display = 'none';
-    },
+        this.addMenu('View');
+        this.addMenuItem('View', 'Grid', this.editor.changeGrid.bind(this.editor));
+        this.addMenuItem('View', 'Boundaries', this.editor.toggleBoundaries.bind(this.editor));
+        this.addMenuItem('View', 'Nodes', this.editor.toggleViewNodes.bind(this.editor));
+        this.addMenuItem('View', 'Lights', this.editor.boundary.toggleScreenDim.bind(this.editor.boundary));
 
-    updateSize: function() {
-        this.windowDiv.style.width = window.innerWidth + 'px';
+        var version = document.createElement('div');
+        version.innerHTML = game.bamboo.version;
+        version.className = 'version';
+        this.windowDiv.appendChild(version);
     },
 
     addMenu: function(name) {
@@ -579,14 +464,14 @@ game.createClass('BambooUiMenu', {
         menuButton.addEventListener('click', this.activate.bind(this, name));
         menuButton.addEventListener('mouseover', this.openMenu.bind(this, name));
         this.contentDiv.appendChild(menuButton);
+        this.menuButtons[name] = menuButton;
 
         var menuContent = document.createElement('div');
         menuContent.className = 'menuContent';
         menuContent.style.display = 'none';
-        menuContent.style.top = (this.height) + 'px';
+        menuContent.style.top = this.height + 'px';
         menuContent.style.left = menuButton.offsetLeft + 'px';
         this.windowDiv.appendChild(menuContent);
-
         this.menus[name] = menuContent;
     },
 
@@ -637,11 +522,21 @@ game.createClass('BambooUiMenu', {
 
         this.activeMenu = name;
 
+        this.menuButtons[name].className = 'menu active';
         this.menus[name].style.display = 'block';
     },
 
     closeMenu: function(name) {
+        this.menuButtons[name].className = 'menu';
         this.menus[name].style.display = 'none';
+    },
+
+    remove: function() {
+        document.body.removeChild(this.windowDiv);
+    },
+
+    update: function() {
+        this.windowDiv.style.width = window.innerWidth + 'px';
     }
 });
 

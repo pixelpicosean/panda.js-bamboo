@@ -4,42 +4,29 @@ game.module(
 .body(function() {
 
 game.createClass('BambooSideBar', {
+    visible: true,
+    width: 220,
+
     init: function(editor) {
         this.editor = editor;
-        this.width = this.editor.config.sideBarWidth;
-        this.visible = this.editor.config.sideBarVisible;
         
         this.initWindows();
         this.initLayerList();
-        this.initLayerSettingsWindow();
     },
 
     initWindows: function() {
-        this.propertyWindow = game.bamboo.ui.addWindow({
+        this.propertyWindow = new game.BambooWindow({
             id: 'properties',
             y: this.editor.menuBar.height,
             width: this.width,
-            height: 300,
-            fixed: true,
-            visible: this.visible,
+            height: 310,
             snappedToEdge: 'right'
         });
 
-        this.layerWindow = game.bamboo.ui.addWindow({
-            id: 'layers',
-            title: 'Layers',
-            snappedTo: 'properties',
-            height: 180,
-            fixed: true,
-            visible: this.visible
-        });
-
-        this.nodesWindow = game.bamboo.ui.addWindow({
+        this.nodesWindow = new game.BambooWindow({
             id: 'nodes',
             title: 'Nodes',
-            height: 135,
-            visible: this.visible,
-            snappedTo: 'layers'
+            snappedTo: 'properties'
         });
 
         this.nodesWindow.addInputSelect('type', 'Type');
@@ -48,12 +35,18 @@ game.createClass('BambooSideBar', {
         }
         this.nodesWindow.setInputSelectValue('type', 'Image');
         this.nodesWindow.addButton('Add', this.editor.addNode.bind(this.editor));
-    },
 
-    initLayerSettingsWindow: function() {
-        this.layerSettingsWindow = game.bamboo.ui.addWindow({
+        this.layerWindow = new game.BambooWindow({
+            id: 'layers',
+            title: 'Layers',
+            snappedTo: 'nodes',
+            height: 180
+        });
+
+        this.layerSettingsWindow = new game.BambooWindow({
             id: 'layerSettings',
-            title: 'Layer settings'
+            title: 'Layer settings',
+            snappedTo: 'layers'
         });
 
         this.layerSettingsWindow.addInputText('name', '', 'Name', '', this.layerSettingsChanged.bind(this));
@@ -61,6 +54,34 @@ game.createClass('BambooSideBar', {
         this.layerSettingsWindow.addInputCheckbox('visible', false, 'Visible', '', this.layerSettingsChanged.bind(this));
         this.layerSettingsWindow.addInputCheckbox('fixed', false, 'Fixed position', '', this.layerSettingsChanged.bind(this));
         this.layerSettingsWindow.addMultiInput('speedFactor', [0, 0], 2, 'Speed', '', this.layerSettingsChanged.bind(this));
+
+        this.assetsWindow = new game.BambooWindow({
+            id: 'assets',
+            title: 'Assets',
+            snappedTo: 'layerSettings'
+        });
+
+        this.assetsList = document.createElement('select');
+        this.assetsList.style.height = (this.assetsWindow.height - 100) + 'px';
+        this.assetsList.className = 'list';
+        this.assetsList.style.overflow = 'auto';
+
+        this.assetsWindow.contentDiv.appendChild(this.assetsList);
+
+        this.assetsWindow.addButton('Add', this.editor.addAsset.bind(this.editor, this.assetsList));
+        this.assetsWindow.addButton('Remove', this.editor.removeAsset.bind(this.editor, this.assetsList));
+        this.updateAssetsList();
+    },
+
+    updateAssetsList: function() {
+        this.assetsList.innerHTML = '';
+        this.assetsList.size = 2;
+        for (var i = 0; i < this.editor.scene.assets.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = this.editor.scene.assets[i];
+            opt.innerHTML = this.editor.scene.assets[i];
+            this.assetsList.appendChild(opt);
+        }
     },
 
     layerSettingsChanged: function(key) {
@@ -73,38 +94,10 @@ game.createClass('BambooSideBar', {
         this.layerList.size = 6;
         this.layerList.addEventListener('click', this.layerSelectionChanged.bind(this));
 
-        var buttonsDiv = document.createElement('div');
-        buttonsDiv.className = 'buttonContainer';
-
-        var layerButton = document.createElement('div');
-
-        layerButton.className = 'button image';
-        layerButton.innerHTML = '<img src="src/bamboo/editor/media/blue-document--plus.png">';
-        layerButton.addEventListener('click', this.newLayerClicked.bind(this));
-        buttonsDiv.appendChild(layerButton);
-
-        layerButton = document.createElement('div');
-        layerButton.className = 'button image';
-        layerButton.innerHTML = '<img src="src/bamboo/editor/media/arrow-090.png">';
-        layerButton.addEventListener('click', this.moveLayerUpClicked.bind(this));
-        buttonsDiv.appendChild(layerButton);
-
-        layerButton = document.createElement('div');
-        layerButton.className = 'button image';
-        layerButton.innerHTML = '<img src="src/bamboo/editor/media/arrow-270.png">';
-        layerButton.addEventListener('click', this.moveLayerDownClicked.bind(this));
-        buttonsDiv.appendChild(layerButton);
-
-        layerButton = document.createElement('div');
-        layerButton.className = 'button image';
-        layerButton.innerHTML = '<img src="src/bamboo/editor/media/cross.png">';
-        layerButton.addEventListener('click', this.deleteLayerClicked.bind(this), false);
-        buttonsDiv.appendChild(layerButton);
-
+        
         this.layerList.style.height = (this.layerWindow.height - 101) + 'px';
 
         this.layerWindow.contentDiv.appendChild(this.layerList);
-        this.layerWindow.contentDiv.appendChild(buttonsDiv);
     },
 
     toggleVisibility: function() {
@@ -112,10 +105,12 @@ game.createClass('BambooSideBar', {
         if (this.visible) {
             this.propertyWindow.show();
             this.layerWindow.show();
+            this.nodesWindow.show();
         }
         else {
             this.propertyWindow.hide();
-            this.layerWindow.hide();   
+            this.layerWindow.hide();
+            this.nodesWindow.hide();
         }
         game.bamboo.resize();
     },
@@ -242,7 +237,7 @@ game.createClass('BambooSideBar', {
     updatePropertyWindow: function(node) {
         this.propertyWindow.clear();
         this.propertyWindow.setTitle('Properties');        
-        this.propertyWindow.addText(node.editorNode.getClassName() + '<br><br>');
+        // this.propertyWindow.addText(node.editorNode.getClassName() + '<br><br>');
 
         var props = node.editorNode.getProperties();
         for (var i = props.length - 1; i >= 0; i--) {

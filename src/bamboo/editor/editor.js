@@ -22,7 +22,6 @@ game.createScene('BambooEditor', {
         this.initNodes();
         this.initNodeProperties();
         // this.initOverlay();
-        this.initWindows();
 
         this.controller.setActiveLayer(this.layers[0]);
         this.changeMode('Main');
@@ -31,6 +30,8 @@ game.createScene('BambooEditor', {
 
         console.log('Scene ' + this.scene.name + ' loaded');
         this.updateDocumentTitle();
+
+        game.bamboo.resize();
     },
 
     updateDocumentTitle: function() {
@@ -90,7 +91,7 @@ game.createScene('BambooEditor', {
     initObjects: function() {
         this.controller = new game.BambooController(this);
         this.boundary = new game.BambooBoundary(this);
-        this.menuBar = new game.BambooMenuBar(this);
+        this.menuBar = new game.BambooMenu(this);
         this.sideBar = new game.BambooSideBar(this);
     },
 
@@ -117,48 +118,14 @@ game.createScene('BambooEditor', {
         game.bamboo.currentScene = name;
         game.bamboo.ui.removeAll();
 
+        game.editor = null;
+        game.system.resize(window.innerWidth, window.innerHeight);
         var loader = new game.Loader('BambooEditor').start();
-    },
-
-    initWindows: function() {
-        // Error window
-        this.errorWindow = game.bamboo.ui.addWindow({
-            width: 400,
-            height: 120,
-            closeable: true,
-            fixed: true
-        });
-        this.errorWindow.setTitle('Error');
-
-        // Assets window
-        var assetsWindow = game.bamboo.ui.addWindow({
-            id: 'assets',
-            resizable: true,
-            snappable: true,
-            closeable: true,
-            minY: this.menuBar.height,
-            minHeight: 200
-        });
-        assetsWindow.setTitle('Assets');
-
-        var assetsList = document.createElement('select');
-        this.assetsList = assetsList;
-        assetsWindow.onResize = function() {
-            assetsList.style.height = (assetsWindow.height - 100) + 'px';
-        };
-        assetsWindow.onResize();
-        this.assetsList.className = 'list';
-        this.assetsList.style.overflow = 'auto';
-        assetsWindow.contentDiv.appendChild(this.assetsList);
-
-        assetsWindow.addButton('Add', this.addAsset.bind(this, this.assetsList));
-        assetsWindow.addButton('Remove', this.removeAsset.bind(this, this.assetsList));
-        this.updateAssetsList();
     },
 
     showScenesWindow: function() {
         if (this.scenesWindow) this.scenesWindow.hide();
-        this.scenesWindow = game.bamboo.ui.addWindow({
+        this.scenesWindow = new game.BambooWindow({
             title: 'Load scene',
             id: 'scenes',
             closeable: true,
@@ -256,17 +223,6 @@ game.createScene('BambooEditor', {
         }
     },
 
-    updateAssetsList: function() {
-        this.assetsList.innerHTML = '';
-        this.assetsList.size = 2;
-        for (var i = 0; i < this.scene.assets.length; i++) {
-            var opt = document.createElement('option');
-            opt.value = this.scene.assets[i];
-            opt.innerHTML = this.scene.assets[i];
-            this.assetsList.appendChild(opt);
-        }
-    },
-
     initNodes: function() {
         var nodes = game.copy(this.scene.nodes);
         this.scene.nodes.length = 0;
@@ -327,16 +283,6 @@ game.createScene('BambooEditor', {
             this.nodes[i].nameText.visible = this.config.viewNodes;
             this.nodes[i].debugDisplayObject.visible = this.config.viewNodes;
         }
-    },
-
-    showError: function(error) {
-        this.errorWindow.clear();
-        this.errorWindow.addText(error);
-        this.errorWindow.show();
-    },
-
-    hideError: function() {
-        this.errorWindow.hide();
     },
 
     updateLayers: function() {
@@ -577,7 +523,7 @@ game.createScene('BambooEditor', {
     },
 
     mousemove: function(event) {
-        if (this.menuBar.menuElem.active) this.menuBar.menuElem.activate();
+        if (this.menuBar.active) this.menuBar.activate();
 
         this.prevMousePos.x = (event.global.x / this.camera.zoom);
         this.prevMousePos.y = (event.global.y / this.camera.zoom);
@@ -597,6 +543,10 @@ game.createScene('BambooEditor', {
     },
 
     keydown: function(key) {
+        if (key === 'TAB' && document.activeElement === document.body) {
+            this.sideBar.toggleVisibility();
+            return true;
+        }
         if (key === 'ESC' && document.activeElement !== document.body) {
             document.activeElement.blur();
         }
@@ -605,8 +555,6 @@ game.createScene('BambooEditor', {
         }
         if (document.activeElement !== document.body) return;
 
-        if (key === '1') return this.menuBar.toggleVisibility();
-        if (key === '2') return this.sideBar.toggleVisibility();
         if (key === 'PLUS') return this.camera.zoomIn();
         if (key === 'MINUS') return this.camera.zoomOut();
         if (key === '0') return this.camera.zoomReset();
@@ -716,7 +664,7 @@ game.createScene('BambooEditor', {
         if (this.mode.animationRunning) this.mode.stopAnimation();
         var json = this.scene.toJSON();
         var name = json.name.toLowerCase();
-        if (!name) return this.showError('Scene must have name');
+        if (!name) return console.error('Scene must have name');
         var filename = json.name.toLowerCase() + '.js';
         var data = this.buildModuleFromJSON(json);
 
@@ -806,7 +754,7 @@ game.createScene('BambooEditor', {
 
     saveToFileComplete: function(request, filename) {
         if (request.readyState === 4) {
-            if (request.responseText !== 'success') console.log('Error saving file: ' + filename);
+            if (request.responseText !== 'success') console.error('Failed to save file: ' + filename);
         }
     },
 
@@ -815,14 +763,11 @@ game.createScene('BambooEditor', {
         this.mainContainer.pivot.y = game.system.height / 2;
         this.mainContainer.position.x = game.system.width / 2;
         this.mainContainer.position.y = game.system.height / 2;
-
         this.camera.center.set(game.system.width / 2 - this.config.systemWidth / 2, game.system.height / 2 - this.config.systemHeight / 2);
-
         this.scene.displayObject.position.set(this.camera.center.x, this.camera.center.y);
         this.editorContainer.position.set(this.camera.center.x, this.camera.center.y);
         this.boundary.updateLines();
         this.boundary.update();
-
         // this.overlay.style.lineHeight = window.innerHeight + 'px';
     },
 
